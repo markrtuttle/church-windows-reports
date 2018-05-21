@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+# pylint: disable=missing-docstring
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-arguments
+
+import balance
+import income
+import chart
+import journal
+import ministry
+import arguments
+import finance
+import vendor
+
+def main():
+    args = arguments.parse()
+    balance_ = balance.Balance(args.balance)
+    income_ = income.Income(args.income)
+    journal_ = journal.Journal(args.journal)
+    chart_ = (chart.Chart(jsn=args.chart)
+              if args.chart.endswith('.json')
+              else chart.Chart(args.chart, balance_))
+    ministry_ = ministry.Ministry(chart_)
+    report = finance.Finance(chart_, balance_, income_, journal_, ministry_,
+                             args)
+
+    if args.dump_chart:
+        print chart_.dump_jsons()
+        return
+
+    if args.ministry_report:
+        report.ministry_reports()
+
+    if args.unassigned_report:
+        report.unassigned_reports()
+
+    if args.vendor_report:
+        ven = vendor.Vendor(args.vendor)
+        ven.report(journal_, args)
+
+if __name__ == "__main__":
+    main()
