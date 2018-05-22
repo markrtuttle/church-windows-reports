@@ -147,4 +147,9 @@ def journal_statement(numbers, journal, width, title,
                               truncate(ent.name(), lwid),
                               truncate(ent.comment(), rwid)))
 
+def trailer(date_start, date_end, posted_start):
+    print ("\nTransactions shown are those occurring between {} and {}, "
+           "\nand occuring before {} but posted after {}"
+           .format(date_start, date_end, date_start, posted_start))
+
 ################################################################
