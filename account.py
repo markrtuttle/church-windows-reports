@@ -19,15 +19,7 @@ def type_parse(string):
     if string == "":
         string = "Vendor"
 
-    # pylint: disable=too-many-boolean-expressions
-    # pylint: disable=bad-continuation
-
-    if (string == "Asset" or
-        string == "Liability" or
-        string == "Vendor" or
-        string == "Fund" or
-        string == "Income" or
-        string == "Expense"):
+    if string in ["Asset", "Liability", "Vendor", "Fund", "Income", "Expense"]:
         return string
     raise ValueError("Invalid account type "+string)
 

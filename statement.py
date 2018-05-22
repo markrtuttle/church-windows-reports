@@ -164,8 +164,7 @@ def subaccount_balance_statement(chart, balance, month, year, parent_name):
 
 def trailer(date_start, date_end, posted_start):
     print ("\nTransactions shown are those occurring between {} and {}, "
-           "\nand occuring before {} but posted after {}"
+           "\nand those occuring before {} but posted after {}"
            .format(date_start, date_end, date_start, posted_start))
->>>>>>> bb5cb04329bbf96140be008db3201d1240070f14
 
 ################################################################
