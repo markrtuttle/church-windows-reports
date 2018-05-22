@@ -146,6 +146,17 @@ def command_line_parser():
         help="Don't generate reports for vendor accounts."
     )
     parser.add_argument(
+        '--subfund-report',
+        action='store_true',
+        help="Generate reports for subfund accounts."
+    )
+    parser.add_argument(
+        '--no-subfund-report',
+        dest='subfund_report',
+        action='store_false',
+        help="Don't generate reports for subfund accounts."
+    )
+    parser.add_argument(
         '--dump-chart',
         action='store_true',
         help='Dump chart of accounts and exit'

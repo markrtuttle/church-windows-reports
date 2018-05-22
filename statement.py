@@ -6,8 +6,6 @@
 import amount
 import date
 
-# TODO: Make banner giving period of entries
-
 ################################################################
 
 def join_nonempty(sep, strings):
@@ -146,5 +144,23 @@ def journal_statement(numbers, journal, width, title,
                               dat,
                               truncate(ent.name(), lwid),
                               truncate(ent.comment(), rwid)))
+
+
+def subaccount_balance_statement(chart, balance, month, year, parent_name):
+    parent_number = chart.number(parent_name)
+    child_numbers = chart.account(parent_number).children()
+    lines = []
+    for num in child_numbers:
+        bal = balance.account(num)
+        lines.append((bal.name(), bal.month(), bal.year()))
+    if not lines:
+        return
+    fmt = "{:40} {:>10} {:>10}"
+    print
+    print fmt.format(parent_name, month, year)
+    print
+    lines.sort(key=lambda tup: tup[0])
+    for name_, month_, year_ in lines:
+        print fmt.format("  "+name_, month_, year_)
 
 ################################################################

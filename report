@@ -4,6 +4,9 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-arguments
 
+# TODO: review date, number, amount, chart, balance, income, etc
+# TODO: separate infrastructure code from PACC application code
+
 import balance
 import income
 import chart
@@ -12,6 +15,7 @@ import ministry
 import arguments
 import finance
 import vendor
+import statement
 
 def main():
     args = arguments.parse()
@@ -38,6 +42,14 @@ def main():
     if args.vendor_report:
         ven = vendor.Vendor(args.vendor)
         ven.report(journal_, args)
+
+    if args.subfund_report:
+        statement.subaccount_balance_statement(chart_, balance_,
+                                               args.month_name, args.year,
+                                               "Special Funds")
+        statement.subaccount_balance_statement(chart_, balance_,
+                                               args.month_name, args.year,
+                                               "Investment Return")
 
 if __name__ == "__main__":
     main()
