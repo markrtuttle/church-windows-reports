@@ -1,3 +1,27 @@
+# chart.csv
+# reports/export -> export -> coa data -> export
+# 
+# balance.csv
+# reports/export -> financial -> balance sheet
+# accounts with zero balancce
+# detail -> total funds -> temporarily restricted -> check all
+# export
+# 
+# income.csv
+# reports/export -> financial -> treasurer's report
+# accounts with zero balances
+# fund -> general fund
+# export
+# 
+# vendor.csv
+# reports -> transaction -> general ledger -> account = accounts payable/vendor
+# export
+# 
+# journal.csv
+# date posted
+# export
+# 
+
 FLAGS = --month $(shell date +%m)
 
 default:

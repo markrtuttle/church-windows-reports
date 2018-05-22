@@ -4,6 +4,7 @@
 # pylint: disable=misplaced-comparison-constant
 
 # TODO: Get month and year from date_start/end, etc.
+# TODO: Add --compact and --sort-names for reports
 
 import argparse
 import time
@@ -47,11 +48,11 @@ def command_line_parser():
     )
     parser.add_argument(
         '--journal',
-        default=['journal1.csv', 'journal2.csv'],
+        default=['journal.csv'],
         metavar='FILE',
         nargs='+',
         help=('Journal dumped by Church Windows as a .csv file. '
-              '(default: [journal1.csv, journal2.csv])')
+              '(default: journal.csv)')
     )
     parser.add_argument(
         '--vendor',

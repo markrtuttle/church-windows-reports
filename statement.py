@@ -145,7 +145,6 @@ def journal_statement(numbers, journal, width, title,
                               truncate(ent.name(), lwid),
                               truncate(ent.comment(), rwid)))
 
-
 def subaccount_balance_statement(chart, balance, month, year, parent_name):
     parent_number = chart.number(parent_name)
     child_numbers = chart.account(parent_number).children()
@@ -162,5 +161,11 @@ def subaccount_balance_statement(chart, balance, month, year, parent_name):
     lines.sort(key=lambda tup: tup[0])
     for name_, month_, year_ in lines:
         print fmt.format("  "+name_, month_, year_)
+
+def trailer(date_start, date_end, posted_start):
+    print ("\nTransactions shown are those occurring between {} and {}, "
+           "\nand occuring before {} but posted after {}"
+           .format(date_start, date_end, date_start, posted_start))
+>>>>>>> bb5cb04329bbf96140be008db3201d1240070f14
 
 ################################################################

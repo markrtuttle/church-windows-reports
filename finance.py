@@ -70,6 +70,7 @@ class Finance(object):
         self.ministry_fund_summary(name)
         self.ministry_general_fund_details(name)
         self.ministry_fund_details(name)
+        statement.trailer(self.date_start, self.date_end, self.posted_start)
 
     def ministry_reports(self, newpage=True):
         for fund in self.ministry_.keys():
