@@ -2,6 +2,8 @@
 
 # pylint: disable=missing-docstring
 
+# TODO: Parse using column header titles
+
 import re
 import csv
 import json
@@ -335,15 +337,4 @@ class Chart(object):
                 and
                 child.number() in parent.expense())
 
-    ################################################################
-
-def main():
-    #
-    # Chart should use Balance.subfunds
-    #
-    coa = Chart("old/report/coa.csv", "old/report/balance.csv")
-    print coa.dump_jsons()
-
-
-if __name__ == "__main__":
-    main()
+################################################################

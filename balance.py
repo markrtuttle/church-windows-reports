@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # pylint: disable=missing-docstring
 
+# TODO: Parse using column header titles
+
 from pprint import pprint
 
 import re
@@ -84,6 +86,26 @@ class Balance(object):
         if balance is not None:
             self.load(balance)
 
+    def account(self, nmbr):
+        try:
+            return self.account_[nmbr]
+        except KeyError:
+            raise KeyError("Unknown account number "+nmbr)
+
+    def accounts(self, numbers):
+        result = []
+        for nmbr in numbers:
+            try:
+                result.append(self.account(nmbr))
+            except KeyError:
+                continue
+        return result
+
+    def subfunds(self):
+        return self.subfunds_
+
+    ################################################################
+
     def load(self, balance):
         with open(balance, 'r') as handle:
             fund_name = None
@@ -117,26 +139,6 @@ class Balance(object):
 
     ################################################################
 
-    def account(self, nmbr):
-        try:
-            return self.account_[nmbr]
-        except KeyError:
-            raise KeyError("Unknown account number "+nmbr)
-
-    def accounts(self, numbers):
-        result = []
-        for nmbr in numbers:
-            try:
-                result.append(self.account(nmbr))
-            except KeyError:
-                continue
-        return result
-
-    def subfunds(self):
-        return self.subfunds_
-
-    ################################################################
-
     def marshall(self):
         my_account = {}
         for nmbr in self.account_:
@@ -148,14 +150,5 @@ class Balance(object):
 
     def dump_jsons(self):
         return json.dumps(self.marshall(), indent=2, sort_keys=True)
-
-################################################################
-
-def main():
-    inc = Balance("old/report/balance.csv")
-    print inc.dump_jsons()
-
-if __name__ == "__main__":
-    main()
 
 ################################################################

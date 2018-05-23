@@ -4,9 +4,6 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-arguments
 
-# TODO: review date, number, amount, chart, balance, income, etc
-# TODO: separate infrastructure code from PACC application code
-
 import balance
 import income
 import chart

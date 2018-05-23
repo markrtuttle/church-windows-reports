@@ -4,8 +4,12 @@
 
 import re
 
+################################################################
+
 def clean(string):
     return re.sub(r"\s+", ' ', string).strip()
+
+################################################################
 
 def parse(amount):
     amount = clean(amount)
@@ -58,6 +62,8 @@ def fmt(string):
     (positive, dollars, cents) = parse(string)
     return "{}{}.{:0>2}".format("" if positive else "-", dollars, cents)
 
+################################################################
+
 def key(amount):
     (positive, dollars, cents) = parse(amount)
     sign = 1 if positive else -1
@@ -97,3 +103,5 @@ def gt(amount1, amount2):
     if amount1 is None or amount2 is None:
         return False
     return compare(amount1, amount2) > 0
+
+################################################################

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # pylint: disable=missing-docstring
 
+# TODO: Parse using column header titles
+
 import re
 import csv
 import json
@@ -17,7 +19,6 @@ def clean(string):
     return string.strip()
 
 ################################################################
-################################################################
 
 class IncomeLine(object):
     def __init__(self, line=None):
@@ -29,14 +30,6 @@ class IncomeLine(object):
         self.budget_ = None
         if line is not None:
             self.load(line)
-
-    def load(self, line):
-        self.number_ = number.fmt(line[0])
-        self.name_ = clean(line[1])
-        self.month_ = amount.fmt(line[2])
-        self.prior_year_ = amount.fmt(line[3])
-        self.year_ = amount.fmt(line[4])
-        self.budget_ = amount.fmt(line[6])
 
     def number(self):
         return self.number_
@@ -56,6 +49,18 @@ class IncomeLine(object):
     def budget(self):
         return self.budget_
 
+    ################################################################
+
+    def load(self, line):
+        self.number_ = number.fmt(line[0])
+        self.name_ = clean(line[1])
+        self.month_ = amount.fmt(line[2])
+        self.prior_year_ = amount.fmt(line[3])
+        self.year_ = amount.fmt(line[4])
+        self.budget_ = amount.fmt(line[6])
+
+        ################################################################
+
     def marshall(self):
         return {
             "number": self.number_,
@@ -66,7 +71,6 @@ class IncomeLine(object):
             "budget": self.budget_
             }
 
-################################################################
 ################################################################
 
 class Income(object):
@@ -83,11 +87,15 @@ class Income(object):
                     detail = IncomeLine(line)
                     self.account_[detail.number()] = detail
 
+    ################################################################
+
     def account(self, nmbr):
         return self.account_[nmbr]
 
     def accounts(self, nmbrs):
         return [self.account(nmbr) for nmbr in nmbrs]
+
+    ################################################################
 
     def marshall(self):
         my_account = {}
@@ -99,11 +107,3 @@ class Income(object):
         return json.dumps(self.marshall(), indent=2, sort_keys=True)
 
 ################################################################
-################################################################
-
-def main():
-    inc = Income("old/report/income.csv")
-    print inc.dump_jsons()
-
-if __name__ == "__main__":
-    main()

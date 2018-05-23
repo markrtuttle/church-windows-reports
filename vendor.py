@@ -5,8 +5,6 @@
 import csv
 
 import amount
-import journal
-import arguments
 import statement
 
 class Vendor(object):
@@ -40,13 +38,3 @@ class Vendor(object):
             print "\n", name, self.vendor[name]
             statement.journal_statement(None, jnl, arg.line_width,
                                         None, ents)
-
-
-def main():
-    ven_ = Vendor("vendor.csv")
-    arg_ = arguments.parse()
-    jnl_ = journal.Journal(arg_.journal)
-    ven_.report(jnl_, arg_)
-
-if __name__ == "__main__":
-    main()

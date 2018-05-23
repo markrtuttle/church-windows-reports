@@ -4,8 +4,12 @@
 
 import re
 
+################################################################
+
 def clean(string):
     return re.sub(r"\s+", ' ', string).strip()
+
+################################################################
 
 def parse(string):
     string = clean(string)
@@ -38,7 +42,6 @@ def parse(string):
     except ValueError:
         raise ValueError("Invalid date "+string)
 
-
 def fmt(string, include_year=True, pad=True):
     if string is None:
         return None
@@ -51,6 +54,8 @@ def fmt(string, include_year=True, pad=True):
     if not pad:
         return "{}/{}".format(month, day)
     return "{:0>2}/{:0>2}".format(month, day)
+
+################################################################
 
 def key(string):
     (month, day, year) = parse(string)
@@ -90,3 +95,5 @@ def gt(date1, date2):
     if date1 is None or date2 is None:
         return False
     return compare(date1, date2) > 0
+
+################################################################

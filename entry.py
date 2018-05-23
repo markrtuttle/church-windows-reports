@@ -32,7 +32,6 @@ def is_id(id_):
         return False
 
 ################################################################
-################################################################
 
 class Entry(object):
     # pylint: disable=too-many-instance-attributes
@@ -50,6 +49,21 @@ class Entry(object):
         self.posted_ = None
         if line is not None:
             self.load(line)
+
+    def load(self, line):
+        line += ['', '', '', '', '', '', '', '', '', '', '']
+        self.id(line[0])
+        self.type(line[1])
+        self.number(line[2])
+        self.name(line[3])
+        self.date(line[4])
+        self.debit(line[5])
+        self.credit(line[6])
+        self.comment(line[8])
+        self.detail(line[9])
+        self.posted(line[11])
+
+    ################################################################
 
     def id(self, value=None):
         # pylint: disable=invalid-name
@@ -143,19 +157,6 @@ class Entry(object):
 
     ################################################################
 
-    def load(self, line):
-        line += ['', '', '', '', '', '', '', '', '', '', '']
-        self.id(line[0])
-        self.type(line[1])
-        self.number(line[2])
-        self.name(line[3])
-        self.date(line[4])
-        self.debit(line[5])
-        self.credit(line[6])
-        self.comment(line[8])
-        self.detail(line[9])
-        self.posted(line[11])
-
     def marshall(self):
         return {
             "id": self.id_,
@@ -173,7 +174,6 @@ class Entry(object):
     def dump_jsons(self):
         return json.dumps(self.marshall(), indent=2)
 
-################################################################
 ################################################################
 
 def date_key(entry):

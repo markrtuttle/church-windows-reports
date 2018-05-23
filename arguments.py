@@ -3,7 +3,6 @@
 # pylint: disable=missing-docstring
 # pylint: disable=misplaced-comparison-constant
 
-# TODO: Get month and year from date_start/end, etc.
 # TODO: Add --compact and --sort-names for reports
 
 import argparse
@@ -65,7 +64,6 @@ def command_line_parser():
     parser.add_argument(
         '--month',
         type=int,
-        default=this_month(),
         metavar='MONTH',
         help='Month of the report (default: this month)'
     )
@@ -196,6 +194,20 @@ def parse():
     parser = command_line_parser()
     args = parser.parse_args()
 
+    if args.month is None and args.date_start is not None:
+        (args.month, _, _) = date.parse(args.date_start)
+    if args.month is None and args.date_end is not None:
+        (args.month, _, _) = date.parse(args.date_end)
+    if args.month is None:
+        args.month = this_month()
+
+    if args.year is None and args.date_start is not None:
+        (_, _, args.year) = date.parse(args.date_start)
+    if args.year is None and args.date_end is not None:
+        (_, _, args.year) = date.parse(args.date_end)
+    if args.year is None:
+        args.year = this_year()
+
     if not (0 <= args.month and args.month <= 12):
         raise ValueError("Invalid month: "+args.month)
     if not (0 <= args.year and args.year <= 3000):
@@ -203,12 +215,12 @@ def parse():
 
     args.month_name = month_name(args.month)
 
-    args.date_start = (args.date_start or
-                       this_month_start(month=args.month, year=args.year))
-    args.date_end = (args.date_end or
-                     this_month_end(month=args.month, year=args.year))
-    args.posted_start = (args.posted_start or
-                         this_posted_start(month=args.month, year=args.year))
+    if args.date_start is None:
+        args.date_start = this_month_start(month=args.month, year=args.year)
+    if args.date_end is None:
+        args.date_end = this_month_end(month=args.month, year=args.year)
+    if args.posted_start is None:
+        args.posted_start = this_posted_start(month=args.month, year=args.year)
 
     args.date_start = date.fmt(args.date_start)
     args.date_end = date.fmt(args.date_end)
