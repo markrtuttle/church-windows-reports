@@ -3,8 +3,6 @@
 # pylint: disable=missing-docstring
 # pylint: disable=misplaced-comparison-constant
 
-# TODO: Add --compact and --sort-names for reports
-
 import argparse
 import time
 import calendar
@@ -154,6 +152,11 @@ def command_line_parser():
         dest='subfund_report',
         action='store_false',
         help="Don't generate reports for subfund accounts."
+    )
+    parser.add_argument(
+        '--compact',
+        action='store_true',
+        help='Use a compact format for printing reports'
     )
     parser.add_argument(
         '--dump-chart',

@@ -35,6 +35,7 @@ class Finance(object):
         self.date_end = args.date_end
         self.posted_start = args.posted_start
         self.line_width = args.line_width
+        self.compact = args.compact
         self.entries = journal_.period_entries(args.date_start,
                                                args.date_end,
                                                args.posted_start)
@@ -50,7 +51,8 @@ class Finance(object):
     def ministry_general_fund_details(self, ministry_name):
         numbers = self.ministry_.accounts(ministry_name)
         statement.journal_statement(numbers, self.journal_, self.line_width,
-                                    "Budget details", self.entries)
+                                    "Budget details", self.entries,
+                                    compress=self.compact)
 
     def ministry_fund_summary(self, ministry_name):
         numbers = self.ministry_.funds(ministry_name)
@@ -60,7 +62,8 @@ class Finance(object):
     def ministry_fund_details(self, ministry_name):
         numbers = self.ministry_.funds_accounts(ministry_name)
         statement.journal_statement(numbers, self.journal_, self.line_width,
-                                    "Fund details", self.entries)
+                                    "Fund details", self.entries,
+                                    compress=self.compact)
 
     def ministry_report(self, name):
         print ("** {} ministry for {} {} **"
