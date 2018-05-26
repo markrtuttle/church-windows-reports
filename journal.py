@@ -21,11 +21,14 @@ class Journal(object):
                 self.load(journal)
 
     def load(self, journal):
-        with open(journal, "r") as handle:
+        with open(journal) as handle:
             for line in csv.reader(handle):
                 line += ['']
+                if entry.is_header(line[0]):
+                    column_map = entry.column_map(line)
+                    continue
                 if entry.is_id(line[0]):
-                    self.entry_.append(entry.Entry(line))
+                    self.entry_.append(entry.Entry(line, column_map))
 
     ################################################################
 
