@@ -2,8 +2,6 @@
 
 # pylint: disable=missing-docstring
 
-# TODO: Parse using column header titles
-
 import json
 import csv
 
@@ -71,7 +69,7 @@ class Journal(object):
         return json.dumps([entry_.marshall() for entry_ in entries],
                           indent=2)
 
-    def sort(self, entries=None, key=date.key):
+    def sort(self, entries=None, key=entry.date_key):
         entries = entries or self.entry_
         entries.sort(key=key)
 
@@ -85,7 +83,7 @@ class Journal(object):
                     (date.lt(entry_.date(), date_start) and
                      date.ge(entry_.posted(), posted_start)))
         entries = self.entry_is(in_period)
-        entries.sort(key=entry.date_key)
+        entries.sort()
         return entries
 
 
