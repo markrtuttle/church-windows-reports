@@ -54,7 +54,9 @@ def format_string(width, right=False):
 
 ################################################################
 
-def income_statement(numbers, income, title, month, year, sort_names=True):
+def income_statement(numbers, income, title, month, year,
+                     sort_names=True, zeros=False):
+
     lines = income.accounts(numbers)
     if not lines:
         return
@@ -70,7 +72,8 @@ def income_statement(numbers, income, title, month, year, sort_names=True):
            .format("", month, year, "Budget"))
     for line in lines:
         # pylint: disable=bad-continuation
-        if (amount.eq(line.month(), "0") and
+        if (not zeros and
+            amount.eq(line.month(), "0") and
             amount.eq(line.ytd(), "0") and
             line.budget() is None):
             continue
@@ -80,7 +83,9 @@ def income_statement(numbers, income, title, month, year, sort_names=True):
                        line.ytd(),
                        line.budget()))
 
-def balance_statement(numbers, balance, title, month, sort_names=True):
+def balance_statement(numbers, balance, title, month,
+                      sort_names=True, zeros=False):
+
     lines = balance.accounts(numbers)
     if not lines:
         return
@@ -94,6 +99,11 @@ def balance_statement(numbers, balance, title, month, sort_names=True):
 
     print "{:<42} {:>10} {:>10}".format("", month, "Balance")
     for line in lines:
+        # pylint: disable=bad-continuation
+        if (not zeros and
+            amount.eq(line.month(), "0") and
+            amount.eq(line.ytd(), "0")):
+            continue
         print ("  {:<40} {:>10} {:>10}"
                .format(truncate(line.name(), 40),
                        line.month(),

@@ -59,6 +59,8 @@ def fmt(string):
         return None
     if string == "":
         return None
+    if string == "N/A":
+        return None
     (positive, dollars, cents) = parse(string)
     return "{}{}.{:0>2}".format("" if positive else "-", dollars, cents)
 

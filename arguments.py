@@ -154,6 +154,17 @@ def command_line_parser():
         help="Don't generate reports for subfund accounts."
     )
     parser.add_argument(
+        '--zeros',
+        action='store_true',
+        help="Generate reports with zero valued accounts."
+    )
+    parser.add_argument(
+        '--no-zeros',
+        dest='subfund_report',
+        action='store_false',
+        help="Don't generate reports without zero valued accounts."
+    )
+    parser.add_argument(
         '--compact',
         action='store_true',
         help='Use a compact format for printing reports'
