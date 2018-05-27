@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # pylint: disable=missing-docstring
 
-# TODO: Parse using column header titles
-
 from pprint import pprint
 
 import re
@@ -14,6 +12,50 @@ import amount
 
 ################################################################
 
+# Note: For the sake of easily identifying funds and subfunds,
+# we require that the fund number and name be in columns 0 and 2,
+# and the subfund number and name be in columns 1 and 3.
+
+HEADER_MAP = {
+    "Account #": "number",
+    "Account Name": "name",
+    "Beginning Balance": "opening",
+    "Period Activity": "month",
+    "Previous Period Balance": "month_prior",
+    "Amount Diff Period": "month_diff",
+    "% Diff Period": "month_diff_percent",
+    "YTD Balance": "ytd",
+    "Previous Year Balance": "ytd_prior",
+    "Amount Diff YTD": "ytd_diff",
+    "% Diff YTD": "ytd_diff_percent",
+}
+
+KEYS = HEADER_MAP.values()
+
+def is_header(string):
+    string = clean(string)
+    return string == "Account #"
+
+def column_map(headers):
+    col_map = {}
+    index = 0
+    for header in headers:
+        if header:
+            try:
+                key = HEADER_MAP[header]
+            except KeyError:
+                raise KeyError("Header {} not in header map".format(header))
+        else:
+            key = None
+        col_map[index] = key
+        index += 1
+    if col_map[0] != "number" or col_map[2] != "name":
+        raise ValueError("Account number and name must be balance sheet "
+                         "columns 1 and 3.")
+    return col_map
+
+################################################################
+
 def clean(string):
     if string is None:
         return None
@@ -21,61 +63,78 @@ def clean(string):
     return string.strip()
 
 ################################################################
-################################################################
 
 class BalanceLine(object):
 
-    def __init__(self, line=None, subfund=False):
-        self.number_ = None
-        self.name_ = None
-        self.month_ = None
-        self.year_ = None
-        if line is not None:
-            self.load(line, subfund)
+    def __init__(self, line=None, col_map=None, subfund=False):
+        self.element = {}
+        if line is not None and col_map is not None:
+            self.load(line, col_map, subfund)
 
-    def load(self, line, subfund=False):
+    def load(self, line, col_map, subfund=False):
         if not subfund:
             self.number(line[0])
             self.name(line[2])
         else:
             self.number(line[1])
             self.name(line[3])
-        self.month(line[4])
-        self.year(line[6])
+        index = 4
+        for col in line[4:]:
+            key = col_map[index]
+            self.set(key, col)
+            index += 1
+
+    def set(self, key, val):
+        if key is None:
+            return None
+
+        key = clean(key)
+        if not key in KEYS:
+            raise ValueError("Unknown entry key "+key)
+
+        if val is None:
+            return self.element.get(key)
+
+        if key in ["number"]:
+            self.element[key] = number.fmt(val)
+        elif key in ["opening", "month", "month_prior", "month_diff",
+                     "ytd", "ytd_prior", "ytd_diff"]:
+            self.element[key] = amount.fmt(val)
+        else:
+            self.element[key] = clean(val)
+
+        return self.element.get(key)
 
     ################################################################
 
-    def number(self, string=None):
-        if string is not None:
-            self.number_ = number.fmt(string)
-        return self.number_
-
-    def name(self, string=None):
-        if string is not None:
-            self.name_ = clean(string)
-        return self.name_
-
-    def month(self, string=None):
-        if string is not None:
-            self.month_ = amount.fmt(string)
-        return self.month_
-
-    def year(self, string=None):
-        if string is not None:
-            self.year_ = amount.fmt(string)
-        return self.year_
+    def number(self, val=None):
+        return self.set("number", val)
+    def name(self, val=None):
+        return self.set("name", val)
+    def opening(self, val=None):
+        return self.set("opening", val)
+    def month(self, val=None):
+        return self.set("month", val)
+    def month_prior(self, val=None):
+        return self.set("month_prior", val)
+    def month_diff(self, val=None):
+        return self.set("month_diff", val)
+    def month_diff_percent(self, val=None):
+        return self.set("month_diff_percent", val)
+    def ytd(self, val=None):
+        return self.set("ytd", val)
+    def ytd_prior(self, val=None):
+        return self.set("ytd_prior", val)
+    def ytd_diff(self, val=None):
+        return self.set("ytd_diff", val)
+    def ytd_diff_percent(self, val=None):
+        return self.set("ytd_diff_percent", val)
 
     ################################################################
 
     def marshall(self):
-        return {
-            "number": self.number_,
-            "name": self.name_,
-            "month": self.month_,
-            "year": self.year_,
-            }
+        return self.element
 
-################################################################
 ################################################################
 
 class Balance(object):
@@ -85,6 +144,43 @@ class Balance(object):
         self.subfunds_ = []
         if balance is not None:
             self.load(balance)
+
+    def load(self, balance):
+        with open(balance, 'r') as handle:
+            fund_name = None
+            fund_number = None
+            fund_children = []
+            in_subfunds = False
+            col_map = {}
+            for line in csv.reader(handle):
+                line += ["", "", "", "", "", "", "", ""]
+                if is_header(line[0]):
+                    col_map = column_map(line)
+                    continue
+                if number.is_number(line[0]):
+                    detail = BalanceLine(line, col_map)
+                    self.account_[detail.number()] = detail
+                    if in_subfunds: # just ended a list of subfunds
+                        self.subfunds_.append((fund_name,
+                                               fund_number,
+                                               fund_children))
+                    fund_name = detail.name()
+                    fund_number = detail.number()
+                    fund_children = []
+                    in_subfunds = False
+                    continue
+                if number.is_number(line[1]):
+                    detail = BalanceLine(line, col_map, subfund=True)
+                    self.account_[detail.number()] = detail
+                    fund_children.append(detail.number())
+                    in_subfunds = True
+                    continue
+            if in_subfunds: # just ended a list of subfunds
+                self.subfunds_.append((fund_name,
+                                       fund_number,
+                                       fund_children))
+
+    ################################################################
 
     def account(self, nmbr):
         try:
@@ -103,39 +199,6 @@ class Balance(object):
 
     def subfunds(self):
         return self.subfunds_
-
-    ################################################################
-
-    def load(self, balance):
-        with open(balance, 'r') as handle:
-            fund_name = None
-            fund_number = None
-            fund_children = []
-            in_subfunds = False
-            for line in csv.reader(handle):
-                line += ["", "", "", "", "", "", "", ""]
-                if number.is_number(line[0]):
-                    detail = BalanceLine(line)
-                    self.account_[detail.number()] = detail
-                    if in_subfunds: # just ended a list of subfunds
-                        self.subfunds_.append((fund_name,
-                                               fund_number,
-                                               fund_children))
-                    fund_name = detail.name()
-                    fund_number = detail.number()
-                    fund_children = []
-                    in_subfunds = False
-                    continue
-                if number.is_number(line[1]):
-                    detail = BalanceLine(line, subfund=True)
-                    self.account_[detail.number()] = detail
-                    fund_children.append(detail.number())
-                    in_subfunds = True
-                    continue
-            if in_subfunds: # just ended a list of subfunds
-                self.subfunds_.append((fund_name,
-                                       fund_number,
-                                       fund_children))
 
     ################################################################
 

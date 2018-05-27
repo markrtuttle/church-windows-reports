@@ -2,8 +2,6 @@
 
 # pylint: disable=missing-docstring
 
-# TODO: entry state should be a dictionary
-
 import re
 import json
 

@@ -86,5 +86,4 @@ class Journal(object):
         entries.sort()
         return entries
 
-
 ################################################################

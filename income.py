@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # pylint: disable=missing-docstring
 
-# TODO: Parse using column header titles
+# TODO: month from income statement appears wrong
 
 import re
 import csv
@@ -9,6 +9,45 @@ import json
 
 import number
 import amount
+
+################################################################
+
+HEADER_MAP = {
+    "Account #": "number",
+    "Account Name": "name",
+    "Period Activity": "month",
+    "Monthly Budget": "month_budget",
+    "% of Budget Month": "percent_month_budget",
+    "YTD Balance": "ytd",
+    "Budget YTD": "ytd_budget",
+    "% of Budget YTD": "percent_ytd_budget",
+    "Over/Under YTD+(-)": "over_under_ytd",
+    "Previous YTD": "prior_ytd",
+    "Annual Budget ": "budget",
+    "Annual Budget Remaining": "remaining_budget",
+    "% of Annual Budget": "percent_budget"
+}
+
+KEYS = HEADER_MAP.values()
+
+def is_header(string):
+    string = clean(string)
+    return string == "Account #"
+
+def column_map(headers):
+    col_map = {}
+    index = 0
+    for header in headers:
+        if header:
+            try:
+                key = HEADER_MAP[header]
+            except KeyError:
+                raise KeyError("Header {} not in header map".format(header))
+        else:
+            key = None
+        col_map[index] = key
+        index += 1
+    return col_map
 
 ################################################################
 
@@ -21,55 +60,73 @@ def clean(string):
 ################################################################
 
 class IncomeLine(object):
-    def __init__(self, line=None):
-        self.number_ = None
-        self.name_ = None
-        self.month_ = None
-        self.prior_year_ = None
-        self.year_ = None
-        self.budget_ = None
-        if line is not None:
-            self.load(line)
+    def __init__(self, line=None, col_map=None):
+        self.element = {}
+        if line is not None and col_map is not None:
+            self.load(line, col_map)
 
-    def number(self):
-        return self.number_
+    def load(self, columns, col_map):
+        index = 0
+        for col in columns:
+            key = col_map[index]
+            self.set(key, col)
+            index += 1
 
-    def name(self):
-        return self.name_
+    def set(self, key, val):
+        if key is None:
+            return None
 
-    def month(self):
-        return self.month_
+        key = clean(key)
+        if not key in KEYS:
+            raise ValueError("Unknown entry key "+key)
 
-    def prior_year(self):
-        return self.prior_year_
+        if val is None:
+            return self.element.get(key)
 
-    def year(self):
-        return self.year_
+        if key in ["number"]:
+            self.element[key] = number.fmt(val)
+        elif key in ["month", "month_budget", "ytd", "ytd_budget",
+                     "over_under_ytd", "prior_ytd",
+                     "budget", "remaining_budget"]:
+            self.element[key] = amount.fmt(val)
+        else:
+            self.element[key] = clean(val)
 
-    def budget(self):
-        return self.budget_
+        return self.element.get(key)
 
     ################################################################
 
-    def load(self, line):
-        self.number_ = number.fmt(line[0])
-        self.name_ = clean(line[1])
-        self.month_ = amount.fmt(line[2])
-        self.prior_year_ = amount.fmt(line[3])
-        self.year_ = amount.fmt(line[4])
-        self.budget_ = amount.fmt(line[6])
+    def number(self, val=None):
+        return self.set("number", val)
+    def name(self, val=None):
+        return self.set("name", val)
+    def month(self, val=None):
+        return self.set("month", val)
+    def month_budget(self, val=None):
+        return self.set("month_budget", val)
+    def percent_month_budget(self, val=None):
+        return self.set("percent_month_budget", val)
+    def ytd(self, val=None):
+        return self.set("ytd", val)
+    def ytd_budget(self, val=None):
+        return self.set("ytd_budget", val)
+    def percent_ytd_budget(self, val=None):
+        return self.set("percent_ytd_budget", val)
+    def over_under_ytd(self, val=None):
+        return self.set("over_under_ytd", val)
+    def prior_ytd(self, val=None):
+        return self.set("prior_ytd", val)
+    def budget(self, val=None):
+        return self.set("budget", val)
+    def remaining_budget(self, val=None):
+        return self.set("remaining_budget", val)
+    def percent_budget(self, val=None):
+        return self.set("percent_budget", val)
 
-        ################################################################
+    ################################################################
 
     def marshall(self):
-        return {
-            "number": self.number_,
-            "name": self.name_,
-            "month": self.month_,
-            "prior_year": self.prior_year_,
-            "year": self.year_,
-            "budget": self.budget_
-            }
+        return self.element
 
 ################################################################
 
@@ -83,8 +140,11 @@ class Income(object):
         with open(income, 'r') as handle:
             for line in csv.reader(handle):
                 line += ["", "", "", "", "", "", "", ""]
+                if is_header(line[0]):
+                    col_map = column_map(line)
+                    continue
                 if number.is_number(line[0]):
-                    detail = IncomeLine(line)
+                    detail = IncomeLine(line, col_map)
                     self.account_[detail.number()] = detail
 
     ################################################################
