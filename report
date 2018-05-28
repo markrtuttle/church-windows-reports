@@ -19,15 +19,21 @@ def main():
     balance_ = balance.Balance(args.balance)
     income_ = income.Income(args.income)
     journal_ = journal.Journal(args.journal)
-    chart_ = (chart.Chart(jsn=args.chart)
-              if args.chart.endswith('.json')
-              else chart.Chart(args.chart, balance_))
+    chart_ = chart.Chart(args.chart, balance_)
     ministry_ = ministry.Ministry(chart_)
     report = finance.Finance(chart_, balance_, income_, journal_, ministry_,
                              args)
 
     if args.dump_chart:
         print chart_.dump_jsons()
+        return
+
+    if args.dump_ministry:
+        print ministry_.dump_jsons()
+        return
+
+    if args.dump_ministry_unassigned:
+        print ministry_.dump_jsons(False)
         return
 
     if args.ministry_report:

@@ -8,8 +8,6 @@ import number
 import balance
 import chart
 
-# TODO: Make a ministry json file for input
-
 ################################################################
 
 ACCOUNTS = {
@@ -200,8 +198,17 @@ class Ministry(object):
             numbers += act.income() + act.expense()
         return numbers
 
-    def dump_jsons(self):
-        return json.dumps(self.accounts_, indent=2)
+    def dump_jsons(self, assigned=True):
+        if assigned:
+            return json.dumps(self.accounts_, indent=2, sort_keys=True)
+
+        report = {}
+        for key in self.unassigned:
+            report[key] = []
+            for num in self.unassigned[key]:
+                name = self.coa_.account(num).name()
+                report[key].append(name)
+        return json.dumps(report, indent=2, sort_keys=True)
 
 ################################################################
 

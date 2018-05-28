@@ -176,6 +176,16 @@ def command_line_parser():
         action='store_true',
         help='Dump chart of accounts and exit'
     )
+    parser.add_argument(
+        '--dump-ministry',
+        action='store_true',
+        help='Dump chart of ministry account assignments and exit'
+    )
+    parser.add_argument(
+        '--dump-ministry-unassigned',
+        action='store_true',
+        help='Dump chart of accounts unassigned to a ministry and exit'
+    )
     return parser
 
 ################################################################

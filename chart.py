@@ -2,8 +2,6 @@
 
 # pylint: disable=missing-docstring
 
-# TODO: Mark chart.json the default, then chart.csv?
-
 # Unlike other data dumped from Church Windows, we assume a fixed layout
 # to the chart of accounts since Church Windows gives no option to change
 # the layout of the chart of accounts.
@@ -29,16 +27,17 @@ def is_number(string):
 class Chart(object):
     # pylint: disable=too-many-public-methods
 
-    def __init__(self, chart=None, balance=None, jsn=None):
+    def __init__(self, chart=None, balance=None):
         self.number_ = {}
         self.account_ = {}
         self.vendor_ = []
-        if jsn is not None:
-            self.unmarshall(jsn)
         if chart is not None:
-            self.load(chart)
-        if balance is not None:
-            self.load_subfunds(balance)
+            if chart.endswith('.json'):
+                self.unmarshall(chart)
+            else:
+                self.load(chart)
+                if balance is not None:
+                    self.load_subfunds(balance)
 
         for num in self.account_:
             act = self.account_[num]
@@ -213,7 +212,7 @@ class Chart(object):
         return self
 
     def dump_jsons(self):
-        return json.dumps(self.marshall(), indent=2)
+        return json.dumps(self.marshall(), indent=2, sort_keys=True)
 
     ################################################################
 

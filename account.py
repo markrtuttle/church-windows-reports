@@ -135,6 +135,6 @@ class Account(object):
         return self
 
     def dump_jsons(self):
-        return json.dumps(self.marshall(), indent=2)
+        return json.dumps(self.marshall(), indent=2, sort_keys=True)
 
     ################################################################
