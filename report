@@ -49,10 +49,12 @@ def main():
     if args.subfund_report:
         statement.subaccount_balance_statement(chart_, balance_,
                                                args.month_name, args.year,
-                                               "Special Funds")
+                                               "Special Funds",
+                                               zeros=args.zeros)
         statement.subaccount_balance_statement(chart_, balance_,
                                                args.month_name, args.year,
-                                               "Investment Return")
+                                               "Investment Return",
+                                               zeros=args.zeros)
 
 if __name__ == "__main__":
     main()

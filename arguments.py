@@ -162,7 +162,7 @@ def command_line_parser():
     )
     parser.add_argument(
         '--no-zeros',
-        dest='subfund_report',
+        dest='zeros',
         action='store_false',
         help="Don't generate reports without zero valued accounts."
     )

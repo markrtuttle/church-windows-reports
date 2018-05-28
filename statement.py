@@ -155,12 +155,21 @@ def journal_statement(numbers, journal, width, title,
                               truncate(ent.name(), lwid),
                               truncate(ent.comment(), rwid)))
 
-def subaccount_balance_statement(chart, balance, month, year, parent_name):
+def subaccount_balance_statement(chart, balance, month, year, parent_name,
+                                 sort_names=True, zeros=False):
+    # pylint: disable=bad-continuation
+    # pylint: disable=too-many-locals
     parent_number = chart.number(parent_name)
     child_numbers = chart.account(parent_number).children()
+    if sort_names:
+        child_numbers.sort(key=lambda num: chart.account(num).name())
     lines = []
     for num in child_numbers:
         bal = balance.account(num)
+        if (not zeros and
+            amount.eq(bal.month(), "0") and
+            amount.eq(bal.ytd(), "0")):
+            continue
         lines.append((bal.name(), bal.month(), bal.ytd()))
     if not lines:
         return
