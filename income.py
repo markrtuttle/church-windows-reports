@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # pylint: disable=missing-docstring
 
-# TODO: month from income statement appears wrong
-
 import re
 import csv
 import json

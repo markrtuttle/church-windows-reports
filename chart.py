@@ -2,6 +2,8 @@
 
 # pylint: disable=missing-docstring
 
+# TODO: Mark chart.json the default, then chart.csv?
+
 # Unlike other data dumped from Church Windows, we assume a fixed layout
 # to the chart of accounts since Church Windows gives no option to change
 # the layout of the chart of accounts.

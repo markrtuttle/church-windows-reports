@@ -4,8 +4,6 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-arguments
 
-# TODO: unassigned fund details missing income/expense accounts for funds
-
 import statement
 
 ################################################################
@@ -83,57 +81,61 @@ class Finance(object):
     ################################################################
 
     def unassigned_general_fund_summary(self, name):
-        unused = self.ministry_.accounts_[name]
-        numbers = [self.coa_.number(name)
-                   for name in unused["income"] + unused["expense"]]
+        names = self.ministry_.unassigned_names("budget")
+        numbers = [self.coa_.number(name) for name in names]
         statement.income_statement(numbers, self.income_,
                                    "Budget summary",
                                    self.month, self.year)
 
     def unassigned_general_fund_details(self, name):
-        unused = self.ministry_.accounts_[name]
-        numbers = [self.coa_.number(name)
-                   for name in unused["income"] + unused["expense"]]
+        names = self.ministry_.unassigned_names("budget")
+        numbers = [self.coa_.number(name) for name in names]
         statement.journal_statement(numbers, self.journal_, self.line_width,
-                                    "Budget details", self.entries)
+                                    "Budget details", self.entries,
+                                    compress=self.compact)
 
     def unassigned_fund_summary(self, name):
-        unused = self.ministry_.accounts_[name]
-        numbers = [self.coa_.number(name) for name in unused["fund"]]
+        names = self.ministry_.unassigned_names("fund")
+        numbers = [self.coa_.number(name) for name in names]
         statement.balance_statement(numbers, self.balance_,
                                     "Fund summary", self.month)
 
     def unassigned_fund_details(self, name):
-        unused = self.ministry_.accounts_[name]
-        numbers = [self.coa_.number(name) for name in unused["fund"]]
+        names = self.ministry_.unassigned_names("fund")
+        numbers = [self.coa_.number(name) for name in names]
+        accounts = []
+        for num in numbers:
+            act = self.coa_.account(num)
+            accounts += act.income() + act.expense()
+        numbers += accounts
         statement.journal_statement(numbers, self.journal_, self.line_width,
-                                    "Fund details", self.entries)
+                                    "Fund details", self.entries,
+                                    compress=self.compact)
 
     def unassigned_asset_summary(self, name):
-        unused = self.ministry_.accounts_[name]
-        numbers = [self.coa_.number(name) for name in unused["asset"]]
+        names = self.ministry_.unassigned_names("asset")
+        numbers = [self.coa_.number(name) for name in names]
         statement.balance_statement(numbers, self.balance_,
                                     "Asset summary", self.month)
 
     def unassigned_asset_details(self, name):
-        unused = self.ministry_.accounts_[name]
-        numbers = [self.coa_.number(name) for name in unused["asset"]
+        names = self.ministry_.unassigned_names("asset")
+        numbers = [self.coa_.number(name) for name in names
                    if name != "Cambridge Savings Bank Checking"]
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Asset details", self.entries)
 
     def unassigned_liability_summary(self, name):
-        unused = self.ministry_.accounts_[name]
-        numbers = [self.coa_.number(name) for name in unused["liability"]]
+        names = self.ministry_.unassigned_names("liability")
+        numbers = [self.coa_.number(name) for name in names]
         statement.balance_statement(numbers, self.balance_,
                                     "Liability summary", self.month)
 
     def unassigned_liability_details(self, name):
-        unused = self.ministry_.accounts_[name]
-        numbers = [self.coa_.number(name) for name in unused["liability"]]
+        names = self.ministry_.unassigned_names("liability")
+        numbers = [self.coa_.number(name) for name in names]
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Liability details", self.entries)
-
 
     def unassigned_report(self, name):
         print "\n** Unassigned accounts **"
@@ -148,9 +150,9 @@ class Finance(object):
         self.unassigned_asset_details(name)
         self.unassigned_liability_details(name)
         self.unassigned_fund_details(name)
+        statement.trailer(self.date_start, self.date_end, self.posted_start)
 
     def unassigned_reports(self):
-        for fund in self.ministry_.keys_unassigned():
-            self.unassigned_report(fund)
+        self.unassigned_report("")
 
 ################################################################
