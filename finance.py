@@ -34,6 +34,7 @@ class Finance(object):
         self.posted_start = args.posted_start
         self.line_width = args.line_width
         self.compact = args.compact
+        self.zeros = args.zeros
         self.entries = journal_.period_entries(args.date_start,
                                                args.date_end,
                                                args.posted_start)
@@ -44,7 +45,8 @@ class Finance(object):
         numbers = self.ministry_.accounts(ministry_name)
         statement.income_statement(numbers, self.income_,
                                    "Budget summary",
-                                   self.month, self.year)
+                                   self.month, self.year,
+                                   zeros=self.zeros)
 
     def ministry_general_fund_details(self, ministry_name):
         numbers = self.ministry_.accounts(ministry_name)
@@ -55,7 +57,8 @@ class Finance(object):
     def ministry_fund_summary(self, ministry_name):
         numbers = self.ministry_.funds(ministry_name)
         statement.balance_statement(numbers, self.balance_,
-                                    "Fund summary", self.month)
+                                    "Fund summary", self.month,
+                                    zeros=self.zeros)
 
     def ministry_fund_details(self, ministry_name):
         numbers = self.ministry_.funds_accounts(ministry_name)
@@ -85,7 +88,8 @@ class Finance(object):
         numbers = [self.coa_.number(name) for name in names]
         statement.income_statement(numbers, self.income_,
                                    "Budget summary",
-                                   self.month, self.year)
+                                   self.month, self.year,
+                                   zeros=self.zeros)
 
     def unassigned_general_fund_details(self, name):
         names = self.ministry_.unassigned_names("budget")
@@ -98,7 +102,8 @@ class Finance(object):
         names = self.ministry_.unassigned_names("fund")
         numbers = [self.coa_.number(name) for name in names]
         statement.balance_statement(numbers, self.balance_,
-                                    "Fund summary", self.month)
+                                    "Fund summary", self.month,
+                                    zeros=self.zeros)
 
     def unassigned_fund_details(self, name):
         names = self.ministry_.unassigned_names("fund")
@@ -116,7 +121,8 @@ class Finance(object):
         names = self.ministry_.unassigned_names("asset")
         numbers = [self.coa_.number(name) for name in names]
         statement.balance_statement(numbers, self.balance_,
-                                    "Asset summary", self.month)
+                                    "Asset summary", self.month,
+                                    zeros=self.zeros)
 
     def unassigned_asset_details(self, name):
         names = self.ministry_.unassigned_names("asset")
