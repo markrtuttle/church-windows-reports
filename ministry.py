@@ -155,19 +155,13 @@ class Ministry(object):
     def __init__(self, coa):
         self.accounts_ = ACCOUNTS
         self.coa_ = coa
-        self.unassigned = self.unused_names()
+        self.unassigned = self.unused_accounts()
         if not self.validate():
             raise ValueError("Inconsistent ministry assignments")
 
     def keys(self):
         result = [key_ for key_ in self.accounts_
                   if not key_.startswith("ignore")]
-        result.sort()
-        return result
-
-    def keys_unassigned(self):
-        result = [key_ for key_ in self.accounts_
-                  if key_.startswith("ignore")]
         result.sort()
         return result
 
@@ -192,13 +186,19 @@ class Ministry(object):
             result.extend(self.fund_accounts(fund_number))
         return result
 
-    def unassigned_names(self, kind):
-        # kind is budget, asset, fund, liability
+    def unassigned_accounts(self, kind):
         try:
             return self.unassigned[kind]
         except KeyError:
-            raise ValueError("Unknown kind '{}' of unassigned account".
+            raise ValueError("Unassigned account type '{}' unknown".
                              format(kind))
+
+    def unassigned_funds_accounts(self):
+        numbers = []
+        for num in self.unassigned_accounts("fund"):
+            act = self.coa_.account(num)
+            numbers += act.income() + act.expense()
+        return numbers
 
     def dump_jsons(self):
         return json.dumps(self.accounts_, indent=2)
@@ -269,8 +269,6 @@ class Ministry(object):
 
     def unused_names(self):
         accounts = self.unused_accounts()
-        from pprint import pprint
-        pprint(accounts)
         def names(numbers):
             return [self.coa_.account(num).name() for num in numbers]
         unused = {}

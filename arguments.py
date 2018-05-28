@@ -18,13 +18,14 @@ def command_line_parser():
     )
     parser.add_argument(
         '--chart',
-        default='chart.csv',
+        default='chart.json',
         metavar='FILE',
         help=('Chart of accounts dumped by Church Windows as a .csv file '
               'or dumped by this program as a .json file using --dump-chart. '
               'The .csv file dumped by Church Windows contains only the leaves '
-              'of the account tree.  The balance sheet is used to infer the '
-              'internal hierarchy of the account tree. (default: chart.csv)')
+              'of the account tree; the balance sheet must be used to infer '
+              'the internal hierarchy of the account tree. '
+              '(default: chart.json)')
     )
     parser.add_argument(
         '--balance',
@@ -32,7 +33,8 @@ def command_line_parser():
         metavar='FILE',
         help=('Balance statement dumped by Church Windows as a .csv file. '
               'Be sure to dump the full balance statement --- including all '
-              'subfunds --- when the balance statement is being used to '
+              'zero balance accounts and all subfunds --- '
+              'when the balance statement is being used to '
               'infer the internal structure of the account tree. '
               '(default: balance.csv)')
     )

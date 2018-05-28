@@ -83,82 +83,67 @@ class Finance(object):
 
     ################################################################
 
-    def unassigned_general_fund_summary(self, name):
-        names = self.ministry_.unassigned_names("budget")
-        numbers = [self.coa_.number(name) for name in names]
+    def unassigned_general_fund_summary(self):
+        numbers = self.ministry_.unassigned_accounts("budget")
         statement.income_statement(numbers, self.income_,
                                    "Budget summary",
                                    self.month, self.year,
                                    zeros=self.zeros)
 
-    def unassigned_general_fund_details(self, name):
-        names = self.ministry_.unassigned_names("budget")
-        numbers = [self.coa_.number(name) for name in names]
+    def unassigned_general_fund_details(self):
+        numbers = self.ministry_.unassigned_accounts("budget")
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Budget details", self.entries,
                                     compress=self.compact)
 
-    def unassigned_fund_summary(self, name):
-        names = self.ministry_.unassigned_names("fund")
-        numbers = [self.coa_.number(name) for name in names]
+    def unassigned_fund_summary(self):
+        numbers = self.ministry_.unassigned_accounts("fund")
         statement.balance_statement(numbers, self.balance_,
                                     "Fund summary", self.month,
                                     zeros=self.zeros)
 
-    def unassigned_fund_details(self, name):
-        names = self.ministry_.unassigned_names("fund")
-        numbers = [self.coa_.number(name) for name in names]
-        accounts = []
-        for num in numbers:
-            act = self.coa_.account(num)
-            accounts += act.income() + act.expense()
-        numbers += accounts
+    def unassigned_fund_details(self):
+        numbers = self.ministry_.unassigned_funds.accounts("fund")
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Fund details", self.entries,
                                     compress=self.compact)
 
-    def unassigned_asset_summary(self, name):
-        names = self.ministry_.unassigned_names("asset")
-        numbers = [self.coa_.number(name) for name in names]
+    def unassigned_asset_summary(self):
+        numbers = self.ministry_.unassigned_accounts("asset")
         statement.balance_statement(numbers, self.balance_,
                                     "Asset summary", self.month,
                                     zeros=self.zeros)
 
-    def unassigned_asset_details(self, name):
-        names = self.ministry_.unassigned_names("asset")
-        numbers = [self.coa_.number(name) for name in names
-                   if name != "Cambridge Savings Bank Checking"]
+    def unassigned_asset_details(self):
+        numbers = self.ministry_.unassigned_accounts("asset")
+        csb = self.coa_.number("Cambridge Savings Bank Checking")
+        numbers = [num for num in numbers if num != csb]
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Asset details", self.entries)
 
-    def unassigned_liability_summary(self, name):
-        names = self.ministry_.unassigned_names("liability")
-        numbers = [self.coa_.number(name) for name in names]
+    def unassigned_liability_summary(self):
+        numbers = self.ministry_.unassigned_accounts("liability")
         statement.balance_statement(numbers, self.balance_,
                                     "Liability summary", self.month)
 
-    def unassigned_liability_details(self, name):
-        names = self.ministry_.unassigned_names("liability")
-        numbers = [self.coa_.number(name) for name in names]
+    def unassigned_liability_details(self):
+        numbers = self.ministry_.unassigned_accounts("liability")
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Liability details", self.entries)
 
-    def unassigned_report(self, name):
+    def unassigned_report(self):
         print "\n** Unassigned accounts **"
 
         print "\nSummary"
-        self.unassigned_general_fund_summary(name)
-        self.unassigned_asset_summary(name)
-        self.unassigned_liability_summary(name)
-        self.unassigned_fund_summary(name)
+        self.unassigned_general_fund_summary()
+        self.unassigned_asset_summary()
+        self.unassigned_liability_summary()
+        self.unassigned_fund_summary()
         print "\nDetails"
-        self.unassigned_general_fund_details(name)
-        self.unassigned_asset_details(name)
-        self.unassigned_liability_details(name)
-        self.unassigned_fund_details(name)
+        self.unassigned_general_fund_details()
+        self.unassigned_asset_details()
+        self.unassigned_liability_details()
+        self.unassigned_fund_details()
         statement.trailer(self.date_start, self.date_end, self.posted_start)
-
-    def unassigned_reports(self):
-        self.unassigned_report("")
 
 ################################################################

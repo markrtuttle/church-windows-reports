@@ -34,7 +34,7 @@ def main():
         report.ministry_reports()
 
     if args.unassigned_report:
-        report.unassigned_reports()
+        report.unassigned_report()
 
     if args.vendor_report:
         ven = vendor.Vendor(args.vendor)
