@@ -52,8 +52,8 @@ def command_line_parser():
               '(default: journal.csv)')
     )
     parser.add_argument(
-        '--vendor',
-        default='vendor.csv',
+        '--vendors',
+        default='vendors.csv',
         metavar='FILE',
         help=("General ledger for vendors dumped by Church Windows as "
               "a .csv file. "

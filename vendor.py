@@ -41,3 +41,4 @@ class Vendor(object):
             statement.journal_statement(None, jnl, arg.line_width,
                                         None, ents,
                                         is_debit_account=False)
+        statement.trailer(arg.date_start, arg.date_end, arg.posted_start)

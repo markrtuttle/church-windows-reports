@@ -78,3 +78,16 @@ class Journal(object):
         return self.entry_
 
 ################################################################
+
+MONTH = {date.month_name(n): n for n in range(1, 13)}
+
+def parse_date_generated(string):
+    try:
+        parts = [str.strip(',') for str in string.split()]
+        (_, month, day, year) = parts
+        return (MONTH[month], int(day), int(year))
+    except (ValueError, KeyError):
+        return None
+
+def is_date_generated(string):
+    return parse_date_generated(string) is not None

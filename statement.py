@@ -3,6 +3,8 @@
 # pylint: disable=missing-docstring
 # pylint: disable=too-many-arguments
 
+# TODO: trailer should use date_end from journal.csv as of date
+
 import amount
 import date
 import entry

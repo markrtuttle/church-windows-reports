@@ -61,7 +61,7 @@ def main():
         if not first_report:
             print "\f"
         first_report = False
-        ven = vendor.Vendor(args.vendor)
+        ven = vendor.Vendor(args.vendors)
         ven.report(journal_, args)
 
     if args.unassigned_report:
