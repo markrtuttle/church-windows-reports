@@ -36,17 +36,18 @@ def main():
         print ministry_.dump_jsons(False)
         return
 
+    first_report = True
+
     if args.ministry_report:
-        report.ministry_reports()
-
-    if args.unassigned_report:
-        report.unassigned_report()
-
-    if args.vendor_report:
-        ven = vendor.Vendor(args.vendor)
-        ven.report(journal_, args)
+        if not first_report:
+            print "\f"
+        first_report = False
+        report.ministry_reports(newpage=args.newpage)
 
     if args.subfund_report:
+        if not first_report:
+            print "\f"
+        first_report = False
         statement.subaccount_balance_statement(chart_, balance_,
                                                args.month_name, args.year,
                                                "Special Funds",
@@ -55,6 +56,19 @@ def main():
                                                args.month_name, args.year,
                                                "Investment Return",
                                                zeros=args.zeros)
+        
+    if args.vendor_report:
+        if not first_report:
+            print "\f"
+        first_report = False
+        ven = vendor.Vendor(args.vendor)
+        ven.report(journal_, args)
+
+    if args.unassigned_report:
+        if not first_report:
+            print "\f"
+        first_report = False
+        report.unassigned_report()
 
 if __name__ == "__main__":
     main()

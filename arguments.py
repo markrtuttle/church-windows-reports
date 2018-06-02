@@ -156,6 +156,11 @@ def command_line_parser():
         help="Don't generate reports for subfund accounts."
     )
     parser.add_argument(
+        '--all-reports',
+        action='store_true',
+        help="Generate all available reports."
+    )
+    parser.add_argument(
         '--zeros',
         action='store_true',
         help="Generate reports with zero valued accounts."
@@ -170,6 +175,18 @@ def command_line_parser():
         '--compact',
         action='store_true',
         help='Use a compact format for printing reports'
+    )
+    parser.add_argument(
+        '--newpage',
+        action='store_true',
+        default=True,
+        help='Insert a new page between report sections'
+    )
+    parser.add_argument(
+        '--no-newpage',
+        dest='newpage',
+        action='store_false',
+        help="Don't insert a new page between report sections"
     )
     parser.add_argument(
         '--dump-chart',
@@ -251,6 +268,12 @@ def parse():
     args.date_start = date.fmt(args.date_start)
     args.date_end = date.fmt(args.date_end)
     args.posted_start = date.fmt(args.posted_start)
+
+    if args.all_reports:
+        args.ministry_report = True
+        args.unassigned_report = True
+        args.vendor_report = True
+        args.subfund_report = True
 
     return args
 

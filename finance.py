@@ -78,10 +78,14 @@ class Finance(object):
         self.ministry_fund_details(name)
         statement.trailer(self.date_start, self.date_end, self.posted_start)
 
-    def ministry_reports(self, newpage=True):
-        for fund in self.ministry_.keys():
-            self.ministry_report(fund)
-            print "\f" if newpage else ""
+    def ministry_reports(self, newpage=False):
+        reports = self.ministry_.keys()
+        first_iteration = True
+        for report in reports:
+            if not first_iteration:
+                print "\f"
+            first_iteration = False
+            self.ministry_report(report)
 
     ################################################################
 
