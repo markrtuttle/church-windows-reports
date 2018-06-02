@@ -182,6 +182,11 @@ class Entry(object):
 
     ################################################################
 
+    def is_bill(self):
+        return self.type() == "BILL"
+
+    ################################################################
+
     def date_is(self, date_predicate):
         return date_predicate(self.date())
 

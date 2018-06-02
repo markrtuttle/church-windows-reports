@@ -25,6 +25,7 @@ class Finance(object):
         self.date_end = None
         self.posted_start = None
         self.entries = None
+        self.material_entries = None
 
         if args is None:
             return
@@ -161,23 +162,39 @@ class Finance(object):
         self.unassigned_fund_details()
         statement.trailer(self.date_start, self.date_end, self.posted_start)
 
+        ################################################################
+
+    def material_report(self):
+        ntries = [ntry for ntry in self.journal_.entries() if
+                  ntry.is_bill() and
+                  amount.ge(ntry.debit(), "100") and
+                  (date.ge(ntry.date(), self.date_start) or
+                   date.ge(ntry.posted(), self.posted_start))]
+        statement.journal_statement(None, self.journal_, self.line_width,
+                                    "Significant bills", ntries,
+                                    compress=self.compact,
+                                    is_debit_account=True,
+                                    amount_sort=True)
+
 ################################################################
 
 def reportable_entries(entries, date_start, date_end=None, posted_start=None):
-    def date_in_period(entry):
-        my_date = entry.date()
+    def date_in_period(ntry):
+        my_date = ntry.date()
         date_after_start = date.ge(my_date, date_start)
         date_before_end = date_end is None or date.le(my_date, date_end)
         return date_after_start and date_before_end
-    def posted_in_period(entry):
-        my_date = entry.date()
-        my_posted = entry.posted()
+    def posted_in_period(ntry):
+        my_date = ntry.date()
+        my_posted = ntry.posted()
         date_before_start = date.lt(my_date, date_start)
         posted_late = date.ge(my_posted, posted_start or date_start)
         return date_before_start and posted_late
-    return [entry for entry in entries
-            if date_in_period(entry) or posted_in_period(entry)]
+    return [ntry for ntry in entries
+            if date_in_period(ntry) or posted_in_period(ntry)]
 
 def material_entries(entries, amt="100"):
-    return [entry for entry in entries
-            if amount.ge(entry.credit() or entry.debit(), amt)]
+    return [ntry for ntry in entries
+            if amount.ge(ntry.credit() or ntry.debit(), amt)]
+
+################################################################

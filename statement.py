@@ -115,7 +115,8 @@ def balance_statement(numbers, balance, title, month,
 
 def journal_statement(numbers, journal, width, title,
                       entries=None, compress=False,
-                      is_debit_account=None):
+                      is_debit_account=None,
+                      amount_sort=False):
     # pylint: disable=too-many-locals
     if numbers is not None:
         my_number = lambda number: number in numbers
@@ -123,7 +124,7 @@ def journal_statement(numbers, journal, width, title,
     if not entries:
         return
 
-    entries = sort_by_account_within_date(entries)
+    entries = sort_by_account_within_date(entries, amount_sort=amount_sort)
 
     if title:
         print "\n"+title
@@ -204,7 +205,8 @@ def trailer(date_start, date_end, posted_start):
 def sort_by_account_within_date(entries,
                                 account_reverse=False,
                                 date_reverse=True,
-                                insert_none=True):
+                                insert_none=True,
+                                amount_sort=False):
 
     months = range(1, 13) if not date_reverse else range(12, 0, -1)
 
@@ -216,6 +218,8 @@ def sort_by_account_within_date(entries,
     for month in months:
         bucket[month].sort(key=entry.date_key)
         bucket[month].sort(key=entry.account_key, reverse=account_reverse)
+        if amount_sort:
+            bucket[month].sort(key=entry.amount_key, reverse=True)
 
     new_entries = []
     first_month = True

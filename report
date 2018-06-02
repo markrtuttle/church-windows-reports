@@ -15,6 +15,7 @@ import vendor
 import statement
 
 def main():
+    # pylint: disable=too-many-branches
     args = arguments.parse()
     balance_ = balance.Balance(args.balance)
     income_ = income.Income(args.income)
@@ -37,6 +38,12 @@ def main():
         return
 
     first_report = True
+
+    if args.material_report:
+        if not first_report:
+            print "\f"
+        first_report = False
+        report.material_report()
 
     if args.ministry_report:
         if not first_report:

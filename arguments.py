@@ -154,6 +154,17 @@ def command_line_parser():
         help="Don't generate reports for subfund accounts."
     )
     parser.add_argument(
+        '--material-report',
+        action='store_true',
+        help="Generate report of material bills."
+    )
+    parser.add_argument(
+        '--no-material-report',
+        dest='material_report',
+        action='store_false',
+        help="Don't generate report of material bills."
+    )
+    parser.add_argument(
         '--all-reports',
         action='store_true',
         help="Generate all available reports."
@@ -242,6 +253,7 @@ def parse():
     args.posted_start = date.fmt(args.posted_start)
 
     if args.all_reports:
+        args.material_report = True
         args.ministry_report = True
         args.unassigned_report = True
         args.vendor_report = True

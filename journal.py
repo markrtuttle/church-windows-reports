@@ -5,6 +5,7 @@
 import json
 import csv
 
+import date
 import entry
 
 ################################################################
@@ -83,7 +84,7 @@ MONTH = {date.month_name(n): n for n in range(1, 13)}
 
 def parse_date_generated(string):
     try:
-        parts = [str.strip(',') for str in string.split()]
+        parts = [stng.strip(',') for stng in string.split()]
         (_, month, day, year) = parts
         return (MONTH[month], int(day), int(year))
     except (ValueError, KeyError):
