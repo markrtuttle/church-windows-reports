@@ -37,4 +37,5 @@ class Vendor(object):
             ents = [ent for ent in entries if ent.name() == name]
             print "\n", name, self.vendor[name]
             statement.journal_statement(None, jnl, arg.line_width,
-                                        None, ents)
+                                        None, ents,
+                                        is_debit_account=False)

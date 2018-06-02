@@ -111,7 +111,8 @@ def balance_statement(numbers, balance, title, month,
 
 
 def journal_statement(numbers, journal, width, title,
-                      entries=None, compress=False, sort_names=True):
+                      entries=None, compress=False, sort_names=True,
+                      is_debit_account=None):
     # pylint: disable=too-many-locals
     if numbers is not None:
         my_number = lambda number: number in numbers
@@ -131,8 +132,10 @@ def journal_statement(numbers, journal, width, title,
         print "\n"+fmt.format("Amount", "Date", "Description")
         for ent in entries:
             dat = date.fmt(ent.date(), False)
-            amt = (ent.debit() + " " if ent.is_debit() else
-                   ent.credit() + "+")
+            amt = amount.fmt(ent.debit() or ent.credit(),
+                             is_debit_account=is_debit_account,
+                             is_debit_entry=ent.is_debit(),
+                             postfix=True)
             desc = join_nonempty(":  ", [ent.name(), ent.comment()])
             desc = desc.replace("Income", "Inc")
             desc = desc.replace("Expense", "Exp")
@@ -148,8 +151,10 @@ def journal_statement(numbers, journal, width, title,
         print "\n"+fmt.format("Amount", "Date", "Account", "Comment")
         for ent in entries:
             dat = date.fmt(ent.date(), False)
-            amt = (ent.debit() + " " if ent.is_debit() else
-                   ent.credit() + "+")
+            amt = amount.fmt(ent.debit() or ent.credit(),
+                             is_debit_account=is_debit_account,
+                             is_debit_entry=ent.is_debit(),
+                             postfix=True)
             print (fmt.format(amt,
                               dat,
                               truncate(ent.name(), lwid),

@@ -52,7 +52,8 @@ class Finance(object):
         numbers = self.ministry_.accounts(ministry_name)
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Budget details", self.entries,
-                                    compress=self.compact)
+                                    compress=self.compact,
+                                    is_debit_account=True)
 
     def ministry_fund_summary(self, ministry_name):
         numbers = self.ministry_.funds(ministry_name)
@@ -64,7 +65,8 @@ class Finance(object):
         numbers = self.ministry_.funds_accounts(ministry_name)
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Fund details", self.entries,
-                                    compress=self.compact)
+                                    compress=self.compact,
+                                    is_debit_account=False)
 
     def ministry_report(self, name):
         print ("** {} ministry for {} {} **"
@@ -94,7 +96,9 @@ class Finance(object):
         numbers = self.ministry_.unassigned_accounts("budget")
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Budget details", self.entries,
-                                    compress=self.compact)
+                                    compress=self.compact,
+                                    is_debit_account=False)
+        # TODO: say why
 
     def unassigned_fund_summary(self):
         numbers = self.ministry_.unassigned_accounts("fund")
@@ -103,10 +107,11 @@ class Finance(object):
                                     zeros=self.zeros)
 
     def unassigned_fund_details(self):
-        numbers = self.ministry_.unassigned_funds.accounts("fund")
+        numbers = self.ministry_.unassigned_funds_accounts()
         statement.journal_statement(numbers, self.journal_, self.line_width,
                                     "Fund details", self.entries,
-                                    compress=self.compact)
+                                    compress=self.compact,
+                                    is_debit_account=False)
 
     def unassigned_asset_summary(self):
         numbers = self.ministry_.unassigned_accounts("asset")
@@ -119,7 +124,8 @@ class Finance(object):
         csb = self.coa_.number("Cambridge Savings Bank Checking")
         numbers = [num for num in numbers if num != csb]
         statement.journal_statement(numbers, self.journal_, self.line_width,
-                                    "Asset details", self.entries)
+                                    "Asset details", self.entries,
+                                    is_debit_account=True)
 
     def unassigned_liability_summary(self):
         numbers = self.ministry_.unassigned_accounts("liability")
@@ -129,7 +135,8 @@ class Finance(object):
     def unassigned_liability_details(self):
         numbers = self.ministry_.unassigned_accounts("liability")
         statement.journal_statement(numbers, self.journal_, self.line_width,
-                                    "Liability details", self.entries)
+                                    "Liability details", self.entries,
+                                    is_debit_account=False)
 
     def unassigned_report(self):
         print "\n** Unassigned accounts **"

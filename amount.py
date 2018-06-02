@@ -54,15 +54,28 @@ def parse(amount):
     except (ValueError, IndexError):
         raise ValueError("Invalid dollar amount "+amount)
 
-def fmt(string):
+def fmt(string, is_debit_account=None, is_debit_entry=None, postfix=False):
     if string is None:
         return None
     if string == "":
         return None
     if string == "N/A":
         return None
+
     (positive, dollars, cents) = parse(string)
+    flip_sign = ((is_debit_account != is_debit_entry and
+                  is_debit_account is not None and
+                  is_debit_entry is not None) 
+                 or
+                 (not is_debit_entry and
+                  is_debit_account is None and
+                  is_debit_entry is not None))
+    positive = not positive if flip_sign else positive
+
+    if postfix:
+        return "{}.{:0>2}{}".format(dollars, cents, " " if positive else "-")
     return "{}{}.{:0>2}".format("" if positive else "-", dollars, cents)
+
 
 ################################################################
 
