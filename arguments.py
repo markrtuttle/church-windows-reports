@@ -4,8 +4,6 @@
 # pylint: disable=misplaced-comparison-constant
 
 import argparse
-import time
-import calendar
 
 import date
 
@@ -70,7 +68,7 @@ def command_line_parser():
     parser.add_argument(
         '--year',
         type=int,
-        default=this_year(),
+        default=date.this_year(),
         metavar='YEAR',
         help='Year of the report (default: this year)'
     )
@@ -207,32 +205,6 @@ def command_line_parser():
 
 ################################################################
 
-def month_name(month):
-    return calendar.month_name[month]
-
-def this_month():
-    return time.localtime().tm_mon
-
-def this_year():
-    return time.localtime().tm_year
-
-def this_month_start(month=None, year=None):
-    month = month or this_month()
-    year = year or this_year()
-    return "{:0>2}/{:0>2}/{:0>4}".format(month, 1, year)
-
-def this_month_end(month=None, year=None):
-    month = month or this_month()
-    year = year or this_year()
-    return "{:0>2}/{:0>2}/{:0>4}".format(month, 31, year)
-
-def this_posted_start(month=None, year=None):
-    month = month or this_month()
-    year = year or this_year()
-    return "{:0>2}/{:0>2}/{:0>4}".format(month, 1, year)
-
-################################################################
-
 def parse():
     parser = command_line_parser()
     args = parser.parse_args()
@@ -242,28 +214,28 @@ def parse():
     if args.month is None and args.date_end is not None:
         (args.month, _, _) = date.parse(args.date_end)
     if args.month is None:
-        args.month = this_month()
+        args.month = date.this_month()
 
     if args.year is None and args.date_start is not None:
         (_, _, args.year) = date.parse(args.date_start)
     if args.year is None and args.date_end is not None:
         (_, _, args.year) = date.parse(args.date_end)
     if args.year is None:
-        args.year = this_year()
+        args.year = date.this_year()
 
     if not (0 <= args.month and args.month <= 12):
         raise ValueError("Invalid month: "+args.month)
     if not (0 <= args.year and args.year <= 3000):
         raise ValueError("Invalid year: "+args.year)
 
-    args.month_name = month_name(args.month)
+    args.month_name = date.month_name(args.month)
 
     if args.date_start is None:
-        args.date_start = this_month_start(month=args.month, year=args.year)
+        args.date_start = date.month_start(month=args.month, year=args.year)
     if args.date_end is None:
-        args.date_end = this_month_end(month=args.month, year=args.year)
+        args.date_end = date.today()
     if args.posted_start is None:
-        args.posted_start = this_posted_start(month=args.month, year=args.year)
+        args.posted_start = args.date_start
 
     args.date_start = date.fmt(args.date_start)
     args.date_end = date.fmt(args.date_end)

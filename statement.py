@@ -5,6 +5,7 @@
 
 import amount
 import date
+import entry
 
 ################################################################
 
@@ -111,7 +112,7 @@ def balance_statement(numbers, balance, title, month,
 
 
 def journal_statement(numbers, journal, width, title,
-                      entries=None, compress=False, sort_names=True,
+                      entries=None, compress=False,
                       is_debit_account=None):
     # pylint: disable=too-many-locals
     if numbers is not None:
@@ -120,8 +121,7 @@ def journal_statement(numbers, journal, width, title,
     if not entries:
         return
 
-    if sort_names:
-        entries.sort(key=lambda ent: ent.name())
+    entries = sort_by_account_within_date(entries)
 
     if title:
         print "\n"+title
@@ -131,6 +131,9 @@ def journal_statement(numbers, journal, width, title,
         fmt = "{:>10} {:5} {:" + str(wid) + "}"
         print "\n"+fmt.format("Amount", "Date", "Description")
         for ent in entries:
+            if ent is None:
+                print
+                continue
             dat = date.fmt(ent.date(), False)
             amt = amount.fmt(ent.debit() or ent.credit(),
                              is_debit_account=is_debit_account,
@@ -150,6 +153,9 @@ def journal_statement(numbers, journal, width, title,
         fmt = "{:>10} {:5} " + lfmt + " " + rfmt
         print "\n"+fmt.format("Amount", "Date", "Account", "Comment")
         for ent in entries:
+            if ent is None:
+                print
+                continue
             dat = date.fmt(ent.date(), False)
             amt = amount.fmt(ent.debit() or ent.credit(),
                              is_debit_account=is_debit_account,
@@ -190,5 +196,34 @@ def trailer(date_start, date_end, posted_start):
     print ("\nTransactions shown are those occurring between {} and {}, "
            "\nand those occuring before {} but posted after {}"
            .format(date_start, date_end, date_start, posted_start))
+
+################################################################
+
+def sort_by_account_within_date(entries,
+                                account_reverse=False,
+                                date_reverse=True,
+                                insert_none=True):
+
+    months = range(1, 13) if not date_reverse else range(12, 0, -1)
+
+    bucket = {month: [] for month in months}
+    for ety in entries:
+        (month, _, _) = date.parse(ety.date())
+        bucket[month].append(ety)
+
+    for month in months:
+        bucket[month].sort(key=entry.date_key)
+        bucket[month].sort(key=entry.account_key, reverse=account_reverse)
+
+    new_entries = []
+    first_month = True
+    for month in months:
+        if not bucket[month]:
+            continue
+        if not first_month and insert_none:
+            new_entries.extend([None])
+        first_month = False
+        new_entries.extend(bucket[month])
+    return new_entries
 
 ################################################################

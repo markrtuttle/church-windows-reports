@@ -4,6 +4,8 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-arguments
 
+import date
+import amount
 import statement
 
 ################################################################
@@ -35,9 +37,11 @@ class Finance(object):
         self.line_width = args.line_width
         self.compact = args.compact
         self.zeros = args.zeros
-        self.entries = journal_.period_entries(args.date_start,
-                                               args.date_end,
-                                               args.posted_start)
+        self.entries = reportable_entries(journal_.entries(),
+                                          args.date_start,
+                                          args.date_end,
+                                          args.posted_start)
+        self.material_entries = material_entries(self.entries)
 
     ################################################################
 
@@ -78,13 +82,13 @@ class Finance(object):
         self.ministry_fund_details(name)
         statement.trailer(self.date_start, self.date_end, self.posted_start)
 
-    def ministry_reports(self, newpage=False):
+    def ministry_reports(self, newpage=True):
         reports = self.ministry_.keys()
-        first_iteration = True
+        first_report = True
         for report in reports:
-            if not first_iteration:
+            if not first_report and newpage:
                 print "\f"
-            first_iteration = False
+            first_report = False
             self.ministry_report(report)
 
     ################################################################
@@ -158,3 +162,22 @@ class Finance(object):
         statement.trailer(self.date_start, self.date_end, self.posted_start)
 
 ################################################################
+
+def reportable_entries(entries, date_start, date_end=None, posted_start=None):
+    def date_in_period(entry):
+        my_date = entry.date()
+        date_after_start = date.ge(my_date, date_start)
+        date_before_end = date_end is None or date.le(my_date, date_end)
+        return date_after_start and date_before_end
+    def posted_in_period(entry):
+        my_date = entry.date()
+        my_posted = entry.posted()
+        date_before_start = date.lt(my_date, date_start)
+        posted_late = date.ge(my_posted, posted_start or date_start)
+        return date_before_start and posted_late
+    return [entry for entry in entries
+            if date_in_period(entry) or posted_in_period(entry)]
+
+def material_entries(entries, amt="100"):
+    return [entry for entry in entries
+            if amount.ge(entry.credit() or entry.debit(), amt)]

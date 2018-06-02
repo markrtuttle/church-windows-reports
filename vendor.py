@@ -6,6 +6,7 @@ import csv
 
 import amount
 import statement
+import finance
 
 class Vendor(object):
     # pylint: disable=too-few-public-methods
@@ -30,9 +31,10 @@ class Vendor(object):
                         amt = amount.fmt(amt_)
 
     def report(self, jnl, arg):
-        entries = jnl.period_entries(arg.date_start,
-                                     arg.date_end,
-                                     arg.posted_start)
+        entries = finance.reportable_entries(jnl.entries(),
+                                             arg.date_start,
+                                             arg.date_end,
+                                             arg.posted_start)
         for name in self.vendor:
             ents = [ent for ent in entries if ent.name() == name]
             print "\n", name, self.vendor[name]

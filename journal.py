@@ -5,7 +5,6 @@
 import json
 import csv
 
-import date
 import entry
 
 ################################################################
@@ -75,15 +74,7 @@ class Journal(object):
 
     ################################################################
 
-    def period_entries(self, date_start, date_end, posted_start):
-        def in_period(entry_):
-            return ((date.le(date_start, entry_.date()) and
-                     date.le(entry_.date(), date_end))
-                    or
-                    (date.lt(entry_.date(), date_start) and
-                     date.ge(entry_.posted(), posted_start)))
-        entries = self.entry_is(in_period)
-        entries.sort()
-        return entries
+    def entries(self):
+        return self.entry_
 
 ################################################################

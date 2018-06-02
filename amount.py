@@ -65,7 +65,7 @@ def fmt(string, is_debit_account=None, is_debit_entry=None, postfix=False):
     (positive, dollars, cents) = parse(string)
     flip_sign = ((is_debit_account != is_debit_entry and
                   is_debit_account is not None and
-                  is_debit_entry is not None) 
+                  is_debit_entry is not None)
                  or
                  (not is_debit_entry and
                   is_debit_account is None and

@@ -209,3 +209,18 @@ class Entry(object):
 
 def date_key(entry):
     return date.key(entry.date())
+
+def amount_key(entry):
+    return amount.key(entry.credit() or entry.debit())
+
+def account_key(entry):
+    return entry.name()
+
+def sort_by_date(entries, reverse=False):
+    entries.sort(key=date_key, reverse=reverse)
+
+def sort_by_amount(entries, reverse=False):
+    entries.sort(key=amount_key, reverse=reverse)
+
+def sort_by_account(entries, reverse=False):
+    entries.sort(key=account_key, reverse=reverse)

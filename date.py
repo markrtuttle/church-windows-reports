@@ -3,6 +3,8 @@
 # pylint: disable=missing-docstring
 
 import re
+import time
+import calendar
 
 ################################################################
 
@@ -45,8 +47,10 @@ def parse(string):
 def fmt(string, include_year=True, pad=True):
     if string is None:
         return None
-
     (month, day, year) = parse(string)
+    return fmt_mdy(month, day, year, include_year=include_year, pad=pad)
+
+def fmt_mdy(month, day, year, include_year=True, pad=True):
     if include_year:
         if not pad:
             return "{}/{}/{}".format(month, day, year)
@@ -95,5 +99,30 @@ def gt(date1, date2):
     if date1 is None or date2 is None:
         return False
     return compare(date1, date2) > 0
+
+################################################################
+
+def month_name(month):
+    return calendar.month_name[month]
+
+def this_month():
+    return time.localtime().tm_mon
+
+def this_year():
+    return time.localtime().tm_year
+
+def month_start(month=None, year=None):
+    month = month or this_month()
+    year = year or this_year()
+    return fmt_mdy(month, 1, year)
+
+def month_end(month=None, year=None):
+    month = month or this_month()
+    year = year or this_year()
+    return fmt_mdy(month, 31, year)
+
+def today():
+    ltm = time.localtime()
+    return fmt_mdy(ltm.tm_mon, ltm.tm_mday, ltm.tm_year)
 
 ################################################################

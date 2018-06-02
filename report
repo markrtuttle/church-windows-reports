@@ -56,7 +56,7 @@ def main():
                                                args.month_name, args.year,
                                                "Investment Return",
                                                zeros=args.zeros)
-        
+
     if args.vendor_report:
         if not first_report:
             print "\f"
