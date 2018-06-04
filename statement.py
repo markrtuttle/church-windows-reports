@@ -62,7 +62,8 @@ def income_statement(numbers, income, title, month,
 
     lines = income.accounts(numbers)
     if not lines:
-        return
+        print "\n  Nothing to report."
+        return False
 
     if sort_names:
         lines.sort(key=lambda ent: ent.name())
@@ -87,14 +88,15 @@ def income_statement(numbers, income, title, month,
                             line.ytd())
     print_income_hbar()
 
-    return
+    return True
 
 def balance_statement(numbers, balance, title, month,
                       sort_names=True, zeros=False):
 
     lines = balance.accounts(numbers)
     if not lines:
-        return
+        print "\n  Nothing to report."
+        return False
 
     if sort_names:
         lines.sort(key=lambda ent: ent.name())
@@ -117,20 +119,7 @@ def balance_statement(numbers, balance, title, month,
                            line.ytd())
     print_balance_hbar()
 
-    return
-
-    print "{:<42} {:>10} {:>10}".format("", month, "Balance")
-    for line in lines:
-        # pylint: disable=bad-continuation
-        if (not zeros and
-            amount.eq(line.month(), "0") and
-            amount.eq(line.ytd(), "0")):
-            continue
-        print ("  {:<40} {:>10} {:>10}"
-               .format(truncate(line.name(), 40),
-                       line.month(),
-                       line.ytd()))
-
+    return True
 
 def journal_statement(numbers, journal, width, title,
                       entries=None, compress=False,
@@ -140,7 +129,9 @@ def journal_statement(numbers, journal, width, title,
     if numbers is not None:
         my_number = lambda number: number in numbers
         entries = journal.number_is(my_number, entries)
+
     if not entries:
+        print "\n  No activity to report."
         return
 
     entries = sort_by_account_within_date(entries, amount_sort=amount_sort)

@@ -48,10 +48,10 @@ class Finance(object):
 
     def ministry_general_fund_summary(self, ministry_name):
         numbers = self.ministry_.accounts(ministry_name)
-        statement.income_statement(numbers, self.income_,
-                                   None,
-                                   self.month, self.year,
-                                   zeros=self.zeros)
+        return statement.income_statement(numbers, self.income_,
+                                          None,
+                                          self.month, self.year,
+                                          zeros=self.zeros)
 
     def ministry_general_fund_details(self, ministry_name):
         numbers = self.ministry_.accounts(ministry_name)
@@ -62,9 +62,9 @@ class Finance(object):
 
     def ministry_fund_summary(self, ministry_name):
         numbers = self.ministry_.funds(ministry_name)
-        statement.balance_statement(numbers, self.balance_,
-                                    None, self.month,
-                                    zeros=self.zeros)
+        return statement.balance_statement(numbers, self.balance_,
+                                           None, self.month,
+                                           zeros=self.zeros)
 
     def ministry_fund_details(self, ministry_name):
         numbers = self.ministry_.funds_accounts(ministry_name)
@@ -78,12 +78,12 @@ class Finance(object):
                .format(self.ministry_.name(name), self.month, self.year))
 
         print "\nGeneral fund"
-        self.ministry_general_fund_summary(name)
-        self.ministry_general_fund_details(name)
+        if self.ministry_general_fund_summary(name):
+            self.ministry_general_fund_details(name)
 
         print "\nOther funds"
-        self.ministry_fund_summary(name)
-        self.ministry_fund_details(name)
+        if self.ministry_fund_summary(name):
+            self.ministry_fund_details(name)
 
         statement.trailer(self.date_start, self.date_end, self.posted_start)
 
