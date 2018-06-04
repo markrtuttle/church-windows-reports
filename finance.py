@@ -49,27 +49,27 @@ class Finance(object):
     def ministry_general_fund_summary(self, ministry_name):
         numbers = self.ministry_.accounts(ministry_name)
         statement.income_statement(numbers, self.income_,
-                                   "Budget summary",
+                                   None,
                                    self.month, self.year,
                                    zeros=self.zeros)
 
     def ministry_general_fund_details(self, ministry_name):
         numbers = self.ministry_.accounts(ministry_name)
         statement.journal_statement(numbers, self.journal_, self.line_width,
-                                    "Budget details", self.entries,
+                                    None, self.entries,
                                     compress=self.compact,
                                     is_debit_account=True)
 
     def ministry_fund_summary(self, ministry_name):
         numbers = self.ministry_.funds(ministry_name)
         statement.balance_statement(numbers, self.balance_,
-                                    "Fund summary", self.month,
+                                    None, self.month,
                                     zeros=self.zeros)
 
     def ministry_fund_details(self, ministry_name):
         numbers = self.ministry_.funds_accounts(ministry_name)
         statement.journal_statement(numbers, self.journal_, self.line_width,
-                                    "Fund details", self.entries,
+                                    None, self.entries,
                                     compress=self.compact,
                                     is_debit_account=False)
 
@@ -77,10 +77,14 @@ class Finance(object):
         print ("** {} ministry for {} {} **"
                .format(self.ministry_.name(name), self.month, self.year))
 
+        print "\nGeneral fund"
         self.ministry_general_fund_summary(name)
-        self.ministry_fund_summary(name)
         self.ministry_general_fund_details(name)
+
+        print "\nOther funds"
+        self.ministry_fund_summary(name)
         self.ministry_fund_details(name)
+
         statement.trailer(self.date_start, self.date_end, self.posted_start)
 
     def ministry_reports(self, newpage=True):

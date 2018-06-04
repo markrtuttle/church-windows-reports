@@ -41,15 +41,15 @@ def parse(amount):
         dollars = dollars.translate(None, ',')
         dollars = int(dollars)
 
-        cents = parts[1]
-        cents = (cents + "00")[:2] if len(cents) < 2 else cents
-        cents = int(cents)
+        pennies = parts[1]
+        pennies = (pennies + "00")[:2] if len(pennies) < 2 else pennies
+        pennies = int(pennies)
 
         # pylint: disable=misplaced-comparison-constant
-        if not (0 <= cents and cents <= 99):
+        if not (0 <= pennies and pennies <= 99):
             raise ValueError
 
-        return (positive, dollars, cents)
+        return (positive, dollars, pennies)
 
     except (ValueError, IndexError):
         raise ValueError("Invalid dollar amount "+amount)
@@ -62,7 +62,15 @@ def fmt(string, is_debit_account=None, is_debit_entry=None, postfix=False):
     if string == "N/A":
         return None
 
-    (positive, dollars, cents) = parse(string)
+    (positive, dollars, pennies) = parse(string)
+    return fmt_pdc(positive, dollars, pennies,
+                   is_debit_account=is_debit_account,
+                   is_debit_entry=is_debit_entry,
+                   postfix=postfix)
+
+def fmt_pdc(positive, dollars, pennies,
+            is_debit_account=None, is_debit_entry=None, postfix=False):
+    # pylint: disable=too-many-arguments
     flip_sign = ((is_debit_account != is_debit_entry and
                   is_debit_account is not None and
                   is_debit_entry is not None)
@@ -73,16 +81,16 @@ def fmt(string, is_debit_account=None, is_debit_entry=None, postfix=False):
     positive = not positive if flip_sign else positive
 
     if postfix:
-        return "{}.{:0>2}{}".format(dollars, cents, " " if positive else "-")
-    return "{}{}.{:0>2}".format("" if positive else "-", dollars, cents)
+        return "{}.{:0>2}{}".format(dollars, pennies, " " if positive else "-")
+    return "{}{}.{:0>2}".format("" if positive else "-", dollars, pennies)
 
 
 ################################################################
 
 def key(amount):
-    (positive, dollars, cents) = parse(amount)
+    (positive, dollars, pennies) = parse(amount)
     sign = 1 if positive else -1
-    return sign * (dollars * 100 + cents)
+    return sign * (dollars * 100 + pennies)
 
 def compare(amount1, amount2):
     if amount1 is None or amount2 is None:
@@ -120,3 +128,23 @@ def gt(amount1, amount2):
     return compare(amount1, amount2) > 0
 
 ################################################################
+
+def cents(amount):
+    return key(amount)
+
+def cents_parse(pennies):
+    positive = pennies >= 0
+    pennies = pennies if positive else -pennies
+
+    dollars = pennies / 100
+    pennies = pennies % 100
+
+    return (positive, dollars, pennies)
+
+def cents_fmt(pennies,
+              is_debit_account=None, is_debit_entry=None, postfix=False):
+    (positive, dollars, pennies) = cents_parse(pennies)
+    return fmt_pdc(positive, dollars, pennies,
+                   is_debit_account=is_debit_account,
+                   is_debit_entry=is_debit_entry,
+                   postfix=postfix)

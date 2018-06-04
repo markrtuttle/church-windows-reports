@@ -57,7 +57,7 @@ def format_string(width, right=False):
 
 ################################################################
 
-def income_statement(numbers, income, title, month, year,
+def income_statement(numbers, income, title, month,
                      sort_names=True, zeros=False):
 
     lines = income.accounts(numbers)
@@ -71,8 +71,9 @@ def income_statement(numbers, income, title, month, year,
     if title:
         print title
 
-    print ("{:<42} {:>10} {:>10} {:>10}"
-           .format("", month, year, "Budget"))
+    print_income_hbar()
+    print_income_header(month)
+    print_income_hbar()
     for line in lines:
         # pylint: disable=bad-continuation
         if (not zeros and
@@ -80,11 +81,13 @@ def income_statement(numbers, income, title, month, year,
             amount.eq(line.ytd(), "0") and
             line.budget() is None):
             continue
-        print ("  {:<40} {:>10} {:>10} {:>10}"
-               .format(truncate(line.name(), 40),
-                       line.month(),
-                       line.ytd(),
-                       line.budget()))
+        print_income_entry(truncate(line.name(), 40),
+                            line.month(),
+                            line.budget(),
+                            line.ytd())
+    print_income_hbar()
+
+    return
 
 def balance_statement(numbers, balance, title, month,
                       sort_names=True, zeros=False):
@@ -99,6 +102,22 @@ def balance_statement(numbers, balance, title, month,
     print ""
     if title:
         print title
+
+    print_balance_hbar()
+    print_balance_header(month)
+    print_balance_hbar()
+    for line in lines:
+        # pylint: disable=bad-continuation
+        if (not zeros and
+            amount.eq(line.month(), "0") and
+            amount.eq(line.ytd(), "0")):
+            continue
+        print_balance_line(truncate(line.name(), 40),
+                           line.month(),
+                           line.ytd())
+    print_balance_hbar()
+
+    return
 
     print "{:<42} {:>10} {:>10}".format("", month, "Balance")
     for line in lines:
@@ -132,7 +151,7 @@ def journal_statement(numbers, journal, width, title,
     if compress:
         wid = width - (10 + 1 + 5 + 1 + 1)
         fmt = "{:>10} {:5} {:" + str(wid) + "}"
-        print "\n"+fmt.format("Amount", "Date", "Description")
+        print "\n"+fmt.format("Amount", "Date", "Description")+"\n"
         for ent in entries:
             if ent is None:
                 print
@@ -154,7 +173,7 @@ def journal_statement(numbers, journal, width, title,
         lfmt = format_string(lwid)
         rfmt = format_string(rwid)
         fmt = "{:>10} {:5} " + lfmt + " " + rfmt
-        print "\n"+fmt.format("Amount", "Date", "Account", "Comment")
+        print "\n"+fmt.format("Amount", "Date", "Account", "Comment")+"\n"
         for ent in entries:
             if ent is None:
                 print
@@ -233,3 +252,65 @@ def sort_by_account_within_date(entries,
     return new_entries
 
 ################################################################
+
+def print_hbar(width=80, indent=0):
+    width = width - indent
+    print "{:>{ind}}{:->{wid}}".format("", "", ind=indent, wid=width)
+
+################################################################
+
+INCOME_FMT = "{sp:<{id}}| {:<{nw}} | {:>{aw}} | {:>{aw}} {:>{aw}} {:>{aw}} {:>{pw}} |"
+def print_income_line(name, month_spent,
+                      year_budget, year_spent, year_left, year_percent,
+                      indent=2, namew=40, amountw=10, percentw=10,
+                      fmt=INCOME_FMT):
+    print (fmt.format(name, month_spent,
+                      year_budget, year_spent, year_left, year_percent,
+                      sp="",
+                      id=indent, nw=namew, aw=amountw, pw=percentw))
+
+def print_income_hbar():
+    print_hbar(width=105, indent=2)
+
+def print_income_header(month, indent=2, namew=40, amountw=10, percentw=10):
+    print_income_line("", month,
+                      "Budget", "Budget", "Budget", "Percent",
+                      indent=indent,
+                      namew=namew, amountw=amountw, percentw=percentw)
+    print_income_line("General fund expense accounts", "expenses",
+                      "total", "spent", "left", "left",
+                      indent=indent,
+                      namew=namew, amountw=amountw, percentw=percentw)
+
+def print_income_entry(name, month_spent, year_budget, year_spent):
+    year_left = amount.cents(year_budget) - amount.cents(year_spent)
+    try:
+        year_percent = float(year_left) / amount.cents(year_budget)
+    except ZeroDivisionError:
+        year_percent = 0
+    year_percent = "{:.2f}".format(year_percent)
+    print_income_line(name, month_spent,
+                      year_budget, year_spent,
+                      amount.cents_fmt(year_left),
+                      year_percent)
+
+################################################################
+
+BALANCE_FMT = "{sp:<{id}}| {:<{nw}} | {:>{aw}} {:>{aw}} |"
+def print_balance_line(name, month_spent, year_spent,
+                       indent=2, namew=40, amountw=10,
+                       fmt=BALANCE_FMT):
+    print (fmt.format(name, month_spent, year_spent,
+                      sp="", id=indent, nw=namew, aw=amountw))
+
+def print_balance_hbar():
+    print_hbar(width=70, indent=2)
+
+def print_balance_header(month, indent=2, namew=40, amountw=10):
+    print_balance_line("", month, "Current",
+                       indent=indent, namew=namew, amountw=amountw)
+    print_balance_line("Fund name", "change", "balance",
+                       indent=indent, namew=namew, amountw=amountw)
+
+def print_balance_entry(name, month_spent, year_spent):
+    print_balance_line(name, month_spent, year_spent)
