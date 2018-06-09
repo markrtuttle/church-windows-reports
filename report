@@ -4,6 +4,8 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-arguments
 
+from pprint import pprint
+
 import balance
 import income
 import chart
@@ -29,12 +31,16 @@ def main():
         print chart_.dump_jsons()
         return
 
-    if args.dump_ministry:
+    if args.dump_assigned_accounts:
         print ministry_.dump_jsons()
         return
 
-    if args.dump_ministry_unassigned:
+    if args.dump_unassigned_accounts:
         print ministry_.dump_jsons(False)
+        return
+
+    if args.dump_arguments:
+        pprint(args)
         return
 
     first_report = True

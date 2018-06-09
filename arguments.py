@@ -203,14 +203,20 @@ def command_line_parser():
         help='Dump chart of accounts and exit'
     )
     parser.add_argument(
-        '--dump-ministry',
+        '--dump-assigned-accounts',
         action='store_true',
         help='Dump chart of ministry account assignments and exit'
     )
     parser.add_argument(
-        '--dump-ministry-unassigned',
+        '--dump-unassigned-accounts',
         action='store_true',
         help='Dump chart of accounts unassigned to a ministry and exit'
+    )
+    parser.add_argument(
+        '--dump-arguments',
+        '--dump-args',
+        action='store_true',
+        help='Dump current settings of command line arguments and exit'
     )
     return parser
 

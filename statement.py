@@ -58,7 +58,8 @@ def format_string(width, right=False):
 ################################################################
 
 def income_statement(numbers, income, title, month,
-                     sort_names=True, zeros=False):
+                     sort_names=True, zeros=False,
+                     is_income=None):
 
     lines = income.accounts(numbers)
     if not lines:
@@ -66,14 +67,14 @@ def income_statement(numbers, income, title, month,
         return False
 
     if sort_names:
-        lines.sort(key=lambda ent: ent.name())
+        lines.sort(key=lambda ntry: ntry.name())
 
     print ""
     if title:
         print title
 
     print_income_hbar()
-    print_income_header(month)
+    print_income_header(month, income=is_income)
     print_income_hbar()
     for line in lines:
         # pylint: disable=bad-continuation
@@ -110,6 +111,8 @@ def balance_statement(numbers, balance, title, month,
     print_balance_hbar()
     for line in lines:
         # pylint: disable=bad-continuation
+        if line.month() is None and line.ytd() is None:
+            continue
         if (not zeros and
             amount.eq(line.month(), "0") and
             amount.eq(line.ytd(), "0")):
@@ -263,12 +266,18 @@ def print_income_line(name, month_spent,
 def print_income_hbar():
     print_hbar(width=105, indent=2)
 
-def print_income_header(month, indent=2, namew=40, amountw=10, percentw=10):
+def print_income_header(month, indent=2, namew=40, amountw=10, percentw=10,
+                        income=None):
+
+    banner = ("General fund income accounts" if income else
+              "General fund expense accounts")
+    kind = "income" if income else "expenses"
+
     print_income_line("", month,
                       "Budget", "Budget", "Budget", "Percent",
                       indent=indent,
                       namew=namew, amountw=amountw, percentw=percentw)
-    print_income_line("General fund expense accounts", "expenses",
+    print_income_line(banner, kind,
                       "total", "spent", "left", "left",
                       indent=indent,
                       namew=namew, amountw=amountw, percentw=percentw)

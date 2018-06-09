@@ -44,11 +44,13 @@ ACCOUNTS = {
             "Parsonage Maintenance",
             "Parsonage Oil",
             "Parsonage Water/Sewer",
-            "Telephone",
             "Water/Sewer",
         ],
         "fund": [
+            "Capital Fund",
+            "Capital Campaign 2009 Fund",
             "Emergency Property Fund",
+            "Roof Self-Loan",
         ]
     },
     "education": {
@@ -71,7 +73,6 @@ ACCOUNTS = {
     "worship": {
         "name": "Worship",
         "budget": [
-            "Additional Pastor Related Expenses",
             "Pulpit Supply",
             "Worship",
         ],
@@ -79,11 +80,31 @@ ACCOUNTS = {
             "Flower Fund",
         ]
     },
+    "pastor": {
+        "name": "Pastor",
+        "budget": [
+            "Home Equity/Compensation",
+            "Sabbatical Fund Contribution",
+            "Parental Leave Fund Contribution",
+            "Pastoral Discretionary Expenses",
+            "Pastor's Auto Allowance",
+            "Pastor's Books/Cont Ed Expense",
+            "Pastor's Furnishings",
+            ],
+        "fund": [
+            "Deacons Fund",
+            "Pastor Home Equity Liability",
+            "Parental Leave Fund",
+            "Sabbatical Fund",
+            ]
+    },
     "finance": {
         "name": "Finance",
         "budget": [
+            "Bank Service Charges",
             ],
         "fund": [
+            "Investment Return",
             "Capital Campaign 2009 Return",
             "Crockett Memorial Return",
             "Hayes Memorial Return",
@@ -99,11 +120,12 @@ ACCOUNTS = {
     "administration": {
         "name": "Administration",
         "budget": [
+            "Additional Pastor Related Expenses",
             "Additional Property & Search Expenses",
             "Association Dues",
-            "Bank Service Charges",
             "Interchurch",
             "Office Expense",
+            "Telephone",
             "Parsonage Basic Telephone",
             "Pastoral Discretionary Expenses",
             "Pastor's Auto Allowance",
@@ -205,10 +227,9 @@ class Ministry(object):
 
         report = {}
         for key in self.unassigned:
-            report[key] = []
-            for num in self.unassigned[key]:
-                name = self.coa_.account(num).name()
-                report[key].append(name)
+            numbers = self.unassigned[key]
+            sort_account_numbers(key, numbers, self.coa_)
+            report[key] = [self.coa_.account(num).name() for num in numbers]
         return json.dumps(report, indent=2, sort_keys=True)
 
 ################################################################
@@ -275,17 +296,6 @@ class Ministry(object):
                                                used["liability"])
         return unused
 
-    def unused_names(self):
-        accounts = self.unused_accounts()
-        def names(numbers):
-            return [self.coa_.account(num).name() for num in numbers]
-        unused = {}
-        unused["budget"] = names(accounts["budget"])
-        unused["asset"] = names(accounts["asset"])
-        unused["fund"] = names(accounts["fund"])
-        unused["liability"] = names(accounts["liability"])
-        return unused
-
 def diff_number_list(lista, listb):
     lista.sort(key=number.key)
     listb.sort(key=number.key)
@@ -305,6 +315,10 @@ def diff_number_list(lista, listb):
         listb = listb[1:]
     return diff+lista
 
+def sort_account_numbers(kind, numbers, coa):
+    #numbers.sort(key=lambda number: coa.account(number).name())
+    if kind == "budget":
+        numbers.sort(key=lambda number: coa.account(number).is_expense())
 
 def main():
     bal = balance.Balance("balance.csv")
