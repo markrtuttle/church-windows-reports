@@ -12,7 +12,8 @@ import chart
 
 ACCOUNTS = {
     "outreach": {
-        "name": "Outreach",
+        "name": "Mission and Justice",
+        "deacons": ["Jill Lewis", "Mike Rich"],
         "budget": [
             "Outreach Fund Contribution",
         ],
@@ -30,6 +31,7 @@ ACCOUNTS = {
     },
     "property": {
         "name": "Property",
+        "deacons": ["Gary Kane"],
         "budget": [
             "Church Grounds",
             "Church Maintenance",
@@ -55,6 +57,7 @@ ACCOUNTS = {
     },
     "education": {
         "name": "Christian Education",
+        "deacons": ["Marianne McPherson", "Kate Lindheim"],
         "budget": [
             "Christian Education",
         ],
@@ -64,6 +67,7 @@ ACCOUNTS = {
     },
     "stewardship": {
         "name": "Stewardship",
+        "deacons": ["Maureen Igoe", "Jim Williams"],
         "budget": [
         ],
         "fund": [
@@ -72,6 +76,7 @@ ACCOUNTS = {
     },
     "worship": {
         "name": "Worship",
+        "deacons": ["Bonnie Hayner", "Tina Gramm"],
         "budget": [
             "Pulpit Supply",
             "Worship",
@@ -82,6 +87,7 @@ ACCOUNTS = {
     },
     "pastor": {
         "name": "Pastor",
+        "deacons": ["Leah Lyman Waldron"],
         "budget": [
             "Home Equity/Compensation",
             "Sabbatical Fund Contribution",
@@ -100,6 +106,7 @@ ACCOUNTS = {
     },
     "finance": {
         "name": "Finance",
+        "deacons": ["Stu Belden"],
         "budget": [
             "Bank Service Charges",
             ],
@@ -119,6 +126,7 @@ ACCOUNTS = {
     },
     "administration": {
         "name": "Administration",
+        "deacons": ["Valerie Censabella"],
         "budget": [
             "Additional Pastor Related Expenses",
             "Additional Property & Search Expenses",
@@ -143,6 +151,7 @@ ACCOUNTS = {
     },
     "membership": {
         "name": "Membership",
+        "deacons": ["Betty Rich", "Cindy Manson"],
         "budget": [
             "Membership",
             "Social Media / Communications",
@@ -152,6 +161,7 @@ ACCOUNTS = {
     },
     "music": {
         "name": "Music",
+        "deacons": ["Connie Dugan"],
         "budget": [
             "Music",
         ],
@@ -160,8 +170,9 @@ ACCOUNTS = {
             "Organ Restoration",
         ]
     },
-    "hospitality": {
-        "name": "Hospitality",
+    "fellowship": {
+        "name": "Fellowship",
+        "deacons": ["Hong Chin"],
         "budget": [
         ],
         "fund": [
@@ -181,9 +192,8 @@ class Ministry(object):
             raise ValueError("Inconsistent ministry assignments")
 
     def keys(self):
-        result = [key_ for key_ in self.accounts_
-                  if not key_.startswith("ignore")]
-        result.sort()
+        result = list(self.accounts_)
+        result.sort(key=lambda key: self.accounts_[key]["name"])
         return result
 
     def name(self, ministry_name):

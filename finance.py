@@ -73,9 +73,11 @@ class Finance(object):
                                     compress=self.compact,
                                     is_debit_account=False)
 
-    def ministry_report(self, name):
+    def ministry_report(self, name, deacons=None):
         print ("** {} ministry for {} {} **"
                .format(self.ministry_.name(name), self.month, self.year))
+        if deacons:
+            print ", ".join(deacons)
 
         print "\nGeneral fund"
         if self.ministry_general_fund_summary(name):
@@ -94,7 +96,8 @@ class Finance(object):
             if not first_report and newpage:
                 print "\f"
             first_report = False
-            self.ministry_report(report)
+            deacons = self.ministry_.accounts_[report].get("deacons")
+            self.ministry_report(report, deacons=deacons)
 
     ################################################################
 
