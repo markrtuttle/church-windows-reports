@@ -9,3 +9,5 @@ full-income.csv
 full-journal.csv
 chart.json
 ministry.json
+.DS_Store
+*.pyc
