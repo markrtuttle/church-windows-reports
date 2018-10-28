@@ -1,11 +1,5 @@
-balance.csv
-chart.csv
-income.csv
-journal.csv
-vendor.csv
-vendors.csv
-full-balance.csv
-full-income.csv
-full-journal.csv
-chart.json
-ministry.json
+.DS_Store
+*.pyc
+*.json
+*.csv
+*~

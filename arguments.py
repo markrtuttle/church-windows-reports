@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-# pylint: disable=missing-docstring
 # pylint: disable=misplaced-comparison-constant
 
+import re
 import argparse
 
-import date
+import datet
 
 ################################################################
 
@@ -18,30 +18,22 @@ def command_line_parser():
         '--chart',
         default='chart.json',
         metavar='FILE',
-        help=('Chart of accounts dumped by Church Windows as a .csv file '
-              'or dumped by this program as a .json file using --dump-chart. '
-              'The .csv file dumped by Church Windows contains only the leaves '
-              'of the account tree; the balance sheet must be used to infer '
-              'the internal hierarchy of the account tree. '
-              '(default: chart.json)')
+        help=('Chart of accounts created by make-chart'
+              " (default: %(default)s)")
     )
     parser.add_argument(
-        '--balance',
-        default='balance.csv',
+        '--initial',
+        default='initial.json',
         metavar='FILE',
-        help=('Balance statement dumped by Church Windows as a .csv file. '
-              'Be sure to dump the full balance statement --- including all '
-              'zero balance accounts and all subfunds --- '
-              'when the balance statement is being used to '
-              'infer the internal structure of the account tree. '
-              '(default: balance.csv)')
+        help=('List of initial balances created by make-initial'
+              " (default: %(default)s)")
     )
     parser.add_argument(
-        '--income',
-        default='income.csv',
+        '--budget',
+        default='budget.json',
         metavar='FILE',
-        help=("Treasurer's report dumped by Church Windows as a .csv file. "
-              '(default: income.csv)')
+        help=('List of budget amounts created by make-budget'
+              " (default: %(default)s)")
     )
     parser.add_argument(
         '--journal',
@@ -49,38 +41,21 @@ def command_line_parser():
         metavar='FILE',
         nargs='+',
         help=('Journal dumped by Church Windows as a .csv file. '
-              '(default: journal.csv)')
+              " (default: %(default)s)")
     )
+
     parser.add_argument(
-        '--vendors',
-        default='vendors.csv',
-        metavar='FILE',
-        help=("General ledger for vendors dumped by Church Windows as "
-              "a .csv file. "
-              '(default: vendor.csv)')
-    )
-    parser.add_argument(
-        '--month',
-        type=int,
-        metavar='MONTH',
-        help='Month of the report (default: this month)'
-    )
-    parser.add_argument(
-        '--year',
-        type=int,
-        default=date.this_year(),
-        metavar='YEAR',
-        help='Year of the report (default: this year)'
-    )
-    parser.add_argument(
-        '--date-start',
+        '--dates',
+        nargs='+',
         metavar='DATE',
-        help='Starting date of the report (default: first day of MONTH/YEAR)'
-    )
-    parser.add_argument(
-        '--date-end',
-        metavar='DATE',
-        help='Ending date of the report (default: last day of MONTH/YEAR)'
+        help=('Specify start and end dates of the current period with'
+              ' one or two dates of the form m or m/y or or m/d/y.'
+              ' The default period is the current month.'
+              ' If only one date is given, use it for both the start and'
+              ' end dates.'
+              ' If the month or year is missing, use the current month or year.'
+              ' If the day is missing, use the first or last day of the month'
+              ' for the start or end of the period.')
     )
     parser.add_argument(
         '--posted-start',
@@ -89,129 +64,101 @@ def command_line_parser():
               '(default: start of MONTH/YEAR)')
     )
     parser.add_argument(
-        '--line-width',
+        '--posted-end',
+        metavar='DATE',
+        help=('Ending "date posted" for entries outside this month '
+              '(default: start of MONTH/YEAR)')
+    )
+
+    parser.add_argument(
+        '--accounts',
+        action='append',
+        nargs='*',
+        help="Display a list of accounts"
+    )
+    parser.add_argument(
+        '--bills',
+        action='store_true',
+        help="Generate report of material bills."
+    )
+    parser.add_argument(
+        '--no-bills',
+        dest='bills',
+        action='store_false',
+        help="Don't generate report of material bills."
+    )
+    parser.add_argument(
+        '--subfunds',
+        action='store_true',
+        help="Generate reports for subfund accounts."
+    )
+    parser.add_argument(
+        '--no-subfunds',
+        dest='subfunds',
+        action='store_false',
+        help="Don't generate reports for subfund accounts."
+    )
+    parser.add_argument(
+        '--ministries',
+        action='store_true',
+        help="Generate reports for ministry accounts."
+    )
+    parser.add_argument(
+        '--no-ministries',
+        dest='ministries',
+        action='store_false',
+        help="Don't generate reports for ministry accounts."
+    )
+    parser.add_argument(
+        '--vendors',
+        action='store_true',
+        help="Generate reports for vendor accounts."
+    )
+    parser.add_argument(
+        '--no-vendors',
+        dest='vendors',
+        action='store_false',
+        help="Don't generate reports for vendor accounts."
+    )
+    parser.add_argument(
+        '--all-vendors',
+        action='store_true',
+        help="Generate reports for all vendor accounts (even with zero balance)."
+    )
+    parser.add_argument(
+        '--unassigned',
+        action='store_true',
+        help="Generate reports for unassigned accounts."
+    )
+    parser.add_argument(
+        '--no-unassigned',
+        dest='unassigned',
+        action='store_false',
+        help="Don't generate reports for unassigned accounts."
+    )
+
+    parser.add_argument(
+        '--width',
         type=int,
         default=80,
         metavar='INT',
-        help="Line width for reports. (default: 80)"
+        help="Line width for reports (default: %(default)s)"
     )
     parser.add_argument(
         '--portrait',
-        dest='line_width',
+        dest='width',
         action='store_const',
         const=80,
         help="Format reports for portrait mode."
     )
     parser.add_argument(
         '--landscape',
-        dest='line_width',
+        dest='width',
         action='store_const',
-        const=110,
+        const=130,
         help="Format reports for landscape mode."
     )
-    parser.add_argument(
-        '--ministry-report',
-        action='store_true',
-        help="Generate reports for ministry accounts."
-    )
-    parser.add_argument(
-        '--no-ministry-report',
-        dest='ministry_report',
-        action='store_false',
-        help="Don't generate reports for ministry accounts."
-    )
-    parser.add_argument(
-        '--unassigned-report',
-        action='store_true',
-        help="Generate reports for unassigned accounts."
-    )
-    parser.add_argument(
-        '--no-unassigned-report',
-        dest='unassigned_report',
-        action='store_false',
-        help="Don't generate reports for unassigned accounts."
-    )
-    parser.add_argument(
-        '--vendor-report',
-        action='store_true',
-        help="Generate reports for vendor accounts."
-    )
-    parser.add_argument(
-        '--no-vendor-report',
-        dest='vendor_report',
-        action='store_false',
-        help="Don't generate reports for vendor accounts."
-    )
-    parser.add_argument(
-        '--subfund-report',
-        action='store_true',
-        help="Generate reports for subfund accounts."
-    )
-    parser.add_argument(
-        '--no-subfund-report',
-        dest='subfund_report',
-        action='store_false',
-        help="Don't generate reports for subfund accounts."
-    )
-    parser.add_argument(
-        '--material-report',
-        action='store_true',
-        help="Generate report of material bills."
-    )
-    parser.add_argument(
-        '--no-material-report',
-        dest='material_report',
-        action='store_false',
-        help="Don't generate report of material bills."
-    )
-    parser.add_argument(
-        '--all-reports',
-        action='store_true',
-        help="Generate all available reports."
-    )
-    parser.add_argument(
-        '--zeros',
-        action='store_true',
-        help="Generate reports with zero valued accounts."
-    )
-    parser.add_argument(
-        '--no-zeros',
-        dest='zeros',
-        action='store_false',
-        help="Don't generate reports without zero valued accounts."
-    )
-    parser.add_argument(
-        '--compact',
-        action='store_true',
-        help='Use a compact format for printing reports'
-    )
-    parser.add_argument(
-        '--newpage',
-        action='store_true',
-        default=True,
-        help='Insert a new page between report sections'
-    )
-    parser.add_argument(
-        '--no-newpage',
-        dest='newpage',
-        action='store_false',
-        help="Don't insert a new page between report sections"
-    )
-    parser.add_argument(
-        '--dump-chart',
-        action='store_true',
-        help='Dump chart of accounts and exit'
-    )
-    parser.add_argument(
-        '--dump-assigned-accounts',
-        action='store_true',
-        help='Dump chart of ministry account assignments and exit'
-    )
-    parser.add_argument(
-        '--dump-unassigned-accounts',
-        action='store_true',
-        help='Dump chart of accounts unassigned to a ministry and exit'
-    )
+
     parser.add_argument(
         '--dump-arguments',
         '--dump-args',
@@ -222,48 +169,62 @@ def command_line_parser():
 
 ################################################################
 
+def parse_dates(date_list):
+    try:
+        size = len(date_list)
+        if size < 1 or size > 2:
+            raise ValueError
+
+        if size == 1:
+            date_start = datet.from_string(date_list[0], True)
+            date_end = datet.from_string(date_list[0], False)
+        else:
+            date_start = datet.from_string(date_list[0], True)
+            date_end = datet.from_string(date_list[1], False)
+
+        return (date_start, date_end)
+    except ValueError:
+        raise ValueError("Not a valid list of dates: {}.".format(
+            ', '.join(date_list)))
+
+################################################################
+
 def parse():
+    # pylint: disable=too-many-branches
+
     parser = command_line_parser()
     args = parser.parse_args()
 
-    if args.month is None and args.date_start is not None:
-        (args.month, _, _) = date.parse(args.date_start)
-    if args.month is None and args.date_end is not None:
-        (args.month, _, _) = date.parse(args.date_end)
-    if args.month is None:
-        args.month = date.this_month()
+    (args.date_start, args.date_end) = parse_dates(args.dates)
+    args.posted_start = datet.from_string(args.posted_start)
+    args.posted_end = datet.from_string(args.posted_end)
 
-    if args.year is None and args.date_start is not None:
-        (_, _, args.year) = date.parse(args.date_start)
-    if args.year is None and args.date_end is not None:
-        (_, _, args.year) = date.parse(args.date_end)
-    if args.year is None:
-        args.year = date.this_year()
+    (mon1, _, _) = datet.parse_ymd_string(args.date_start)
+    (mon2, _, _) = datet.parse_ymd_string(args.date_end)
+    str1 = datet.month_name(mon1)
+    str2 = datet.month_name(mon2)
+    if mon1 == mon2:
+        args.period_name = str1
+    else:
+        args.period_name = "{}-{}".format(str1[:3], str2[:3])
+    args.month_name = args.period_name
 
-    if not (0 <= args.month and args.month <= 12):
-        raise ValueError("Invalid month: "+args.month)
-    if not (0 <= args.year and args.year <= 3000):
-        raise ValueError("Invalid year: "+args.year)
-
-    args.month_name = date.month_name(args.month)
-
-    if args.date_start is None:
-        args.date_start = date.month_start(month=args.month, year=args.year)
-    if args.date_end is None:
-        args.date_end = date.today()
     if args.posted_start is None:
         args.posted_start = args.date_start
+    if args.posted_end is None:
+        args.posted_end = datet.from_string(datet.today_string())
 
-    args.date_start = date.fmt(args.date_start)
-    args.date_end = date.fmt(args.date_end)
-    args.posted_start = date.fmt(args.posted_start)
-
-    if args.all_reports:
-        args.material_report = True
-        args.ministry_report = True
-        args.unassigned_report = True
-        args.vendor_report = True
-        args.subfund_report = True
+    def flatten(listoflists):
+        """Flatten a list of lists into a list"""
+        if listoflists is not None:
+            return [item for sublist in listoflists for item in sublist]
+        return None
+    def clean(string):
+        """Replace whitespace with a space and strip whitespace from ends."""
+        return re.sub(r'\s+', ' ', string).strip()
+    if args.accounts:
+        args.accounts = flatten(args.accounts)
+        args.accounts = [clean(item) for item in args.accounts]
 
     return args
 

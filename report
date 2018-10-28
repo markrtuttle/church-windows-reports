@@ -1,87 +1,154 @@
 #!/usr/bin/env python
 
-# pylint: disable=missing-docstring
-# pylint: disable=too-many-instance-attributes
-# pylint: disable=too-many-arguments
-
 from pprint import pprint
 
-import balance
-import income
-import chart
-import journal
-import ministry
+import chartt
+import ministryt
 import arguments
-import finance
-import vendor
-import statement
+import journalt
+import initialt
+import budgett
+
+import report_ministry
+import report_bills
+import report_subfunds
+import report_vendors
+import report_accounts
+
+################################################################
+
+
+def accumulate_children(number, chart, balance):
+    children = chart.account(number).children()
+    if not children:
+        return balance
+
+    total = 0
+    kind = chart.account(number).is_debit_account()
+    for num in children:
+        balance = accumulate_children(num, chart, balance)
+        num_kind = chart.account(num).is_debit_account()
+        total += balance.get(num, 0) * (1 if kind == num_kind else -1)
+    balance[number] += total
+    return balance
+
+def balances(chart, journal, initial, start=None, end=None):
+
+    # pylint: disable=too-many-locals
+
+    prior_credit = {}
+    prior_debit = {}
+    period_credit = {}
+    period_debit = {}
+    for entry in journal.entries():
+        num = entry.number()
+        debit = entry.debit() or 0
+        credit = entry.credit() or 0
+        if entry.date_is(None, start) and entry.date() != start:
+            prior_debit[num] = prior_debit.get(num, 0) + debit
+            prior_credit[num] = prior_credit.get(num, 0) + credit
+            continue
+        if entry.date_is(start, end):
+            period_debit[num] = period_debit.get(num, 0) + debit
+            period_credit[num] = period_credit.get(num, 0) + credit
+            continue
+
+    prior_balance = {}
+    current_balance = {}
+    activity = {}
+    for num in chart.accounts():
+        prior_balance[num] = initial.balance(num)
+        current_balance[num] = initial.balance(num)
+
+        prior_change = prior_debit.get(num, 0) - prior_credit.get(num, 0)
+        period_change = period_debit.get(num, 0) - period_credit.get(num, 0)
+        if chart.account(num).is_credit_account():
+            prior_change = -prior_change
+            period_change = -period_change
+
+        prior_balance[num] += prior_change
+        current_balance[num] += prior_change + period_change
+        activity[num] = period_change
+
+    for num in prior_balance:
+        if chart.account(num).parent() is None:
+            prior_balance = accumulate_children(num, chart, prior_balance)
+            current_balance = accumulate_children(num, chart, current_balance)
+            activity = accumulate_children(num, chart, activity)
+
+    return {'prior': prior_balance,
+            'current': current_balance,
+            'activity': activity}
 
 def main():
+
     # pylint: disable=too-many-branches
-    args = arguments.parse()
-    balance_ = balance.Balance(args.balance)
-    income_ = income.Income(args.income)
-    journal_ = journal.Journal(args.journal)
-    chart_ = chart.Chart(args.chart, balance_)
-    ministry_ = ministry.Ministry(chart_)
-    report = finance.Finance(chart_, balance_, income_, journal_, ministry_,
-                             args)
 
-    if args.dump_chart:
-        print chart_.dump_jsons()
-        return
+    arg = arguments.parse()
+    chart = chartt.Chart(chart=arg.chart)
+    journal = journalt.Journal(arg.journal)
+    initial = initialt.Initial(arg.initial)
+    budget = budgett.Budget(arg.budget)
+    ministry = ministryt.Ministry(coa=chart)
 
-    if args.dump_assigned_accounts:
-        print ministry_.dump_jsons()
-        return
+    balance = balances(chart, journal, initial, arg.date_start, arg.date_end)
 
-    if args.dump_unassigned_accounts:
-        print ministry_.dump_jsons(False)
-        return
-
-    if args.dump_arguments:
-        pprint(args)
+    if arg.dump_arguments:
+        pprint(arg)
         return
 
     first_report = True
 
-    if args.material_report:
+    if arg.bills:
         if not first_report:
             print "\f"
         first_report = False
-        report.material_report()
+        report_bills.bills_report(chart, journal,
+                                  arg.date_start, arg.date_end,
+                                  arg.posted_start, arg.posted_end,
+                                  width=arg.width)
 
-    if args.ministry_report:
+    if arg.subfunds:
         if not first_report:
             print "\f"
         first_report = False
-        report.ministry_reports(newpage=args.newpage)
+        report_subfunds.subfund_report(arg.month_name, chart, balance,
+                                       width=arg.width)
 
-    if args.subfund_report:
+    if arg.ministries:
         if not first_report:
             print "\f"
         first_report = False
-        statement.subaccount_balance_statement(chart_, balance_,
-                                               args.month_name, args.year,
-                                               "Special Funds",
-                                               zeros=args.zeros)
-        statement.subaccount_balance_statement(chart_, balance_,
-                                               args.month_name, args.year,
-                                               "Investment Return",
-                                               zeros=args.zeros)
+        report_ministry.ministry_reports(chart, journal, budget, balance,
+                                         ministry, arg.month_name,
+                                         arg.date_start, arg.date_end,
+                                         arg.posted_start, arg.posted_end,
+                                         width=arg.width)
 
-    if args.vendor_report:
+    if arg.vendors:
         if not first_report:
             print "\f"
         first_report = False
-        ven = vendor.Vendor(args.vendors)
-        ven.report(journal_, args)
+        report_vendors.vendor_report(chart, journal, balance,
+                                     arg.date_start, arg.date_end,
+                                     all_vendors=arg.all_vendors,
+                                     width=arg.width)
 
-    if args.unassigned_report:
+    if arg.unassigned:
         if not first_report:
             print "\f"
         first_report = False
-        report.unassigned_report()
+        print "Unassigned report no implemented"
+
+
+    if arg.accounts:
+        if not first_report:
+            print "\f"
+        first_report = False
+        report_accounts.accounts_report(arg.month_name, arg.accounts,
+                                        chart, journal, budget, balance,
+                                        arg.date_start, arg.date_end,
+                                        width=arg.width)
 
 if __name__ == "__main__":
     main()

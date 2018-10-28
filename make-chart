@@ -1,0 +1,181 @@
+#!/usr/bin/env python
+
+import csv
+import sys
+import json
+import argparse
+import re
+
+def command_line_parser():
+    """Create the command line parser."""
+
+    parser = argparse.ArgumentParser(
+        description=("Extract chart of accounts")
+    )
+    parser.add_argument(
+        '--chart',
+        default='chart.csv',
+        metavar='CHART',
+        help=("Chart of accounts dumped from Church Windows as a CSV file"
+              " (default: %(default)s)")
+    )
+    parser.add_argument(
+        '--balance',
+        default='balance.csv',
+        metavar='BALANCE',
+        help=("Balance statement dumped from Church Windows as a CSV file"
+              " (default: %(default)s)")
+    )
+
+    return parser
+
+def clean(string):
+    string = re.sub(r"\s+", ' ', string)
+    return string.strip()
+
+################################################################
+
+VENDOR_NAME = '-A/P Vendor-'
+VENDOR_NUMBER = '2.000.000.000'
+
+def scan_chart(chart):
+    """Scan chart of accounts for account definitions"""
+
+    # map account numbers to account definitions
+    account = {}
+    # map account names to account numbers
+    name_to_number = {}
+
+    with open(chart) as csvfile:
+        for line in csv.reader(csvfile):
+
+            typ = clean(line[0])
+            fund = clean(line[1])
+            name = clean(line[2])
+            number = clean(line[3])
+            parent = None
+            children = []
+
+            # skip initial row of csv file
+            if typ == 'Account Type':
+                continue
+
+            # link income and expense accounts to funds
+            if typ == "Income" or typ == "Expense":
+                parent = name_to_number[fund]
+
+            # Link vendors to vendor liability account
+            if typ == "Liability" and fund == "" and number == "":
+                typ = "Vendor"
+                fund = VENDOR_NAME
+                number = name
+                parent = VENDOR_NUMBER
+
+            account[number] = {
+                'type': typ,
+                'fund': fund,
+                'name': name,
+                'number': number,
+                'parent': parent,
+                'children': children
+            }
+            name_to_number[name] = number
+
+    account[VENDOR_NUMBER] = {
+        'type': 'Liability',
+        'fund': '',
+        'name': VENDOR_NAME,
+        'number': VENDOR_NUMBER,
+        'parent': None,
+        'children': []
+    }
+
+    return {'account': account, 'vendor name': VENDOR_NAME, 'vendor number': VENDOR_NUMBER}
+
+################################################################
+
+def is_number(number):
+    if number:
+        return number[0] in ['1', '2', '3', '4', '5']
+    return False
+
+def scan_balance(balance):
+    """Scan balance statement for asset, liability, and fund hierarchy"""
+
+    parent = ""
+    child = ""
+    ancestor = {}
+
+    with open(balance) as csvfile:
+        for line in csv.reader(csvfile):
+            new_parent_number = clean(line[0])
+            new_parent_name = clean(line[2])
+            child_number = clean(line[1])
+
+            if not is_number(child_number):
+                parent_number = new_parent_number
+                parent_name = new_parent_name
+                continue
+
+            ancestor[child_number] = {'number': parent_number, 'name': parent_name}
+
+    return ancestor
+
+################################################################
+
+def make_tree(account, ancestor):
+    for child in ancestor:
+        parent_number = ancestor[child]['number']
+        parent_name = ancestor[child]['name']
+
+        typ = account[child]['type']
+        name = account[child]['name']
+        fund = account[child]['fund']
+        assert(typ in ['Asset', 'Liability', 'Fund'])
+        assert(name == fund)
+
+        if account.get(parent_number) is None:
+            account[parent_number] = {
+                'type': account[child]['type'],
+                'fund': parent_name,
+                'name': parent_name,
+                'number': parent_number,
+                'parent': None,
+                'children': []
+            }
+
+        account[child]['parent'] = parent_number
+        account[child]['fund'] = parent_name
+
+    for number in account:
+        parent = account[number]['parent']
+        if parent:
+            account[parent]['children'].append(number)
+
+    for number in account:
+        account[number]['children'].sort()
+
+    return account
+
+################################################################
+
+def make_name(account):
+    name = {}
+    for number in account:
+        name[account[number]['name']] = number
+    return name
+
+################################################################
+
+def main():
+    parser = command_line_parser()
+    args = parser.parse_args()
+    chart = scan_chart(args.chart)
+    ancestor = scan_balance(args.balance)
+    chart['account'] = make_tree(chart['account'], ancestor)
+    chart['number'] = make_name(chart['account'])
+
+    print json.dumps(chart, indent=2, sort_keys=True)
+
+if __name__ == '__main__':
+    main()
