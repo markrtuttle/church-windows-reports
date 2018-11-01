@@ -1,0 +1,49 @@
+Make stand-alone commands for constructing unchanging json data:
+  make-chart: Use dumped chart of accounts and balance sheet.
+    json contains only account number mapped to account number, name, type,
+    parent and children
+
+  make-initial: Use dumped balance sheet from PRIOR year.
+    json maps asset, liability, funds (including subaccounts) and vendors
+    to initial balance (maybe just nonzero values)
+
+  make-budget: Use dumped expense report
+    json maps general fund income and expense account to budget value
+    (maybe just nonzero values)
+
+  chart module should do nothing but map number to name, type,
+  children, parents.  maybe iterator over accounts and iterator
+  over vendors
+    chart -> number -> (name/type/children/parents -> value)
+    do we want chart and account objects so we have accessors?
+
+  initial should do nothing but map number to value
+    use accessor?
+
+  budget should do nothing but map number to value
+    use accessor?
+
+  use journal and entry as they are now to produce entry list.
+
+  period activity: need to map entry list and activity period to
+  period activity, initial, and final for all accounts (nested
+  accounts will be tricky)
+
+  period entries: need to map entry list and activity period and
+  post period to entries in those periods
+
+  treasurer report:
+    use period entries, select bills above minimum amount to produce list
+      of material expenses
+    use period activity and initial, produce special fund and
+      investment summaries
+
+  ministry report:
+    use period activity and initial and budget, select ministry accounts to
+      produce general account and fund summaries
+    use period entries, select ministry accounts to produce list of ministry
+      expenses
+
+
+
+

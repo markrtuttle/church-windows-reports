@@ -1,4 +1,7 @@
-# Table row indexes (a sequence of contiguous integers)
+import amountt
+import datet
+
+# An enum for the entry elements
 TID = 0
 TYPE = 1
 NUMBER = 2
@@ -9,107 +12,107 @@ CREDIT = 6
 COMMENTS = 7
 DETAIL = 8
 POSTED = 9
-ROW_LENGTH = 10 # Number of table rown indexes
 
-# Transaction types
+# Enum elements
+ELEMENTS = [TID, TYPE, NUMBER, NAME, DATE, DEBIT, CREDIT,
+            COMMENTS, DETAIL, POSTED]
+
+# The transaction types
 BILL = "BILL"
 DONA = "DONA"
 INCM = "INCM"
 JRNL = "JRNL"
 PYMT = "PYMT"
-
-# Vendor account number
-VENDOR = "-A/P Vendor-"
-
-def str2amt(string):
-    """Convert dollars (a string) to cents (an integer)"""
-
-    if string == "":
-        return None
-
-    # String is of the form dddd.cc
-    assert(string[-3:].startswith('.'))
-
-    string = string.replace(',','')
-    string = string.replace('.','')
-    return int(string)
-
-def amt2str(amount):
-    """Convert cents (an integer) to dollars (a string)"""
-
-    if amount is None:
-        return ""
-
-    sign = '-' if amount < 0 else ''
-    amount = -amount if sign else amount
-
-    dollars = amount / 100
-    cents = abs(amount) % 100
-    return "{}{}.{:02}".format(sign, dollars, cents)
+TYPES = [BILL, DONA, INCM, JRNL, PYMT]
 
 ################################################################
 
-def type(entry, value=None):
-    if value is None:
-        return entry[TYPE] or None
-    entry[TYPE] = value
-    return entry
+class Entry(object):
 
-def date(entry, value=None):
-    if value is None:
-        return entry[DATE] or None
-    entry[DATE] = value
-    return entry
+    def __init__(self, line, element_to_column):
+        self.elements = []
+        for element in ELEMENTS:
+            value = line[element_to_column[element]]
+            self.elements.append(value)
+        self.elements[DEBIT] = amountt.from_string(self.elements[DEBIT])
+        self.elements[CREDIT] = amountt.from_string(self.elements[CREDIT])
+        self.elements[DATE] = datet.from_string(self.elements[DATE])
+        self.elements[POSTED] = datet.from_string(self.elements[POSTED])
 
-def number(entry, value=None):
-    if value is None:
-        return entry[NUMBER] or None
-    entry[NUMBER] = value
-    return entry
+    ################################################################
 
-def debit(entry, value=None):
-    if value is None:
-        return entry[DEBIT]
-    entry[DEBIT] = value
-    return entry
+    def type(self, value=None):
+        if value is None:
+            return self.elements[TYPE] or None
+        if value not in TYPES:
+            return ValueError
+        self.elements[TYPE] = value
+        return self.elements
 
-def credit(entry, value=None):
-    if value is None:
-        return entry[CREDIT]
-    entry[CREDIT] = value
-    return entry
+    def date(self, value=None):
+        if value is None:
+            return self.elements[DATE] or None
+        # Assuming date is 10 character date yyyy/mm/dd
+        self.elements[DATE] = value
+        return self.elements
 
-################################################################
+    def number(self, value=None):
+        if value is None:
+            return self.elements[NUMBER] or None
+        # Assuming number is a valid account number
+        self.elements[NUMBER] = value
+        return self.elements
 
-def type_is(entry, values):
-    return entry[TYPE] in values
+    def debit(self, value=None):
+        if value is None:
+            return self.elements[DEBIT] or None
+        # Assuming value is an integer value
+        self.elements[DEBIT] = value
+        return self.elements
 
-def number_is(entry, numbers):
-    return entry[NUMBER] in numbers
+    def credit(self, value=None):
+        if value is None:
+            return self.elements[CREDIT] or None
+        # Assuming value is an integer value
+        self.elements[CREDIT] = value
+        return self.elements
 
-def date_is(entry, low=None, high=None):
-    val = entry[DATE]
-    low_match = low is None or log <= val
-    high_match = high in None or val <= high
-    return low_match and high_match
+    ################################################################
 
-def debit_is(entry, low=None, high=None):
-    val = entry[DEBIT]
-    low_match = low is None or log <= val
-    high_match = high in None or val <= high
-    return low_match and high_match
+    def type_is(self, values):
+        return self.type() in values
 
-def credit_is(entry, low=None, high=None):
-    val = entry[CREDIT]
-    low_match = low is None or log <= val
-    high_match = high in None or val <= high
-    return low_match and high_match
+    def number_is(self, numbers):
+        return self.number() in numbers
 
-################################################################
+    def date_is(self, low=None, high=None):
+        val = self.date()
+        low_match = low is None or low <= val
+        high_match = high is None or val <= high
+        return low_match and high_match
 
-if __name__ == "__main__":
-    import sys
-    import journalt
-    jnl = journalt.Journal(sys.argv)
-    for entry in jnl.entry_list():
-        print number(entry)
+    def debit_is(self, low=None, high=None):
+        val = self.debit()
+        if val is None:
+            return False
+        low_match = low is None or low <= val
+        high_match = high is None or val <= high
+        return low_match and high_match
+
+    def credit_is(self, low=None, high=None):
+        val = self.credit()
+        if val is None:
+            return False
+        low_match = low is None or low <= val
+        high_match = high is None or val <= high
+        return low_match and high_match
+
+    ################################################################
+
+    def dump(self):
+        elt = self.elements
+        elt[DEBIT] = amountt.to_string(elt[DEBIT])
+        elt[CREDIT] = amountt.to_string(elt[CREDIT])
+        elt[DATE] = datet.to_string(elt[DATE])
+        elt[POSTED] = datet.to_string(elt[POSTED])
+        return elt

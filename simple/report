@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import chartt
+import ministryt
+import arguments
+import journalt
+
+def main():
+    arg = arguments.parse()
+
+    chart = chartt.Chart(chart=arg.chart)
+    ministry = ministryt.Ministry(coa=chart)
+
+    journal = journalt.Journal(arg.journal)
