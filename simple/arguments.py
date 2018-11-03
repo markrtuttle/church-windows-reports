@@ -18,30 +18,19 @@ def command_line_parser():
         '--chart',
         default='chart.json',
         metavar='FILE',
-        help=('Chart of accounts dumped by Church Windows as a .csv file '
-              'or dumped by this program as a .json file using --dump-chart. '
-              'The .csv file dumped by Church Windows contains only the leaves '
-              'of the account tree; the balance sheet must be used to infer '
-              'the internal hierarchy of the account tree. '
-              '(default: chart.json)')
+        help='Chart of accounts dumped created by make-chart.'
     )
     parser.add_argument(
-        '--balance',
-        default='balance.csv',
+        '--initial',
+        default='initial.json',
         metavar='FILE',
-        help=('Balance statement dumped by Church Windows as a .csv file. '
-              'Be sure to dump the full balance statement --- including all '
-              'zero balance accounts and all subfunds --- '
-              'when the balance statement is being used to '
-              'infer the internal structure of the account tree. '
-              '(default: balance.csv)')
+        help='List of initial balances created by make-initial.'
     )
     parser.add_argument(
-        '--income',
-        default='income.csv',
+        '--budget',
+        default='budget.json',
         metavar='FILE',
-        help=("Treasurer's report dumped by Church Windows as a .csv file. "
-              '(default: income.csv)')
+        help='List of budget amounts created by make-budget.'
     )
     parser.add_argument(
         '--journal',
@@ -52,14 +41,6 @@ def command_line_parser():
               '(default: journal.csv)')
     )
     parser.add_argument(
-        '--vendors',
-        default='vendors.csv',
-        metavar='FILE',
-        help=("General ledger for vendors dumped by Church Windows as "
-              "a .csv file. "
-              '(default: vendor.csv)')
-    )
-    parser.add_argument(
         '--month',
         type=int,
         metavar='MONTH',
@@ -68,7 +49,6 @@ def command_line_parser():
     parser.add_argument(
         '--year',
         type=int,
-        default=datet.this_year(),
         metavar='YEAR',
         help='Year of the report (default: this year)'
     )
@@ -86,6 +66,12 @@ def command_line_parser():
         '--posted-start',
         metavar='DATE',
         help=('Starting "date posted" for entries outside this month '
+              '(default: start of MONTH/YEAR)')
+    )
+    parser.add_argument(
+        '--posted-end',
+        metavar='DATE',
+        help=('Ending "date posted" for entries outside this month '
               '(default: start of MONTH/YEAR)')
     )
     parser.add_argument(
@@ -226,17 +212,22 @@ def parse():
     parser = command_line_parser()
     args = parser.parse_args()
 
+    args.date_start = datet.from_string(args.date_start)
+    args.date_end = datet.from_string(args.date_end)
+    args.posted_start = datet.from_string(args.posted_start)
+    args.posted_end = datet.from_string(args.posted_end)
+
     if args.month is None and args.date_start is not None:
-        (args.month, _, _) = datet.parse_mdy_string(args.date_start)
+        (args.month, _, _) = datet.parse_ymd_string(args.date_start)
     if args.month is None and args.date_end is not None:
-        (args.month, _, _) = datet.parse_mdy_string(args.date_end)
+        (args.month, _, _) = datet.parse_ymd_string(args.date_end)
     if args.month is None:
         args.month = datet.this_month()
 
     if args.year is None and args.date_start is not None:
-        (_, _, args.year) = datet.parse_mdy_string(args.date_start)
+        (_, _, args.year) = datet.parse_ymd_string(args.date_start)
     if args.year is None and args.date_end is not None:
-        (_, _, args.year) = datet.parse_mdy_string(args.date_end)
+        (_, _, args.year) = datet.parse_ymd_string(args.date_end)
     if args.year is None:
         args.year = datet.this_year()
 
@@ -248,11 +239,13 @@ def parse():
     args.month_name = datet.month_name(args.month)
 
     if args.date_start is None:
-        args.date_start = datet.make_mdy_string(args.month, 1, args.year)
+        args.date_start = datet.make_ymd_string(args.month, 1, args.year)
     if args.date_end is None:
-        args.date_end = datet.today_string()
+        args.date_end = datet.make_ymd_string(args.month, 31, args.year)
     if args.posted_start is None:
         args.posted_start = args.date_start
+    if args.posted_end is None:
+        args.posted_end = datet.from_string(datet.today_string())
 
     if args.all_reports:
         args.material_report = True

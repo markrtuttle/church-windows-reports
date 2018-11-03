@@ -32,7 +32,7 @@ class Journal(object):
         """Initialize journal with one or more Church Windows journals"""
 
         # A list of entries in the journal
-        self.entries = []
+        self.entries_ = []
         # A mapping entry element to journal column number with element
         self.element_to_column_map = {}
 
@@ -74,19 +74,22 @@ class Journal(object):
                     if line[0].startswith(" Trans. Count:"):
                         continue
                     entry = entryt.Entry(line, self.element_to_column_map)
-                    self.entries.append(entry)
+                    self.entries_.append(entry)
                 else:
                     if line[0] != ELEMENT_TO_HEADER_MAP[TID]:
                         continue
                     self.map_element_to_column(line)
                     headers_parsed = True
 
+    def entries(self):
+        return self.entries_
+
     def dump(self):
-        return [entry.dump() for entry in self.entries]
+        return [entry.dump() for entry in self.entries_]
 
 def main():
     jnl = Journal(sys.argv)
-    entries = [ntry.dump() for ntry in jnl.entries if ntry.debit_is(low=282000)]
+    entries = [ntry.dump() for ntry in jnl.entries() if ntry.debit_is(low=282000)]
     pprint(entries)
 
 if __name__ == "__main__":

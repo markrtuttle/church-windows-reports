@@ -38,8 +38,13 @@ class Entry(object):
         self.elements[CREDIT] = amountt.from_string(self.elements[CREDIT])
         self.elements[DATE] = datet.from_string(self.elements[DATE])
         self.elements[POSTED] = datet.from_string(self.elements[POSTED])
+        if self.elements[NUMBER] == '-A/P Vendor-':
+            self.elements[NUMBER] = self.elements[NAME]
 
     ################################################################
+
+    def id(self):
+        return self.elements[TID]
 
     def type(self, value=None):
         if value is None:
@@ -62,6 +67,12 @@ class Entry(object):
         # Assuming number is a valid account number
         self.elements[NUMBER] = value
         return self.elements
+
+    def name(self, value=None):
+        return self.elements[NAME]
+
+    def comment(self, value=None):
+        return self.elements[COMMENTS]
 
     def debit(self, value=None):
         if value is None:
@@ -88,7 +99,7 @@ class Entry(object):
     def date_is(self, low=None, high=None):
         val = self.date()
         low_match = low is None or low <= val
-        high_match = high is None or val <= high
+        high_match = high is None or val < high
         return low_match and high_match
 
     def debit_is(self, low=None, high=None):
@@ -96,7 +107,7 @@ class Entry(object):
         if val is None:
             return False
         low_match = low is None or low <= val
-        high_match = high is None or val <= high
+        high_match = high is None or val < high
         return low_match and high_match
 
     def credit_is(self, low=None, high=None):
@@ -104,7 +115,7 @@ class Entry(object):
         if val is None:
             return False
         low_match = low is None or low <= val
-        high_match = high is None or val <= high
+        high_match = high is None or val < high
         return low_match and high_match
 
     ################################################################

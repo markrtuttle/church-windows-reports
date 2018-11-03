@@ -261,7 +261,7 @@ class Ministry(object):
         cht["liability"] = []
         cht["fund"] = []
         general_fund = self.coa_.number("General Fund")
-        for num in self.coa_.account_:
+        for num in self.coa_.accounts():
             act = self.coa_.account(num)
             if act.is_asset():
                 cht["asset"].append(num)

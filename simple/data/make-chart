@@ -33,7 +33,7 @@ def clean(string):
 
 ################################################################
 
-VENDOR_NAME = 'A/P Vendor'
+VENDOR_NAME = '-A/P Vendor-'
 VENDOR_NUMBER = '2.000.000.000'
 
 def scan_chart(chart):
@@ -43,8 +43,6 @@ def scan_chart(chart):
     account = {}
     # map account names to account numbers
     name_to_number = {}
-    # list of vendor names
-    vendor = []
 
     with open(chart, 'r') as csvfile:
         for line in csv.reader(csvfile):
@@ -90,7 +88,8 @@ def scan_chart(chart):
         'children': []
     }
 
-    return {'account': account, 'number': name_to_number}
+    return {'account': account,
+            'vendor name': VENDOR_NAME, 'vendor number': VENDOR_NUMBER}
 
 ################################################################
 
@@ -161,12 +160,21 @@ def make_tree(account, ancestor):
 
 ################################################################
 
+def make_name(account):
+    name = {}
+    for number in account:
+        name[account[number]['name']] = number
+    return name
+
+################################################################
+
 def main():
     parser = command_line_parser()
     args = parser.parse_args()
     chart = scan_chart(args.chart)
     ancestor = scan_balance(args.balance)
     chart['account'] = make_tree(chart['account'], ancestor)
+    chart['number'] = make_name(chart['account'])
 
     print json.dumps(chart, indent=2, sort_keys=True)
 

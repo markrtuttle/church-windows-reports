@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
-# pylint: disable=missing-docstring
-
 import json
-
-import numbert
 
 ################################################################
 
@@ -24,62 +20,35 @@ TYPES = [ASSET, LIABILITY, VENDOR, FUND, INCOME, EXPENSE]
 
 class Account(object):
 
-    def __init__(self, typ=None, name=None, nmbr=None):
-        self.type_ = None
-        self.name_ = None
-        self.number_ = None
-        self.parent_ = None
-        self.children_ = []
-        self.income_ = []
-        self.expense_ = []
-        self.type(typ)
-        self.name(name)
-        self.number(nmbr)
+    def __init__(self, account):
+        self.type_ = account['type']
+        self.name_ = account['name']
+        self.number_ = account['number']
+        self.parent_ = account['parent']
+        self.children_ = account['children']
 
     ################################################################
 
-    def type(self, string=None):
-        if string is not None:
-            if string not in TYPES:
-                raise ValueError("Illegal type: " + string)
-            self.type_ = string
-            return self
+    def type(self):
         return self.type_
 
-    def name(self, string=None):
-        if string is not None:
-            self.name_ = string.strip()
-            return self
+    def name(self):
         return self.name_
 
-    def number(self, string=None):
-        if string is not None:
-            self.number_ = numbert.from_string(string)
-            return self
+    def number(self):
         return self.number_
 
-    def parent(self, string=None):
-        if string is not None:
-            self.parent_ = numbert.from_string(string)
-            return self
+    def parent(self):
         return self.parent_
 
-    def children(self, string=None):
-        if string is not None:
-            self.children_.append(numbert.from_string(string))
-            return self
+    def children(self):
         return self.children_
 
-    def income(self, string=None):
-        if string is not None:
-            self.income_.append(numbert.from_string(string))
-        return self.income_
+    def income(self):
+        return [child for child in self.children_ if child.startswith('4')]
 
-    def expense(self, string=None):
-        if string is not None:
-            self.expense_.append(numbert.from_string(string))
-            return self
-        return self.expense_
+    def expense(self):
+        return [child for child in self.children_ if child.startswith('5')]
 
     ################################################################
 
@@ -105,36 +74,19 @@ class Account(object):
         return self.is_asset() or self.is_expense()
 
     def is_credit_account(self):
-        return (self.is_fund() or self.is_vendor() or self.is_liability() or
-                self.is_expense())
+        return not self.is_debit_account()
 
     ################################################################
 
-    def marshall(self):
-        return {
-            "type": self.type_,
-            "name": self.name_,
-            "number": self.number_,
-            "parent": self.parent_,
-            "children": self.children_,
-            "income": self.income_,
-            "expense": self.expense_
-            }
+    def dictionary(self):
+        return {'type': self.type_,
+                'name': self.name_,
+                'number': self.number_,
+                'parent': self.parent_,
+                'children': self.children_,
+               }
 
-    def unmarshall(self, my_dict):
-        self.type(my_dict["type"])
-        self.name(my_dict["name"])
-        self.number(my_dict["number"])
-        self.parent(my_dict["parent"])
-        for num in my_dict["children"]:
-            self.children(num)
-        for num in my_dict["income"]:
-            self.income(num)
-        for num in my_dict["expense"]:
-            self.expense(num)
-        return self
+    def string(self):
+        return json.dumps(self.dictionary())
 
-    def dump_jsons(self):
-        return json.dumps(self.marshall(), indent=2, sort_keys=True)
-
-    ################################################################
+################################################################
