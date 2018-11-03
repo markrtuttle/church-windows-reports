@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-# pylint: disable=missing-docstring
 # pylint: disable=misplaced-comparison-constant
 
 import argparse
@@ -96,13 +95,13 @@ def command_line_parser():
         help="Format reports for landscape mode."
     )
     parser.add_argument(
-        '--ministry-report',
+        '--ministries',
         action='store_true',
         help="Generate reports for ministry accounts."
     )
     parser.add_argument(
-        '--no-ministry-report',
-        dest='ministry_report',
+        '--no-ministries',
+        dest='ministries',
         action='store_false',
         help="Don't generate reports for ministry accounts."
     )
@@ -129,24 +128,24 @@ def command_line_parser():
         help="Don't generate reports for vendor accounts."
     )
     parser.add_argument(
-        '--subfund-report',
+        '--subfunds',
         action='store_true',
         help="Generate reports for subfund accounts."
     )
     parser.add_argument(
-        '--no-subfund-report',
-        dest='subfund_report',
+        '--no-subfunds',
+        dest='subfunds',
         action='store_false',
         help="Don't generate reports for subfund accounts."
     )
     parser.add_argument(
-        '--material-report',
+        '--bills',
         action='store_true',
         help="Generate report of material bills."
     )
     parser.add_argument(
-        '--no-material-report',
-        dest='material_report',
+        '--no-bills',
+        dest='bills',
         action='store_false',
         help="Don't generate report of material bills."
     )
@@ -209,6 +208,8 @@ def command_line_parser():
 ################################################################
 
 def parse():
+    # pylint: disable=too-many-branches
+
     parser = command_line_parser()
     args = parser.parse_args()
 
@@ -248,11 +249,11 @@ def parse():
         args.posted_end = datet.from_string(datet.today_string())
 
     if args.all_reports:
-        args.material_report = True
-        args.ministry_report = True
+        args.bills = True
+        args.ministries = True
         args.unassigned_report = True
         args.vendor_report = True
-        args.subfund_report = True
+        args.subfunds = True
 
     return args
 

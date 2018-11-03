@@ -44,49 +44,32 @@ class Entry(object):
     ################################################################
 
     def id(self):
+        # pylint: disable=invalid-name
         return self.elements[TID]
 
-    def type(self, value=None):
-        if value is None:
-            return self.elements[TYPE] or None
-        if value not in TYPES:
-            return ValueError
-        self.elements[TYPE] = value
-        return self.elements
+    def type(self):
+        return self.elements[TYPE]
 
-    def date(self, value=None):
-        if value is None:
-            return self.elements[DATE] or None
-        # Assuming date is 10 character date yyyy/mm/dd
-        self.elements[DATE] = value
-        return self.elements
+    def date(self):
+        return self.elements[DATE]
 
-    def number(self, value=None):
-        if value is None:
-            return self.elements[NUMBER] or None
-        # Assuming number is a valid account number
-        self.elements[NUMBER] = value
-        return self.elements
+    def posted(self):
+        return self.elements[POSTED]
 
-    def name(self, value=None):
+    def number(self):
+        return self.elements[NUMBER]
+
+    def name(self):
         return self.elements[NAME]
 
-    def comment(self, value=None):
+    def comment(self):
         return self.elements[COMMENTS]
 
-    def debit(self, value=None):
-        if value is None:
-            return self.elements[DEBIT] or None
-        # Assuming value is an integer value
-        self.elements[DEBIT] = value
-        return self.elements
+    def debit(self):
+        return self.elements[DEBIT]
 
-    def credit(self, value=None):
-        if value is None:
-            return self.elements[CREDIT] or None
-        # Assuming value is an integer value
-        self.elements[CREDIT] = value
-        return self.elements
+    def credit(self):
+        return self.elements[CREDIT]
 
     ################################################################
 
@@ -98,6 +81,12 @@ class Entry(object):
 
     def date_is(self, low=None, high=None):
         val = self.date()
+        low_match = low is None or low <= val
+        high_match = high is None or val < high
+        return low_match and high_match
+
+    def posted_is(self, low=None, high=None):
+        val = self.posted()
         low_match = low is None or low <= val
         high_match = high is None or val < high
         return low_match and high_match

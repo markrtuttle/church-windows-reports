@@ -78,6 +78,14 @@ class Account(object):
 
     ################################################################
 
+    def amount(self, debit=None, credit=None):
+        amount = (debit or 0) - (credit or 0)
+        if self.is_credit_account():
+            amount = -amount
+        return amount
+
+    ################################################################
+
     def dictionary(self):
         return {'type': self.type_,
                 'name': self.name_,

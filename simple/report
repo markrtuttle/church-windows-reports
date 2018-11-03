@@ -1,179 +1,39 @@
 #!/usr/bin/env python
 
+from pprint import pprint
+
 import chartt
 import ministryt
 import arguments
 import journalt
 import initialt
 import budgett
-import amountt
-import datet
+
+import report_ministry
+import report_bills
+import report_funds
 
 ################################################################
 
-def truncate(string, width):
-    if len(string) <= width:
-        return string
-    return string[:width-3] + '...'
-
-################################################################
-
-def ministry_reports(journal, balance, chart, initial, budget, ministry,
-                     date_start, date_end, posted_start, posted_end, width=80):
-
-    names = ministry.keys()
-    names.sort(key=lambda name: ministry.name(name))
-
-    for name in names:
-        print "\f\n{} ministry ({} to {})".format(ministry.name(name),
-                                                datet.to_string(date_start),
-                                                datet.to_string(date_end))
-        print
-        ministry_summary(name, balance, chart, initial, budget, ministry,
-                         date_start, date_end, posted_start, posted_end,
-                         width=width)
-        print
-        ministry_detail(name, journal, chart, ministry,
-                        date_start, date_end, posted_start, posted_end,
-                         width=width)
-
-def ministry_summary(name, balance, chart, initial, budget, ministry,
-                     date_start, date_end, posted_start, posted_end,
-                     width=80,
-                     comment_w=35,
-                     name_w=25,
-                     amount_w=8,
-                     balance_w=10):
-
-    name_max = 40
-
-    remaining_width = width - (name_w + 2 + 1 + balance_w + 1 + amount_w +
-                               balance_w + 1 + balance_w)
-    remaining_width = remaining_width if remaining_width > 0 else 0
-
-    name_pad = remaining_width / 10 * 4
-    name_pad = name_pad if name_pad < name_max - name_w else name_max - name_w
-    name_pad = name_pad if name_pad > 0 else 0
-
-    name_w += name_pad
-    comment_w += remaining_width - name_pad
-
-    prior = balance['prior']
-    current = balance['current']
-    activity = balance['activity']
-
-    numbers = ministry.accounts(name)
-    if numbers:
-        print ("{:<{nw}}   {:>{bw}} {:>{aw}} {:>{bw}} {:>{bw}}"
-               .format(truncate("General Fund", name_w),
-                       truncate("Starting", balance_w),
-                       truncate("Activity", amount_w),
-                       truncate("Ending", balance_w),
-                       truncate("Budget", balance_w),
-                       cw=comment_w,
-                       nw=name_w,
-                       bw=balance_w,
-                       aw=amount_w))
-
-    for number in ministry.accounts(name):
-        account = chart.account(number)
-        prior_ = prior[number]
-        activity_ = activity[number]
-        current_ = current[number]
-        budget_ = budget.balance(number)
-        if not prior_ and not activity_ and not current_ and not budget_:
-            continue
-        print ("  {:<{nw}} {:>{bw}} {:>{aw}} {:>{bw}} {:>{bw}}"
-               .format(truncate(account.name(), name_w),
-                       truncate(amountt.to_string(prior_), balance_w),
-                       truncate(amountt.to_string(activity_), amount_w),
-                       truncate(amountt.to_string(current_), balance_w),
-                       truncate(amountt.to_string(budget_), balance_w),
-                       cw=comment_w,
-                       nw=name_w,
-                       bw=balance_w,
-                       aw=amount_w))
-
-    print
-
-    numbers = ministry.funds(name)
-    if numbers:
-        print ("{:<30}   {:>10} {:>10} {:>10}"
-               .format("Other Funds", "Starting", "Activity", "Ending"))
-
-    for number in numbers:
-        account = chart.account(number)
-        prior_ = prior[number]
-        activity_ = activity[number]
-        current_ = current[number]
-
-        print ("  {:<30} {:>10} {:>10} {:>10}"
-               .format(account.name()[:30],
-                       amountt.to_string(prior_)[:10],
-                       amountt.to_string(activity_)[:10],
-                       amountt.to_string(current_)[:10]))
-
-def ministry_detail(name, journal, chart, ministry,
-                    date_start, date_end, posted_start, posted_end,
-                    width=80,
-                    comment_w=35,
-                    name_w=25,
-                    amount_w=8):
-
-    name_max = 40
-
-    remaining_width = width - (name_w + 1 + amount_w + 1 + 5 + 1 + comment_w)
-    remaining_width = remaining_width if remaining_width > 0 else 0
-
-    name_pad = remaining_width / 10 * 4
-    name_pad = name_pad if name_pad < name_max - name_w else name_max - name_w
-    name_pad = name_pad if name_pad > 0 else 0
-
-    name_w += name_pad
-    comment_w += remaining_width - name_pad
-
-    numbers = ministry.accounts(name) + ministry.funds_accounts(name)
-    entries = [ entry for entry in journal.entries()
-                if entry.number_is(numbers) and
-                   (entry.date_is(date_start, date_end) or
-                    (entry.date_is(posted_start, posted_end) and
-                     entry.date_is(None, posted_end))) ]
-    entries.sort(key=lambda entry: (entry.name(), entry.date()))
-
-    for entry in entries:
-        (month, day, year) = datet.parse_ymd_string(entry.date())
-
-        amount = (entry.debit() or 0) - (entry.credit() or 0)
-        if chart.account(entry.number()).is_credit_account():
-            amount = -amount
-
-
-        print ("{3:<{nw}} {4:>{aw}} {0:>2}/{1:>2} {2:<{cw}}"
-               .format(month, day,
-                       truncate(entry.comment(), comment_w),
-                       truncate(entry.name(), name_w),
-                       truncate(amountt.to_string(amount), amount_w),
-                       cw=comment_w,
-                       nw=name_w,
-                       aw=amount_w))
-
-################################################################
 
 def accumulate_children(number, balance, chart):
     children = chart.account(number).children()
     if not children:
         return balance
 
-    sum = 0
+    total = 0
     kind = chart.account(number).is_debit_account()
     for num in children:
         balance = accumulate_children(num, balance, chart)
         num_kind = chart.account(num).is_debit_account()
-        sum += balance.get(num, 0) * (1 if kind == num_kind else -1)
-    balance[number] += sum
+        total += balance.get(num, 0) * (1 if kind == num_kind else -1)
+    balance[number] += total
     return balance
 
 def balances(initial, journal, chart, start=None, end=None):
+
+    # pylint: disable=too-many-locals
+
     prior_credit = {}
     prior_debit = {}
     period_credit = {}
@@ -218,22 +78,56 @@ def balances(initial, journal, chart, start=None, end=None):
 
 def main():
     arg = arguments.parse()
-
     chart = chartt.Chart(chart=arg.chart)
     initial = initialt.Initial(arg.initial)
     budget = budgett.Budget(arg.budget)
-
     ministry = ministryt.Ministry(coa=chart)
-
     journal = journalt.Journal(arg.journal)
 
     balance = balances(initial, journal, chart, arg.date_start, arg.date_end)
 
-    ministry_reports(journal, balance, chart, initial, budget, ministry,
-                     arg.date_start, arg.date_end,
-                     arg.posted_start, arg.posted_end, width=arg.line_width)
+    if arg.dump_arguments:
+        pprint(arg)
+        return
 
+    first_report = True
 
+    if arg.bills:
+        if not first_report:
+            print "\f"
+        first_report = False
+        report_bills.bills_report(journal, chart,
+                                  arg.date_start, arg.date_end,
+                                  arg.posted_start, arg.posted_end,
+                                  width=arg.line_width)
+
+    if arg.subfunds:
+        if not first_report:
+            print "\f"
+        first_report = False
+        report_funds.subfund_report(chart, balance, width=arg.line_width)
+
+    if arg.ministries:
+        if not first_report:
+            print "\f"
+        first_report = False
+        report_ministry.ministry_reports(journal, balance, chart, budget,
+                                         ministry,
+                                         arg.date_start, arg.date_end,
+                                         arg.posted_start, arg.posted_end,
+                                         width=arg.line_width)
+
+    if arg.vendor_report:
+        if not first_report:
+            print "\f"
+        first_report = False
+        print "Vendor report not implemented"
+
+    if arg.unassigned_report:
+        if not first_report:
+            print "\f"
+        first_report = False
+        print "Unassigned report no implemented"
 
 if __name__ == "__main__":
     main()
