@@ -105,14 +105,15 @@ def main():
         if not first_report:
             print "\f"
         first_report = False
-        report_funds.subfund_report(chart, balance, width=arg.line_width)
+        report_funds.subfund_report(arg.month_name, chart, balance,
+                                    width=arg.line_width)
 
     if arg.ministries:
         if not first_report:
             print "\f"
         first_report = False
         report_ministry.ministry_reports(journal, balance, chart, budget,
-                                         ministry,
+                                         ministry, arg.month_name,
                                          arg.date_start, arg.date_end,
                                          arg.posted_start, arg.posted_end,
                                          width=arg.line_width)
