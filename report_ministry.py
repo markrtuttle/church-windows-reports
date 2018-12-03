@@ -76,7 +76,9 @@ def ministry_detail(name, journal, chart, ministry,
                and
                (entry.date_is(date_start, date_end)
                 or
-                (entry.posted_is(posted_start, posted_end)
+                (posted_start and posted_end
+                 and
+                 entry.posted_is(posted_start, posted_end)
                  and
                  entry.date_is(None, posted_end)))]
 

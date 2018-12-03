@@ -45,7 +45,7 @@ def command_line_parser():
     )
 
     parser.add_argument(
-        '--dates',
+        '--date',
         nargs='+',
         metavar='DATE',
         help=('Specify start and end dates of the current period with'
@@ -58,16 +58,11 @@ def command_line_parser():
               ' for the start or end of the period.')
     )
     parser.add_argument(
-        '--posted-start',
+        '--posted',
+        nargs='+',
         metavar='DATE',
-        help=('Starting "date posted" for entries outside this month '
-              '(default: start of MONTH/YEAR)')
-    )
-    parser.add_argument(
-        '--posted-end',
-        metavar='DATE',
-        help=('Ending "date posted" for entries outside this month '
-              '(default: start of MONTH/YEAR)')
+        help=('Specify start and end dates for the posted date interval with'
+              ' one or two dates of the form m or m/y or or m/d/y.  See --date.')
     )
 
     parser.add_argument(
@@ -171,6 +166,9 @@ def command_line_parser():
 
 def parse_dates(date_list):
     try:
+        if date_list is None:
+            return (None, None)
+
         size = len(date_list)
         if size < 1 or size > 2:
             raise ValueError
@@ -195,9 +193,11 @@ def parse():
     parser = command_line_parser()
     args = parser.parse_args()
 
-    (args.date_start, args.date_end) = parse_dates(args.dates)
-    args.posted_start = datet.from_string(args.posted_start)
-    args.posted_end = datet.from_string(args.posted_end)
+    if args.date is None:
+        raise ValueError("No dates specified with --dates")
+    (args.date_start, args.date_end) = parse_dates(args.date)
+
+    (args.posted_start, args.posted_end) = parse_dates(args.posted)
 
     (mon1, _, _) = datet.parse_ymd_string(args.date_start)
     (mon2, _, _) = datet.parse_ymd_string(args.date_end)
@@ -208,11 +208,6 @@ def parse():
     else:
         args.period_name = "{}-{}".format(str1[:3], str2[:3])
     args.month_name = args.period_name
-
-    if args.posted_start is None:
-        args.posted_start = args.date_start
-    if args.posted_end is None:
-        args.posted_end = datet.from_string(datet.today_string())
 
     def flatten(listoflists):
         """Flatten a list of lists into a list"""
