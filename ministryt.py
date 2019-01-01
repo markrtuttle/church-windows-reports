@@ -127,7 +127,7 @@ ACCOUNTS = {
             "Additional Pastor Related Expenses",
             "Additional Property & Search Expenses",
             "Association Dues",
-            "Interchurch",
+            "Interchurch Meetings",
             "Office Expense",
             "Telephone",
             "Parsonage Basic Telephone",

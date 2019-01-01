@@ -11,7 +11,7 @@ def bills_report(chart, journal,
                  name_w=25,
                  amount_w=8,
                  name_max=40,
-                 min_amount=amountt.from_string("200.00")):
+                 min_amount=amountt.from_string("100.00")):
 
     # pylint: disable=too-many-arguments
 
