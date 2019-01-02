@@ -150,5 +150,23 @@ def main():
                                         arg.date_start, arg.date_end,
                                         width=arg.width)
 
+    if arg.dev:
+        dev(chart)
+
+
+def dev(chart):
+    import report_fund
+    from pprint import pprint
+    print "hi"
+    special = "3.021.000.000"
+    tree = report_fund.account_tree(special, chart)
+#    pprint(tree)
+
+    tree2 = report_fund.account_tree_flatten(tree)
+#    pprint(tree2)
+    
+    acts = report_fund.account_tree_list_income_expense(tree, chart)
+    pprint(acts)
+
 if __name__ == "__main__":
     main()

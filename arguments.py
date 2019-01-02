@@ -155,6 +155,12 @@ def command_line_parser():
     )
 
     parser.add_argument(
+        '--dev',
+        action='store_true',
+        help='Run development code'
+    )
+
+    parser.add_argument(
         '--dump-arguments',
         '--dump-args',
         action='store_true',
@@ -194,7 +200,7 @@ def parse():
     args = parser.parse_args()
 
     if args.date is None:
-        raise ValueError("No dates specified with --dates")
+        raise ValueError("No dates specified with --date")
     (args.date_start, args.date_end) = parse_dates(args.date)
 
     (args.posted_start, args.posted_end) = parse_dates(args.posted)
