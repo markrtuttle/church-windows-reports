@@ -14,7 +14,10 @@ EXPENSE = "Expense"
 
 TYPES = [ASSET, LIABILITY, VENDOR, FUND, INCOME, EXPENSE]
 
-# Income and expense account numbers start with 4 and 5
+# The account numbers start with 1 through 5
+ASSET_PREFIX = '1'
+LIABILITY_PREFIX = '2'
+FUND_PREFIX = '3'
 INCOME_PREFIX = '4'
 EXPENSE_PREFIX = '5'
 
@@ -45,14 +48,6 @@ class Account(object):
 
     def children(self):
         return self.children_
-
-    def income(self):
-        return [child for child in self.children_
-                if child.startswith(INCOME_PREFIX)]
-
-    def expense(self):
-        return [child for child in self.children_
-                if child.startswith(EXPENSE_PREFIX)]
 
     ################################################################
 
@@ -87,6 +82,28 @@ class Account(object):
         if self.is_credit_account():
             amount = -amount
         return amount
+
+    ################################################################
+
+    def assets(self):
+        return [child for child in self.children_
+                if child.startswith(ASSET_PREFIX)]
+
+    def liabilities(self):
+        return [child for child in self.children_
+                if child.startswith(LIABILITY_PREFIX)]
+
+    def funds(self):
+        return [child for child in self.children_
+                if child.startswith(FUND_PREFIX)]
+
+    def incomes(self):
+        return [child for child in self.children_
+                if child.startswith(INCOME_PREFIX)]
+
+    def expenses(self):
+        return [child for child in self.children_
+                if child.startswith(EXPENSE_PREFIX)]
 
     ################################################################
 

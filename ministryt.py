@@ -209,7 +209,7 @@ class Ministry(object):
 
     def fund_accounts(self, fund_number):
         fund_account = self.coa_.account(fund_number)
-        return fund_account.income() + fund_account.expense()
+        return fund_account.incomes() + fund_account.expenses()
 
     def funds_accounts(self, ministry_name):
         result = []
@@ -228,7 +228,7 @@ class Ministry(object):
         numbers = []
         for num in self.unassigned_accounts("fund"):
             act = self.coa_.account(num)
-            numbers += act.income() + act.expense()
+            numbers += act.incomes() + act.expenses()
         return numbers
 
     def dump_jsons(self, assigned=True):
