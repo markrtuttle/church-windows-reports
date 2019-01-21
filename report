@@ -31,7 +31,8 @@ def main():
     budget = budgett.Budget(arg.budget)
     ministry = ministryt.Ministry(coa=chart)
 
-    balance = balancet.balances(chart, journal, initial, arg.date_start, arg.date_end)
+    balance = balancet.Balance(chart, journal.entries(), initial,
+                               arg.date_start, arg.date_end)
 
     if arg.dump_arguments:
         pprint(arg)

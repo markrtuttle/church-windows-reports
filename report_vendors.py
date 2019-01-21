@@ -18,7 +18,7 @@ def vendor_report(chart, journal, balance,
     vendor_numbers = chart.account(chart.vendor_number()).children()
 
     numbers = [number for number in vendor_numbers if
-               balance['current'].get(number) or all_vendors]
+               balance.current(number) or all_vendors]
 
     first = True
     for number in numbers:
@@ -27,7 +27,7 @@ def vendor_report(chart, journal, balance,
                    and
                    entry.date_is(date_start, date_end)]
 
-        if not entries and not balance['current'].get(number):
+        if not entries and not balance.current(number):
             continue
 
         if not first:
@@ -36,8 +36,8 @@ def vendor_report(chart, journal, balance,
 
         print "{}: balance {} (prior balance {})".format(
             chart.account(number).name(),
-            amountt.to_string(balance['current'][number]),
-            amountt.to_string(balance['prior'][number]))
+            amountt.to_string(balance.current(number)),
+            amountt.to_string(balance.prior(number)))
         report_style.display_entries(
             entries, chart,
             width=width, comment_w=comment_w, name_w=name_w, amount_w=amount_w,

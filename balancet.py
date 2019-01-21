@@ -1,63 +1,64 @@
+import treet
 
+class Balance(object):
 
-def accumulate_children(number, chart, balance):
-    children = chart.account(number).children()
-    if not children:
-        return balance
+    def __init__(self, chart, entries, initial, start=None, end=None):
 
-    total = 0
-    kind = chart.account(number).is_debit_account()
-    for num in children:
-        balance = accumulate_children(num, chart, balance)
-        num_kind = chart.account(num).is_debit_account()
-        total += balance.get(num, 0) * (1 if kind == num_kind else -1)
-    balance[number] += total
-    return balance
+        def accumulate(number, chart, value):
+            val = value[number]
+            pvals = [value[child] 
+                     for child in chart.account(number).children() if
+                     (chart.account(number).is_debit_account() ==
+                      chart.account(child).is_debit_account())]
+            nvals = [value[child] 
+                     for child in chart.account(number).children() if
+                     (chart.account(number).is_debit_account() !=
+                      chart.account(child).is_debit_account())]
+            return val + sum(pvals) - sum(nvals)
+  
+        self.prior_ = {}
+        self.current_ = {}
+        prior_credit = {}
+        prior_debit = {}
+        current_credit = {}
+        current_debit = {}
+        for number in chart.accounts():
+            self.prior_[number] = initial.balance(number)
+            self.current_[number] = initial.balance(number)
+            prior_credit[number] = 0
+            prior_debit[number] = 0
+            current_credit[number] = 0
+            current_debit[number] = 0
 
-def balances(chart, journal, initial, start=None, end=None):
+        for entry in entries:
+            number = entry.number()
+            credit = entry.credit() or 0
+            debit = entry.debit() or 0
+            if entry.date_is(None, start) and entry.date() != start:
+                prior_credit[number] += credit
+                prior_debit[number] += debit
+            if entry.date_is(start, end):
+                current_credit[number] += credit
+                current_debit[number] += debit
 
-    # pylint: disable=too-many-locals
+        for number in treet.walk_chart(chart):
+            pchange = prior_debit[number] - prior_credit[number]
+            cchange = current_debit[number] - current_credit[number]
+            if chart.account(number).is_debit_account():
+                self.prior_[number] += pchange
+                self.current_[number] += pchange + cchange
+            else:
+                self.prior_[number] -= pchange
+                self.current_[number] -= pchange + cchange
 
-    prior_credit = {}
-    prior_debit = {}
-    period_credit = {}
-    period_debit = {}
-    for entry in journal.entries():
-        num = entry.number()
-        debit = entry.debit() or 0
-        credit = entry.credit() or 0
-        if entry.date_is(None, start) and entry.date() != start:
-            prior_debit[num] = prior_debit.get(num, 0) + debit
-            prior_credit[num] = prior_credit.get(num, 0) + credit
-            continue
-        if entry.date_is(start, end):
-            period_debit[num] = period_debit.get(num, 0) + debit
-            period_credit[num] = period_credit.get(num, 0) + credit
-            continue
+            self.prior_[number] = accumulate(number, chart, self.prior_)
+            self.current_[number] = accumulate(number, chart, self.current_)
 
-    prior_balance = {}
-    current_balance = {}
-    activity = {}
-    for num in chart.accounts():
-        prior_balance[num] = initial.balance(num)
-        current_balance[num] = initial.balance(num)
+    def prior(self, number):
+        return self.prior_[number]
 
-        prior_change = prior_debit.get(num, 0) - prior_credit.get(num, 0)
-        period_change = period_debit.get(num, 0) - period_credit.get(num, 0)
-        if chart.account(num).is_credit_account():
-            prior_change = -prior_change
-            period_change = -period_change
+    def current(self, number):
+        return self.current_[number]
 
-        prior_balance[num] += prior_change
-        current_balance[num] += prior_change + period_change
-        activity[num] = period_change
-
-    for num in prior_balance:
-        if chart.account(num).parent() is None:
-            prior_balance = accumulate_children(num, chart, prior_balance)
-            current_balance = accumulate_children(num, chart, current_balance)
-            activity = accumulate_children(num, chart, activity)
-
-    return {'prior': prior_balance,
-            'current': current_balance,
-            'activity': activity}
+    def activity(self, number):
+        return self.current(number) - self.prior(number)

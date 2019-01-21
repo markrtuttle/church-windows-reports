@@ -1,15 +1,8 @@
 #!/usr/bin/env python
 
-import chartt
 import accountt
 import amountt
 import datet
-import balancet
-
-# for main
-import arguments
-import initialt
-import journalt
 
 ################################################################
 
@@ -122,8 +115,8 @@ def tree_summary_line(tree, chart, balance, level, print_line):
     (number, trees) = tree
 
     name = chart.account(number).name()
-    activity = balance["activity"][number]
-    current = balance["current"][number]
+    activity = balance.activity(number)
+    current = balance.current(number)
 
     print_line(name, activity, current, level)
     tree_summary_lines(trees, chart, balance, level+1, print_line)
@@ -200,34 +193,19 @@ def detail(entries, credit=True):
 
 ################################################################
 
-def main():
-    arg = arguments.parse()
-    chart = chartt.Chart(chart=arg.chart)
-    journal = journalt.Journal(arg.journal)
-    initial = initialt.Initial(arg.initial)
-    balance = balancet.balances(chart, journal, initial, arg.date_start, arg.date_end)
+def walk_tree(tree):
+    (number, subtrees) = tree
+    return walk_trees(subtrees) + [number]
 
-    subtree = build_tree("3.021.000.000", chart)
+def walk_trees(trees):
+    return [number
+            for walk in [walk_tree(tree) for tree in trees]
+            for number in walk]
 
-    subtree1 = remove_income_expense_from_tree(subtree)
-    tree_summary(subtree1, chart, balance)
+def walk_chart(chart):
+    numbers = [number
+               for number in chart.accounts()
+               if chart.account(number).parent() is None]
+    return walk_trees(build_trees(numbers, chart))
 
-    subtree2 = remove_from_tree(subtree, lambda number: False, 0, 0)
-    tree_summary(subtree2, chart, balance)
-
-    accounts = select_income_expense_from_tree(subtree)
-
-    entries = [entry for entry in journal.entries() if
-               entry.number() in accounts and
-               (entry.date_is(arg.date_start, arg.date_end)
-                or
-                (arg.posted_start and arg.posted_end
-                 and
-                 entry.posted_is(arg.posted_start, arg.posted_end)
-                 and
-                 entry.date_is(None, arg.posted_end)))]
-
-    detail(entries)
-
-if __name__ == "__main__":
-    main()
+################################################################

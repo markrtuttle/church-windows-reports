@@ -58,8 +58,8 @@ def display_accounts(
 
     for num in numbers:
         name = chart.account(num).name()
-        activity = balance['activity'][num]
-        current = balance['current'][num]
+        activity = balance.activity(num)
+        current = balance.current(num)
         if not activity and not current:
             continue
         print format_string.format(
@@ -130,9 +130,9 @@ def display_budgeted_accounts(
 
     for number in numbers:
         name = chart.account(number).name()
-        activity = balance['activity'][number]
+        activity = balance.activity(number)
         total = budget.balance(number) if budget else None
-        spent = balance['current'][number]
+        spent = balance.current(number)
         if not activity and not total and not spent:
             continue
         remaining = total - spent
