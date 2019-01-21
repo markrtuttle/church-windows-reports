@@ -14,12 +14,35 @@ EXPENSE = "Expense"
 
 TYPES = [ASSET, LIABILITY, VENDOR, FUND, INCOME, EXPENSE]
 
+################################################################
+
 # The account numbers start with 1 through 5
 ASSET_PREFIX = '1'
 LIABILITY_PREFIX = '2'
 FUND_PREFIX = '3'
 INCOME_PREFIX = '4'
 EXPENSE_PREFIX = '5'
+
+def is_asset_number(number):
+    return number.startswith(ASSET_PREFIX)
+
+def is_liability_number(number):
+    return number.startswith(LIABILITY_PREFIX)
+
+def is_fund_number(number):
+    return number.startswith(FUND_PREFIX)
+
+def is_income_number(number):
+    return number.startswith(INCOME_PREFIX)
+
+def is_expense_number(number):
+    return number.startswith(EXPENSE_PREFIX)
+
+def is_debit_number(number):
+    return is_asset_number(number) or is_expense_number(number)
+
+def is_credit_number(number):
+    return not is_debit_number(number)
 
 ################################################################
 
@@ -85,25 +108,40 @@ class Account(object):
 
     ################################################################
 
-    def assets(self):
-        return [child for child in self.children_
-                if child.startswith(ASSET_PREFIX)]
+    def assets(self, chart=None):
+        nums = [child for child in self.children_ if is_asset_number(child)]
+        if chart:
+            name = lambda num: chart.account(num).name()
+            nums = sorted(nums, key=name)
+        return nums
 
-    def liabilities(self):
-        return [child for child in self.children_
-                if child.startswith(LIABILITY_PREFIX)]
+    def liabilities(self, chart=None):
+        nums = [child for child in self.children_ if is_liability_number(child)]
+        if chart:
+            name = lambda num: chart.account(num).name()
+            nums = sorted(nums, key=name)
+        return nums
 
-    def funds(self):
-        return [child for child in self.children_
-                if child.startswith(FUND_PREFIX)]
+    def funds(self, chart=None):
+        nums = [child for child in self.children_ if is_fund_number(child)]
+        if chart:
+            name = lambda num: chart.account(num).name()
+            nums = sorted(nums, key=name)
+        return nums
 
-    def incomes(self):
-        return [child for child in self.children_
-                if child.startswith(INCOME_PREFIX)]
+    def incomes(self, chart=None):
+        nums = [child for child in self.children_ if is_income_number(child)]
+        if chart:
+            name = lambda num: chart.account(num).name()
+            nums = sorted(nums, key=name)
+        return nums
 
-    def expenses(self):
-        return [child for child in self.children_
-                if child.startswith(EXPENSE_PREFIX)]
+    def expenses(self, chart=None):
+        nums = [child for child in self.children_ if is_expense_number(child)]
+        if chart:
+            name = lambda num: chart.account(num).name()
+            nums = sorted(nums, key=name)
+        return nums
 
     ################################################################
 
