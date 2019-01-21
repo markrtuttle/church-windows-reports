@@ -6,16 +6,16 @@ class Balance(object):
 
         def accumulate(number, chart, value):
             val = value[number]
-            pvals = [value[child] 
+            pvals = [value[child]
                      for child in chart.account(number).children() if
                      (chart.account(number).is_debit_account() ==
                       chart.account(child).is_debit_account())]
-            nvals = [value[child] 
+            nvals = [value[child]
                      for child in chart.account(number).children() if
                      (chart.account(number).is_debit_account() !=
                       chart.account(child).is_debit_account())]
             return val + sum(pvals) - sum(nvals)
-  
+
         self.prior_ = {}
         self.current_ = {}
         prior_credit = {}
