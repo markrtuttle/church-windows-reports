@@ -41,7 +41,8 @@ class Balance(object):
                 current_credit[number] += credit
                 current_debit[number] += debit
 
-        for number in treet.walk_chart(chart):
+        tree = treet.Tree(chart)
+        for number in tree.root_walk():
             pchange = prior_debit[number] - prior_credit[number]
             cchange = current_debit[number] - current_credit[number]
             if chart.account(number).is_debit_account():

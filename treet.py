@@ -13,6 +13,7 @@ def build_tree(number, chart):
     nums += account.funds(chart)
     nums += account.incomes(chart)
     nums += account.expenses(chart)
+    nums += account.vendors(chart)
 
     return (number, build_trees(nums, chart))
 
@@ -23,8 +24,6 @@ def build_trees(numbers, chart):
 
 def depth(tree):
     (_, subtrees) = tree
-    if not subtrees:
-        return 1
     return depths(subtrees) + 1
 
 def depths(trees):
@@ -82,10 +81,55 @@ def walk_trees(trees):
             for walk in [walk_tree(tree) for tree in trees]
             for number in walk]
 
-def walk_chart(chart):
-    numbers = [number
-               for number in chart.accounts()
-               if chart.account(number).parent() is None]
-    return walk_trees(build_trees(numbers, chart))
-
 ################################################################
+
+class Tree(object):
+
+    def __init__(self, chart):
+        roots = [number
+                 for number in chart.accounts()
+                 if chart.account(number).parent() is None]
+        roots = sorted(roots, key=lambda number: chart.account(number).name())
+
+        numbers = []
+        numbers += [num for num in roots if accountt.is_asset_number(num)]
+        numbers += [num for num in roots if accountt.is_liability_number(num)]
+        numbers += [num for num in roots if accountt.is_fund_number(num)]
+        numbers += [num for num in roots if accountt.is_income_number(num)]
+        numbers += [num for num in roots if accountt.is_expense_number(num)]
+        numbers += [num for num in roots if accountt.is_vendor_number(num)]
+
+        root_trees = build_trees(numbers, chart)
+
+        self.tree_ = {}
+
+        def install_tree(tree):
+            (number, subtrees) = tree
+            self.tree_[number] = tree
+            install_trees(subtrees)
+
+        def install_trees(trees):
+            for tree in trees:
+                install_tree(tree)
+
+        self.tree_[None] = (None, root_trees)
+        install_trees(root_trees)
+
+    def tree(self, number):
+        return self.tree_[number]
+
+    def depth(self, number):
+        return depth(self.tree_[number])
+
+    def walk(self, number):
+        (_, subtrees) = self.tree_[number]
+        subwalk = walk_trees(subtrees)
+        if number is None:
+            return subwalk
+        return subwalk + [number]
+
+    def root(self):
+        return self.tree(None)
+
+    def root_walk(self):
+        return self.walk(None)

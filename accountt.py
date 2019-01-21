@@ -38,6 +38,10 @@ def is_income_number(number):
 def is_expense_number(number):
     return number.startswith(EXPENSE_PREFIX)
 
+def is_vendor_number(number):
+    return number[:1] not in [ASSET_PREFIX, LIABILITY_PREFIX, FUND_PREFIX,
+                              INCOME_PREFIX, EXPENSE_PREFIX]
+
 def is_debit_number(number):
     return is_asset_number(number) or is_expense_number(number)
 
@@ -92,6 +96,9 @@ class Account(object):
     def is_expense(self):
         return self.type_ == EXPENSE
 
+    def is_vendor(self):
+        return self.type_ == VENDOR
+
     def is_debit_account(self):
         return self.is_asset() or self.is_expense()
 
@@ -138,6 +145,13 @@ class Account(object):
 
     def expenses(self, chart=None):
         nums = [child for child in self.children_ if is_expense_number(child)]
+        if chart:
+            name = lambda num: chart.account(num).name()
+            nums = sorted(nums, key=name)
+        return nums
+
+    def vendors(self, chart=None):
+        nums = [child for child in self.children_ if is_vendor_number(child)]
         if chart:
             name = lambda num: chart.account(num).name()
             nums = sorted(nums, key=name)
