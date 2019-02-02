@@ -83,6 +83,17 @@ def command_line_parser():
         help="Don't generate report of material bills."
     )
     parser.add_argument(
+        '--general',
+        action='store_true',
+        help="General Fund report."
+    )
+    parser.add_argument(
+        '--no-general',
+        dest='general',
+        action='store_false',
+        help="General Fund report."
+    )
+    parser.add_argument(
         '--subfunds',
         action='store_true',
         help="Generate reports for subfund accounts."

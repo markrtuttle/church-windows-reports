@@ -2,6 +2,7 @@
 
 import treet
 import amountt
+import accountt
 
 ################################################################
 
@@ -28,19 +29,22 @@ def make_summary_format(width=80,
     string = format_string.format(nw=name_w, aw=amount_w, bw=balance_w)
     width = format_length()
 
-    def print_line(name, activity, balance, level=0):
+    def format_line(name, activity, balance, level=0):
         name = " "*(2*level) + name
         name = name[:name_w]
-        act = amountt.to_string(activity) + " "*(2*level)
-        bal = amountt.to_string(balance)  + " "*(2*level)
+        act = activity + " "*(2*level)
+        bal = balance  + " "*(2*level)
         print string.format(name, act, bal)
+
+    def print_line(name, activity, balance, level=0):
+        format_line(name, amountt.to_string(activity), amountt.to_string(balance), level)
 
     def print_rule():
         print '-'*width
 
-    return (print_line, print_rule)
+    return (format_line, print_line, print_rule)
 
-def tree_summary_line(tree, chart, balance, level, print_line, zeros):
+def tree_summary_line(tree, chart, balance, level, print_line, zeros, credit_tree):
 
     (number, trees) = tree
 
@@ -48,22 +52,37 @@ def tree_summary_line(tree, chart, balance, level, print_line, zeros):
     activity = balance.activity(number)
     current = balance.current(number)
 
+    if credit_tree != accountt.is_credit_number(number):
+        activity = -activity
+        current = -current
+
     if zeros or activity or current:
         print_line(name, activity, current, level)
-    tree_summary_lines(trees, chart, balance, level+1, print_line, zeros)
+    tree_summary_lines(trees, chart, balance, level+1, print_line, zeros, credit_tree)
 
-def tree_summary_lines(trees, chart, balance, level, print_line, zeros):
+def tree_summary_lines(trees, chart, balance, level, print_line, zeros, credit_tree):
     for tree in trees:
-        tree_summary_line(tree, chart, balance, level, print_line, zeros)
+        tree_summary_line(tree, chart, balance, level, print_line, zeros, credit_tree)
 
-def tree_summary(tree, chart, balance, zeros=True):
-    (line, rule) = make_summary_format(level_max=treet.depth(tree))
+def header(line, rule, report_name=None, activity_name=None, balance_name=None):
     rule()
-    tree_summary_line(tree, chart, balance, 0, line, zeros=zeros)
+    line("", activity_name, balance_name)
+    line(report_name, "activity", "balance")
+    rule()
+    
+def footer(rule):
     rule()
 
-def tree_summaries(trees, chart, balance, zeros=True):
-    (line, rule) = make_summary_format(level_max=max([treet.depth(tree) for tree in trees]))
-    rule()
-    tree_summary_lines(trees, chart, balance, 0, line, zeros=zeros)
-    rule()
+def tree_summary(tree, chart, balance, report_name=None, activity_name=None, balance_name=None, zeros=True,
+                 credit_tree=True):
+    (fmt, line, rule) = make_summary_format(level_max=treet.depth(tree))
+    header(fmt, rule, report_name, activity_name, balance_name)
+    tree_summary_line(tree, chart, balance, 0, line, zeros=zeros, credit_tree=credit_tree)
+    footer(rule)
+
+def tree_summaries(trees, chart, balance, report_name=None, activity_name=None, balance_name=None, zeros=True,
+                   credit_tree=True):
+    (fmt, line, rule) = make_summary_format(level_max=max([treet.depth(tree) for tree in trees]))
+    header(fmt, rule, report_name, activity_name, balance_name)
+    tree_summary_lines(trees, chart, balance, 0, line, zeros=zeros, credit_tree=credit_tree)
+    footer(rule)

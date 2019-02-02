@@ -1,9 +1,7 @@
 import amountt
 import datet
 
-def make_detail_format(width=80,
-                       comment_w=35, name_w=25, amount_w=8,
-                       name_max=40):
+def make_detail_format(width=80, comment_w=35, name_w=25, amount_w=8, name_max=40):
 
     format_string = "{{:>{aw}}} {{:>2}}/{{:>2}} {{:<{nw}}} {{:<{cw}}}"
     format_length = lambda: amount_w + 1 + 5 + 1 + name_w + 1 + comment_w
@@ -49,6 +47,15 @@ def entry_lines(entries, print_line, credit):
     for entry in entries:
         entry_line(entry, print_line, credit)
 
-def detail(entries, credit=True):
-    (print_line, _) = make_detail_format()
+def detail(entries, credit=True,
+           width=80,
+           comment_w=35,
+           name_w=25,
+           amount_w=8,
+           name_max=40):
+    (print_line, _) = make_detail_format(width=width,
+                                         comment_w=comment_w,
+                                         name_w=name_w,
+                                         amount_w=amount_w,
+                                         name_max=name_max)
     entry_lines(entries, print_line, credit)

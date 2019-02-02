@@ -96,9 +96,6 @@ class Account(object):
     def is_expense(self):
         return self.type_ == EXPENSE
 
-    def is_vendor(self):
-        return self.type_ == VENDOR
-
     def is_debit_account(self):
         return self.is_asset() or self.is_expense()
 

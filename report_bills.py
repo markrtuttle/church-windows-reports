@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
+import entriest
+import detail
 import amountt
-import entryt
-import report_style
 
 def bills_report(chart, journal,
                  date_start, date_end, posted_start, posted_end,
@@ -13,27 +13,17 @@ def bills_report(chart, journal,
                  name_max=40,
                  min_amount=amountt.from_string("100.00")):
 
-    # pylint: disable=too-many-arguments
+    entries = journal.entries()
+    entries = entriest.select_by_date(entries, date_start, date_end,
+                                      posted_start, posted_end)
+    entries = entriest.select_by_amount(entries, low="100.00")
+    entries = entriest.select_bill(entries)
+    entries = entriest.select_debit(entries)
+    groups = entriest.group_by_month(entries, reverse=True)
+    groups = [entriest.sort_by_amount(group, reverse=True) for group in groups]
 
-    entries = [entry for entry in journal.entries()
-               if
-               entry.type() == entryt.BILL
-               and
-               chart.account(entry.number()).is_debit_account()
-               and
-               (entry.debit_is(min_amount, None)
-                or
-                entry.credit_is(min_amount, None))
-               and
-               (entry.date_is(date_start, date_end)
-                or
-                (posted_start and posted_end
-                 and
-                 entry.posted_is(posted_start, posted_end)
-                 and
-                 entry.date_is(None, posted_end)))]
-
-
-    report_style.display_entries(entries, chart, True, ["reverse_amount"],
-                                 width, comment_w, name_w, amount_w,
-                                 name_max)
+    for group in groups:
+        print
+        detail.detail(group, credit=False, width=width,
+                      comment_w=comment_w, name_w=name_w, amount_w=amount_w,
+                      name_max=name_max)
