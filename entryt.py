@@ -108,6 +108,9 @@ class Entry(object):
         high_match = high is None or val <= high
         return low_match and high_match
 
+    def amount_is(self, low=None, high=None):
+        return self.debit_is(low, high) or self.credit_is(low, high)
+
     ################################################################
 
     def dump(self):

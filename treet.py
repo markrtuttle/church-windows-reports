@@ -39,7 +39,7 @@ def depths(trees):
 
 # prune: number -> level -> boolean
 
-def remove_from_tree(tree, remove, level=0, max_level=None):
+def remove_from_tree(tree, remove=lambda num: False, level=0, max_level=None):
     (number, subtrees) = tree
     if remove(number) or max_level is not None and level > max_level:
         return None

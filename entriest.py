@@ -1,4 +1,6 @@
 import amountt
+import entryt
+import accountt
 
 def select_by_number(entries, numbers):
     return [entry for entry in entries if entry.number() in numbers]
@@ -14,19 +16,26 @@ def select_by_date(entries, date_start, date_end,
              and
              entry.date_is(None, posted_end))]
 
-def select_by_amount(entries, amt_min=None, amt_max=None):
-    amt_min = amountt.from_string(amt_min)
-    amt_max = amountt.from_string(amt_max)
+def select_by_amount(entries, low=None, high=None):
+    low = amountt.from_string(low)
+    high = amountt.from_string(high)
     def select(amount):
         if amount is None:
             return None
-        amt = abs(amountt.from_string(amount))
-        return ((amt_min is None or amt_min <= amt)
+        amt = abs(amount)
+        return ((low is None or low <= amt)
                 and
-                (amt_max is None or amt <= amt_max))
+                (high is None or amt <= high))
 
     return [entry for entry in entries
             if select(entry.credit() or entry.debit())]
+
+def select_debit(entries):
+    return [entry for entry in entries
+            if accountt.is_debit_number(entry.number())]
+
+def select_bill(entries):
+    return [entry for entry in entries if entry.type() == entryt.BILL]
 
 def sort_by_date(entries, reverse=False):
     key = lambda entry: entry.date()
@@ -36,13 +45,13 @@ def sort_by_name(entries, chart, reverse=False):
     key = lambda entry: chart.account(entry.number()).name()
     return sorted(entries, key=key, reverse=reverse)
 
-def sort_by_amt(entries, reverse=False):
+def sort_by_amount(entries, reverse=False):
     key = lambda entry: abs(entry.debit() or entry.credit())
     return sorted(entries, key=key, reverse=reverse)
 
 def group_by_month(entries, reverse=False):
     group = {}
     for entry in entries:
-        date = entry.date()[:6] # grab yyyymm from yyyymmdd
-        group[date] = group.get(date, []) + entry
+        date = entry.date()[:7] # grab yyyy/mm from yyyy/mm/dd
+        group[date] = group.get(date, []) + [entry]
     return [group[date] for date in sorted(group, reverse=reverse)]
