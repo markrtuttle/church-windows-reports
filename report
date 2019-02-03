@@ -11,8 +11,10 @@ import treet
 import entriest
 
 import budgett
+
 import detail
 import summary
+import summary_budget
 
 import ministryt
 
@@ -71,8 +73,7 @@ def main():
         number = chart.number(name)
         general = tree.tree(number)
         summary.tree_summary(general, chart, balance, name, arg.month_name, arg.month_name, zeros=False)
-
-        
+        summary_budget.tree_summary(general, chart, balance, budget, name, arg.month_name, zeros=False)
 
     if arg.ministries:
         if not first_report:

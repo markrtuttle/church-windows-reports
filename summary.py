@@ -69,7 +69,7 @@ def header(line, rule, report_name=None, activity_name=None, balance_name=None):
     line("", activity_name, balance_name)
     line(report_name, "activity", "balance")
     rule()
-    
+
 def footer(rule):
     rule()
 
