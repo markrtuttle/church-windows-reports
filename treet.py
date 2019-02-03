@@ -4,132 +4,227 @@ import accountt
 
 ################################################################
 
-def build_tree(number, chart):
-    account = chart.account(number)
-
-    nums = []
-    nums += account.assets(chart)
-    nums += account.liabilities(chart)
-    nums += account.funds(chart)
-    nums += account.incomes(chart)
-    nums += account.expenses(chart)
-    nums += account.vendors(chart)
-
-    return (number, build_trees(nums, chart))
-
-def build_trees(numbers, chart):
-    return [build_tree(num, chart) for num in numbers]
-
-################################################################
-
-def depth(tree):
-    (_, subtrees) = tree
-    return depths(subtrees) + 1
-
-def depths(trees):
-    if not trees:
-        return 0
-    return max([depth(tree) for tree in trees])
-
-################################################################
-
 # tree: strip accounts types
 # tree: max depth
 # tree accumlate account types
 
 # prune: number -> level -> boolean
 
-def remove_from_tree(tree, remove=lambda num: False, level=0, max_level=None):
-    (number, subtrees) = tree
-    if remove(number) or max_level is not None and level > max_level:
-        return None
-    return (number, remove_from_trees(subtrees, remove, level+1, max_level))
-
-def remove_from_trees(trees, remove, level=0, max_level=None):
-    trees = [remove_from_tree(tree, remove, level, max_level) for tree in trees]
-    return [tree for tree in trees if tree is not None]
-
-def select_from_tree(tree, select):
-    (number, subtrees) = tree
-    node = [number] if select(number) else []
-    return node + select_from_trees(subtrees, select)
-
-def select_from_trees(trees, select):
-    node_lists = [select_from_tree(tree, select) for tree in trees]
-    return [node for node_list in node_lists for node in node_list]
-
-def remove_income_expense_from_tree(tree):
-    def remove(number):
-        return (accountt.is_income_number(number) or
-                accountt.is_expense_number(number))
-    return remove_from_tree(tree, remove)
-
-def select_income_expense_from_tree(tree):
-    def select(number):
-        return (accountt.is_income_number(number) or
-                accountt.is_expense_number(number))
-    return select_from_tree(tree, select)
-
 ################################################################
 
-def walk_tree(tree):
-    (number, subtrees) = tree
-    return walk_trees(subtrees) + [number]
+def max0(numbers):
+    return max(numbers + [0])
 
-def walk_trees(trees):
-    return [number
-            for walk in [walk_tree(tree) for tree in trees]
-            for number in walk]
+class Node(object):
+    def __init__(self, number, name):
+        self.number_ = number
+        self.name_ = name
+        self.period_activity_ = 0
+        self.year_activity_ = 0
+        self.initial_balance_ = 0
+        self.balance_ = 0
+        self.budget_ = 0
 
-################################################################
+        self.type_ = number[:1]
+        if self.type_ not in ["0", "1", "2", "3", "4", "5"]:
+            self.type_ = "2"
+        self.kind_ = "D" if self.type_ in ["0", "1", "5"] else "C"
+
+    def number(self):
+        return self.number_
+
+    def name(self):
+        return self.name_
+
+    def period_activity(self):
+        return self.period_activity_
+
+    def year_activity(self):
+        return self.year_activity_
+
+    def initial_balance(self):
+        return self.initial_balance_
+
+    def balance(self):
+        return self.balance_
+
+    def budget(self):
+        return self.budget_
+
+    def type(self):
+        return self.type_
+
+    def kind(self):
+        return self.kind_
+
+    def set_period_activity(self, activity):
+        self.period_activity_ = activity
+
+    def set_year_activity(self, activity):
+        self.year_activity_ = activity
+
+    def set_initial_balance(self, initial):
+        self.initial_balance_ = initial
+
+    def set_balance(self, balance):
+        self.balance_ = balance
+
+    def set_budget(self, budget):
+        self.budget_ = budget
+
+    def copy(self):
+        node = Node(self.number(), self.name())
+        node.set_period_activity(self.period_activity())
+        node.set_year_activity(self.year_activity())
+        node.set_initial_balance(self.initial_balance())
+        node.set_balance(self.balance())
+        node.set_budget(self.budget())
+
+        return node
 
 class Tree(object):
 
-    def __init__(self, chart):
-        roots = [number
-                 for number in chart.accounts()
-                 if chart.account(number).parent() is None]
-        roots = sorted(roots, key=lambda number: chart.account(number).name())
+    def __init__(self, chart=None, number=None):
+
+        if chart is None:
+            self.node_ = None
+            self.subtrees_ = None
+            self.depth_ = None
+            self.traversal_ = None
+            return
+
+        if number is None:
+            number = "0.000.000.000"
+            name = "Root"
+            children = [num for num in chart.accounts()
+                        if chart.account(num).parent() is None]
+        else:
+            name = chart.account(number).name()
+            children = chart.account(number).children()
+        children = sorted(children, key=lambda number: chart.account(number).name())
 
         numbers = []
-        numbers += [num for num in roots if accountt.is_asset_number(num)]
-        numbers += [num for num in roots if accountt.is_liability_number(num)]
-        numbers += [num for num in roots if accountt.is_fund_number(num)]
-        numbers += [num for num in roots if accountt.is_income_number(num)]
-        numbers += [num for num in roots if accountt.is_expense_number(num)]
-        numbers += [num for num in roots if accountt.is_vendor_number(num)]
+        numbers += [num for num in children if accountt.is_asset_number(num)]
+        numbers += [num for num in children if accountt.is_liability_number(num)]
+        numbers += [num for num in children if accountt.is_fund_number(num)]
+        numbers += [num for num in children if accountt.is_income_number(num)]
+        numbers += [num for num in children if accountt.is_expense_number(num)]
+        numbers += [num for num in children if accountt.is_vendor_number(num)]
 
-        root_trees = build_trees(numbers, chart)
+        self.node_ = Node(number, name)
+        self.subtrees_ = [Tree(chart, num) for num in numbers]
 
-        self.tree_ = {}
+        depths = [subtree.depth() for subtree in self.subtrees_]
+        self.depth_ = max(depths + [0]) + 1
 
-        def install_tree(tree):
-            (number, subtrees) = tree
-            self.tree_[number] = tree
-            install_trees(subtrees)
+        traversals = [subtree.traversal() for subtree in self.subtrees_]
+        traversal = [num for traversal in traversals for num in traversal]
+        self.traversal_ = traversal + [number]
 
-        def install_trees(trees):
-            for tree in trees:
-                install_tree(tree)
+    def node(self):
+        return self.node_
 
-        self.tree_[None] = (None, root_trees)
-        install_trees(root_trees)
+    def subtrees(self):
+        return self.subtrees_
 
-    def tree(self, number):
-        return self.tree_[number]
+    def depth(self):
+        return self.depth_
 
-    def depth(self, number):
-        return depth(self.tree_[number])
+    def traversal(self):
+        return self.traversal_
 
-    def walk(self, number):
-        (_, subtrees) = self.tree_[number]
-        subwalk = walk_trees(subtrees)
-        if number is None:
-            return subwalk
-        return subwalk + [number]
+    def set_initial_balances(self, initial):
+        self.node().set_initial_balance(initial.balance(self.node().number()))
+        for subtree in self.subtrees():
+            subtree.set_initial_balances(initial)
 
-    def root(self):
-        return self.tree(None)
+    def set_balances(self, period_credit, period_debit, year_credit, year_debit):
+        number = self.node().number()
+        period_activity = period_credit.get(number, 0) - period_debit.get(number, 0)
+        year_activity = year_credit.get(number, 0) - year_debit.get(number, 0)
 
-    def root_walk(self):
-        return self.walk(None)
+        if self.node().kind() == "D":
+            period_activity = -period_activity
+            year_activity = -year_activity
+
+        balance = self.node().initial_balance() + year_activity
+        for subtree in self.subtrees():
+            subtree.set_balances(period_credit, period_debit, year_credit, year_debit)
+
+            if self.node().kind() == subtree.node().kind():
+                period_activity += subtree.node().period_activity()
+                year_activity += subtree.node().year_activity()
+                balance += subtree.node().balance()
+            else:
+                period_activity -= subtree.node().period_activity()
+                year_activity -= subtree.node().year_activity()
+                balance -= subtree.node().balance()
+
+        self.node().set_period_activity(period_activity)
+        self.node().set_year_activity(year_activity)
+        self.node().set_balance(balance)
+
+    def set_budgets(self, budget):
+        number = self.node().number()
+
+        total = budget.balance(number)
+        for subtree in self.subtrees():
+            subtree.set_budgets(budget)
+
+            if subtree.node().budget() is not None:
+                if self.node().kind() == subtree.node().kind():
+                    total = (total or 0) + subtree.node().budget()
+                else:
+                    total = (total or 0) - subtree.node().budget()
+
+        self.node().set_budget(total)
+
+    def copy(self):
+        tree = Tree()
+        tree.node_ = self.node().copy()
+        tree.subtrees_ = [subtree.copy() for subtree in self.subtrees()]
+        tree.depth_ = self.depth()
+        tree.traversal_ = self.traversal()
+        return tree
+
+    def remove_from_tree(self, remove=lambda num: False, level=0, max_level=None):
+        number = self.node().number()
+        if remove(number) or max_level is not None and level > max_level:
+            raise UserWarning
+
+        subtrees = []
+        for subtree in self.subtrees():
+            number = subtree.node().number()
+            if remove(number) or max_level is not None and level+1 > max_level:
+                continue
+            subtree.remove_from_tree(remove, level+1, max_level)
+            subtrees.append(subtree)
+        self.subtrees_ = subtrees
+        self.depth_ = max0([stree.depth() for stree in self.subtrees()]) + 1
+        self.traversal_ = None
+
+    def remove_income_expense_from_tree(self):
+        def remove(number):
+            return (accountt.is_income_number(number) or
+                    accountt.is_expense_number(number))
+        self.remove_from_tree(remove)
+
+class Forest(object):
+    def __init__(self, tree):
+
+        self.number_ = {}
+        self.name_ = {}
+
+        def set_trees(tree):
+            self.number_[tree.node().number()] = tree
+            self.name_[tree.node().name()] = tree
+            for subtree in tree.subtrees():
+                set_trees(subtree)
+
+        set_trees(tree)
+
+    def tree_number(self, number):
+        return self.number_.get(number)
+
+    def tree_name(self, name):
+        return self.name_.get(name)

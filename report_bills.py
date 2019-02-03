@@ -3,14 +3,8 @@
 import entriest
 import detail
 
-def bills_report(journal,
-                 date_start, date_end, posted_start, posted_end,
-                 layout,
-                 min_amount="100.00"):
+def bills_report(entries, layout, min_amount="100.00"):
 
-    entries = journal.entries()
-    entries = entriest.select_by_date(entries, date_start, date_end,
-                                      posted_start, posted_end)
     entries = entriest.select_by_amount(entries, low=min_amount)
     entries = entriest.select_bill(entries)
     entries = entriest.select_debit(entries)

@@ -3,18 +3,11 @@
 import treet
 import summary
 
-def subfund_report(period_name, tree, chart, balance, layout):
+def subfund_report(period_name, forest, layout):
 
-    name = "Special Funds"
-    number = chart.number(name)
-    subtree = treet.remove_income_expense_from_tree(tree.tree(number))
-    summary.tree_summary(subtree, chart, balance, name,
-                         period_name, period_name, zeros=False, layout=layout)
-
-    print
-
-    name = "Investment Return"
-    number = chart.number(name)
-    subtree = treet.remove_income_expense_from_tree(tree.tree(number))
-    summary.tree_summary(subtree, chart, balance, name,
-                         period_name, period_name, zeros=False, layout=layout)
+    for name in ["Special Funds", "Investment Return"]:
+        tree = forest.tree_name(name).copy()
+        tree.remove_income_expense_from_tree()
+        summary.tree_summary(tree, name,
+                             period_name, period_name, zeros=False, layout=layout)
+        print

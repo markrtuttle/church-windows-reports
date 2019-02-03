@@ -8,6 +8,7 @@ import journalt
 import chartt
 import balancet
 import treet
+import entriest
 
 import budgett
 
@@ -24,24 +25,31 @@ import report_vendors
 
 ################################################################
 
-
 def main():
 
     # pylint: disable=too-many-branches
 
     arg = arguments.parse()
     chart = chartt.Chart(chart=arg.chart)
-    journal = journalt.Journal(arg.journal)
     initial = initialt.Initial(arg.initial)
-    balance = balancet.Balance(chart, journal.entries(), initial,
-                               arg.date_start, arg.date_end)
-
-    tree = treet.Tree(chart)
-
     budget = budgett.Budget(arg.budget)
-    ministry = ministryt.Ministry(coa=chart)
-
+    ministry = ministryt.Ministry(chart)
     layout = layoutt.Layout(arg.width)
+
+    journal = journalt.Journal(arg.journal)
+    (pcredits, pdebits, ycredits, ydebits) = journal.accumulate(arg.date_start,
+                                                                arg.date_end)
+    tree = treet.Tree(chart)
+    tree.set_initial_balances(initial)
+    tree.set_budgets(budget)
+    tree.set_balances(pcredits, pdebits, ycredits, ydebits)
+
+    forest = treet.Forest(tree)
+
+    entries = journal.entries()
+    entries = entriest.select_by_date(entries,
+                                      arg.date_start, arg.date_end,
+                                      arg.posted_start, arg.posted_end)
 
     if arg.dump_arguments:
         pprint(arg)
@@ -53,27 +61,23 @@ def main():
         if not first_report:
             print "\f"
         first_report = False
-        report_bills.bills_report(journal,
-                                  arg.date_start, arg.date_end,
-                                  arg.posted_start, arg.posted_end,
-                                  layout)
+        report_bills.bills_report(entries, layout)
 
     if arg.subfunds:
         if not first_report:
             print "\f"
         first_report = False
-        report_subfunds.subfund_report(arg.month_name, tree, chart, balance, layout)
+        report_subfunds.subfund_report(arg.month_name, forest, layout)
 
     if arg.general:
         if not first_report:
             print "\f"
         first_report = False
         name = "General Fund"
-        number = chart.number(name)
-        general = tree.tree(number)
-        summary.tree_summary(general, chart, balance, name,
+        general = forest.tree_name(name)
+        summary.tree_summary(general, name,
                              arg.month_name, arg.month_name, zeros=False, layout=layout)
-        summary_budget.tree_summary(general, chart, balance, budget, name,
+        summary_budget.tree_summary(general, name,
                                     arg.month_name, zeros=False, layout=layout)
 
     if arg.ministries:

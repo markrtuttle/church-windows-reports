@@ -87,10 +87,27 @@ class Journal(object):
     def dump(self):
         return [entry.dump() for entry in self.entries_]
 
-def main():
-    jnl = Journal(sys.argv)
-    entries = [ntry.dump() for ntry in jnl.entries() if ntry.debit_is(low=282000)]
-    pprint(entries)
+    ################################################################
 
-if __name__ == "__main__":
-    main()
+    def accumulate(self, date_start, date_end):
+        period_credits = {}
+        period_debits = {}
+        year_credits = {}
+        year_debits = {}
+
+        for entry in self.entries():
+            number = entry.number()
+
+            period_credits[number] = period_credits.get(number) or 0
+            period_debits[number] = period_debits.get(number) or 0
+            year_credits[number] = year_credits.get(number) or 0
+            year_debits[number] = year_debits.get(number) or 0
+
+            if entry.date_is(date_start, date_end):
+                period_credits[number] += entry.credit() or 0
+                period_debits[number] += entry.debit() or 0
+            if entry.date_is(None, date_end):
+                year_credits[number] += entry.credit() or 0
+                year_debits[number] += entry.debit() or 0
+
+        return (period_credits, period_debits, year_credits, year_debits)
