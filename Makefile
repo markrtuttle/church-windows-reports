@@ -61,7 +61,7 @@ clean:
 veryclean: clean
 	$(RM) ministry.pdf unassigned.pdf vendor.pdf
 pylint:
-	pylint --disable=missing-docstring,duplicate-code *.py report
+	pylint --disable=missing-docstring,duplicate-code,too-many-arguments,too-many-public-methods,too-many-locals *.py report
 
 
 

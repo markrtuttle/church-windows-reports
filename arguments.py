@@ -66,12 +66,6 @@ def command_line_parser():
     )
 
     parser.add_argument(
-        '--accounts',
-        action='append',
-        nargs='*',
-        help="Display a list of accounts"
-    )
-    parser.add_argument(
         '--bills',
         action='store_true',
         help="Generate report of material bills."
@@ -85,13 +79,13 @@ def command_line_parser():
     parser.add_argument(
         '--general',
         action='store_true',
-        help="General Fund report."
+        help="Generate report for General Fund."
     )
     parser.add_argument(
         '--no-general',
         dest='general',
         action='store_false',
-        help="General Fund report."
+        help="Don't generate report for General Fund."
     )
     parser.add_argument(
         '--subfunds',
@@ -130,17 +124,6 @@ def command_line_parser():
         '--all-vendors',
         action='store_true',
         help="Generate reports for all vendor accounts (even with zero balance)."
-    )
-    parser.add_argument(
-        '--unassigned',
-        action='store_true',
-        help="Generate reports for unassigned accounts."
-    )
-    parser.add_argument(
-        '--no-unassigned',
-        dest='unassigned',
-        action='store_false',
-        help="Don't generate reports for unassigned accounts."
     )
 
     parser.add_argument(
@@ -219,18 +202,6 @@ def parse():
     else:
         args.period_name = "{}-{}".format(str1[:3], str2[:3])
     args.month_name = args.period_name
-
-    def flatten(listoflists):
-        """Flatten a list of lists into a list"""
-        if listoflists is not None:
-            return [item for sublist in listoflists for item in sublist]
-        return None
-    def clean(string):
-        """Replace whitespace with a space and strip whitespace from ends."""
-        return re.sub(r'\s+', ' ', string).strip()
-    if args.accounts:
-        args.accounts = flatten(args.accounts)
-        args.accounts = [clean(item) for item in args.accounts]
 
     return args
 

@@ -97,7 +97,7 @@ def ministry_detail(name, journal, chart, ministry,
     groups = entriest.group_by_month(entries, reverse=True)
     groups = [entriest.sort_by_amount(group, reverse=True) for group in groups]
     groups = [entriest.sort_by_name(group, chart) for group in groups]
-    
+
     for group in groups:
         print
         detail.detail(group, credit=True, width=width,

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import amountt
-import report_style
 
 import entriest
 import detail
@@ -40,5 +39,5 @@ def vendor_report(chart, journal, balance,
             amountt.to_string(balance.current(number)),
             amountt.to_string(balance.prior(number)))
         detail.detail(entries, credit=True,
-            width=width, comment_w=comment_w, name_w=name_w, amount_w=amount_w,
-            name_max=name_max)
+                      width=width, comment_w=comment_w, name_w=name_w, amount_w=amount_w,
+                      name_max=name_max)

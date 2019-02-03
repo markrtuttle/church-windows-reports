@@ -8,21 +8,18 @@ import journalt
 import chartt
 import balancet
 import treet
-import entriest
 
 import budgett
 
-import detail
 import summary
 import summary_budget
 
 import ministryt
 
-import report_ministry
 import report_bills
 import report_subfunds
+import report_ministry
 import report_vendors
-import report_accounts
 
 ################################################################
 
@@ -53,7 +50,7 @@ def main():
         if not first_report:
             print "\f"
         first_report = False
-        report_bills.bills_report(chart, journal,
+        report_bills.bills_report(journal,
                                   arg.date_start, arg.date_end,
                                   arg.posted_start, arg.posted_end,
                                   width=arg.width)
@@ -93,22 +90,6 @@ def main():
                                      arg.date_start, arg.date_end,
                                      all_vendors=arg.all_vendors,
                                      width=arg.width)
-
-    if arg.unassigned:
-        if not first_report:
-            print "\f"
-        first_report = False
-        print "Unassigned report no implemented"
-
-
-    if arg.accounts:
-        if not first_report:
-            print "\f"
-        first_report = False
-        report_accounts.accounts_report(arg.month_name, arg.accounts,
-                                        chart, journal, budget, balance,
-                                        arg.date_start, arg.date_end,
-                                        width=arg.width)
 
 if __name__ == "__main__":
     main()

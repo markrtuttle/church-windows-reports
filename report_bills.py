@@ -2,21 +2,20 @@
 
 import entriest
 import detail
-import amountt
 
-def bills_report(chart, journal,
+def bills_report(journal,
                  date_start, date_end, posted_start, posted_end,
                  width=80,
                  comment_w=35,
                  name_w=25,
                  amount_w=8,
                  name_max=40,
-                 min_amount=amountt.from_string("100.00")):
+                 min_amount="100.00"):
 
     entries = journal.entries()
     entries = entriest.select_by_date(entries, date_start, date_end,
                                       posted_start, posted_end)
-    entries = entriest.select_by_amount(entries, low="100.00")
+    entries = entriest.select_by_amount(entries, low=min_amount)
     entries = entriest.select_bill(entries)
     entries = entriest.select_debit(entries)
     groups = entriest.group_by_month(entries, reverse=True)
