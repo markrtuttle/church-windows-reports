@@ -7,12 +7,8 @@ import detail
 
 def vendor_report(chart, journal, balance,
                   date_start, date_end,
-                  all_vendors=False,
-                  width=80,
-                  comment_w=35,
-                  name_w=25,
-                  amount_w=8,
-                  name_max=40):
+                  layout=None,
+                  all_vendors=False):
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
@@ -38,6 +34,4 @@ def vendor_report(chart, journal, balance,
             chart.account(number).name(),
             amountt.to_string(balance.current(number)),
             amountt.to_string(balance.prior(number)))
-        detail.detail(entries, credit=True,
-                      width=width, comment_w=comment_w, name_w=name_w, amount_w=amount_w,
-                      name_max=name_max)
+        detail.detail(entries, credit=True, layout=layout)

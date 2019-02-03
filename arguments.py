@@ -2,7 +2,6 @@
 
 # pylint: disable=misplaced-comparison-constant
 
-import re
 import argparse
 
 import datet

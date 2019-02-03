@@ -16,6 +16,7 @@ import summary_budget
 
 import ministryt
 
+import layoutt
 import report_bills
 import report_subfunds
 import report_ministry
@@ -40,6 +41,8 @@ def main():
     budget = budgett.Budget(arg.budget)
     ministry = ministryt.Ministry(coa=chart)
 
+    layout = layoutt.Layout(arg.width)
+
     if arg.dump_arguments:
         pprint(arg)
         return
@@ -53,14 +56,13 @@ def main():
         report_bills.bills_report(journal,
                                   arg.date_start, arg.date_end,
                                   arg.posted_start, arg.posted_end,
-                                  width=arg.width)
+                                  layout)
 
     if arg.subfunds:
         if not first_report:
             print "\f"
         first_report = False
-        report_subfunds.subfund_report(arg.month_name, tree, chart, balance,
-                                       width=arg.width)
+        report_subfunds.subfund_report(arg.month_name, tree, chart, balance, layout)
 
     if arg.general:
         if not first_report:
@@ -69,8 +71,10 @@ def main():
         name = "General Fund"
         number = chart.number(name)
         general = tree.tree(number)
-        summary.tree_summary(general, chart, balance, name, arg.month_name, arg.month_name, zeros=False)
-        summary_budget.tree_summary(general, chart, balance, budget, name, arg.month_name, zeros=False)
+        summary.tree_summary(general, chart, balance, name,
+                             arg.month_name, arg.month_name, zeros=False, layout=layout)
+        summary_budget.tree_summary(general, chart, balance, budget, name,
+                                    arg.month_name, zeros=False, layout=layout)
 
     if arg.ministries:
         if not first_report:
@@ -80,7 +84,7 @@ def main():
                                          ministry, arg.month_name,
                                          arg.date_start, arg.date_end,
                                          arg.posted_start, arg.posted_end,
-                                         width=arg.width)
+                                         layout)
 
     if arg.vendors:
         if not first_report:
@@ -88,8 +92,8 @@ def main():
         first_report = False
         report_vendors.vendor_report(chart, journal, balance,
                                      arg.date_start, arg.date_end,
-                                     all_vendors=arg.all_vendors,
-                                     width=arg.width)
+                                     layout,
+                                     all_vendors=arg.all_vendors)
 
 if __name__ == "__main__":
     main()

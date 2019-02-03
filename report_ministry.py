@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import datet
-import report_style
 
 import summary
 import summary_budget
@@ -14,8 +13,7 @@ import treet
 ################################################################
 
 def ministry_reports(chart, tree, journal, budget, balance, ministry, period_name,
-                     date_start, date_end, posted_start, posted_end,
-                     width=80):
+                     date_start, date_end, posted_start, posted_end, layout=None):
 
     # pylint: disable=too-many-arguments
 
@@ -34,27 +32,25 @@ def ministry_reports(chart, tree, journal, budget, balance, ministry, period_nam
         print "Deacons: {}".format(', '.join(ministry.deacons(name)))
         print
         ministry_summary(name, period_name, tree, balance, chart, budget, ministry,
-                         width=width)
+                         layout)
         print
         ministry_detail(name, journal, chart, ministry,
                         date_start, date_end, posted_start, posted_end,
-                        width=width)
+                        layout)
 
 ################################################################
 
 def ministry_summary(name, period_name, tree, balance, chart, budget, ministry,
-                     width=80,
-                     name_w=21,
-                     amount_w=8,
-                     balance_w=10,
-                     name_max=40):
+                     layout):
 
     # pylint: disable=too-many-arguments
 
     numbers = ministry.accounts(name)
     trees = [tree.tree(num) for num in numbers]
     if trees:
-        summary_budget.tree_summaries(trees, chart, balance, budget, report_name="General Fund", activity_name=period_name)
+        summary_budget.tree_summaries(trees, chart, balance, budget,
+                                      report_name="General Fund", activity_name=period_name,
+                                      layout=layout)
 
     if numbers:
         print
@@ -63,16 +59,16 @@ def ministry_summary(name, period_name, tree, balance, chart, budget, ministry,
     trees = [tree.tree(num) for num in numbers]
     trees = [treet.remove_income_expense_from_tree(tree) for tree in trees]
     if trees:
-        summary.tree_summaries(trees, chart, balance, report_name="Other Funds", activity_name=period_name, balance_name=period_name)
+        summary.tree_summaries(trees, chart, balance,
+                               report_name="Other Funds", activity_name=period_name,
+                               balance_name=period_name,
+                               layout=layout)
+
 ################################################################
 
 def ministry_detail(name, journal, chart, ministry,
                     date_start, date_end, posted_start, posted_end,
-                    width=80,
-                    comment_w=35,
-                    name_w=25,
-                    amount_w=8,
-                    name_max=40):
+                    layout):
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
@@ -100,8 +96,6 @@ def ministry_detail(name, journal, chart, ministry,
 
     for group in groups:
         print
-        detail.detail(group, credit=True, width=width,
-                      comment_w=comment_w, name_w=name_w, amount_w=amount_w,
-                      name_max=name_max)
+        detail.detail(group, credit=True, layout=layout)
 
 ################################################################
