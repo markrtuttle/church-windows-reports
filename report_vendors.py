@@ -3,6 +3,9 @@
 import amountt
 import report_style
 
+import entriest
+import detail
+
 def vendor_report(chart, journal, balance,
                   date_start, date_end,
                   all_vendors=False,
@@ -22,11 +25,9 @@ def vendor_report(chart, journal, balance,
 
     first = True
     for number in numbers:
-        entries = [entry for entry in journal.entries() if
-                   entry.number() == number
-                   and
-                   entry.date_is(date_start, date_end)]
-
+        entries = journal.entries()
+        entries = entriest.select_by_number(entries, [number])
+        entries = entriest.select_by_date(entries, date_start, date_end)
         if not entries and not balance.current(number):
             continue
 
@@ -38,7 +39,6 @@ def vendor_report(chart, journal, balance,
             chart.account(number).name(),
             amountt.to_string(balance.current(number)),
             amountt.to_string(balance.prior(number)))
-        report_style.display_entries(
-            entries, chart,
+        detail.detail(entries, credit=True,
             width=width, comment_w=comment_w, name_w=name_w, amount_w=amount_w,
             name_max=name_max)
