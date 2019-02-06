@@ -41,8 +41,8 @@ def sort_by_date(entries, reverse=False):
     key = lambda entry: entry.date()
     return sorted(entries, key=key, reverse=reverse)
 
-def sort_by_name(entries, chart, reverse=False):
-    key = lambda entry: chart.account(entry.number()).name()
+def sort_by_name(entries, reverse=False):
+    key = lambda entry: entry.name()
     return sorted(entries, key=key, reverse=reverse)
 
 def sort_by_amount(entries, reverse=False):
