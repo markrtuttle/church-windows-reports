@@ -75,8 +75,6 @@ def main():
         first_report = False
         report_ministry.ministry_reports(forest, entries,
                                          ministry, arg.month_name,
-                                         arg.date_start, arg.date_end,
-                                         arg.posted_start, arg.posted_end,
                                          layout)
 
     if arg.general:
@@ -86,9 +84,10 @@ def main():
         name = "General Fund"
         general = forest.tree_name(name)
         summary.tree_summary(general, name,
-                             arg.month_name, arg.month_name, zeros=False, layout=layout)
-        summary_budget.tree_summary(general, name,
-                                    arg.month_name, zeros=False, layout=layout)
+                             arg.month_name, arg.month_name,
+                             zeros=False, layout=layout)
+        summary_budget.tree_summary(general, name, arg.month_name,
+                                    zeros=False, layout=layout)
 
     if arg.vendors:
         if not first_report:

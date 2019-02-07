@@ -9,7 +9,7 @@ import json
 ACCOUNTS = {
     "outreach": {
         "name": "Mission and Justice",
-        "deacons": ["Jill Lewis", "Mike Rich"],
+        "deacons": ["Mike Rich"],
         "budget": [
             "Outreach Fund Contribution",
         ],
@@ -63,7 +63,7 @@ ACCOUNTS = {
     },
     "stewardship": {
         "name": "Stewardship",
-        "deacons": ["Maureen Igoe", "Jim Williams"],
+        "deacons": ["Stu Belden", "Jim Williams"],
         "budget": [
         ],
         "fund": [
@@ -102,30 +102,18 @@ ACCOUNTS = {
     },
     "finance": {
         "name": "Finance",
-        "deacons": ["Stu Belden"],
+        "deacons": ["Tim Durning"],
         "budget": [
             "Bank Service Charges",
             ],
         "fund": [
             "Investment Return",
-            "Capital Campaign 2009 Return",
-            "Crockett Memorial Return",
-            "Hayes Memorial Return",
-            "Jackson Legacy Return",
-            "Jennings Memorial Return",
-            "Legacy Return",
-            "Memorial Return",
-            "PSCC Legacy Return",
-            "Skinner/Hall Memorial Return",
-            "Smith Memorial Return",
         ],
     },
     "administration": {
         "name": "Administration",
-        "deacons": ["Valerie Censabella"],
+        "deacons": ["Maureen Igoe"],
         "budget": [
-            "Additional Pastor Related Expenses",
-            "Additional Property & Search Expenses",
             "Association Dues",
             "Interchurch Meetings",
             "Office Expense",
@@ -157,7 +145,7 @@ ACCOUNTS = {
     },
     "music": {
         "name": "Music",
-        "deacons": ["Connie Dugan"],
+        "deacons": ["Linda Cohn"],
         "budget": [
             "Music",
         ],

@@ -23,7 +23,9 @@ def command_line_parser():
         '--balance',
         default='balance.csv',
         metavar='BALANCE',
-        help=("Balance statement dumped from Church Windows as a CSV file"
+        help=("Balance statement dumped from Church Windows as a CSV file."
+              "Select 'Accounts with zero balance' and on the 'Detail' tab "
+              "select all details. "
               " (default: %(default)s)")
     )
 

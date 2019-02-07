@@ -15,7 +15,8 @@ def command_line_parser():
         '--income',
         default='income.csv',
         metavar='INCOME',
-        help=("Income statement dumped from Church Windows as a CSV file"
+        help=("Income statement dumped from Church Windows as a CSV file. "
+              "Select 'General Fund' and 'Accounts with zero balance.' "
               " (default: %(default)s)")
 
     )

@@ -13,7 +13,6 @@ import treet
 ################################################################
 
 def ministry_reports(forest, entries, ministry, period_name,
-                     date_start, date_end, posted_start, posted_end,
                      layout=None):
 
     # pylint: disable=too-many-arguments
@@ -27,9 +26,7 @@ def ministry_reports(forest, entries, ministry, period_name,
             print "\f"
         first = False
 
-        print "{} ministry ({} to {})".format(ministry.name(name),
-                                              datet.to_string(date_start),
-                                              datet.to_string(date_end))
+        print "{} ministry".format(ministry.name(name))
         print "Deacons: {}".format(', '.join(ministry.deacons(name)))
         print
         ministry_summary(name, forest, ministry, period_name, layout)
