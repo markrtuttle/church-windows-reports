@@ -5,33 +5,26 @@ import amountt
 import entriest
 import detail
 
-def vendor_report(chart, journal, balance,
-                  date_start, date_end,
-                  layout=None,
-                  all_vendors=False):
+def vendor_report(forest, entries, layout=None, all_vendors=False):
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
 
-    vendor_numbers = chart.account(chart.vendor_number()).children()
-
-    numbers = [number for number in vendor_numbers if
-               balance.current(number) or all_vendors]
+    trees = forest.tree_number('2.000.000.000').subtrees()
 
     first = True
-    for number in numbers:
-        entries = journal.entries()
-        entries = entriest.select_by_number(entries, [number])
-        entries = entriest.select_by_date(entries, date_start, date_end)
-        if not entries and not balance.current(number):
+    for tree in trees:
+        number = tree.node().number()
+        details = [entry for entry in entries if entry.number_is([number])]
+        if not details and not tree.node().balance():
             continue
 
         if not first:
             print
         first = False
 
-        print "{}: balance {} (prior balance {})".format(
-            chart.account(number).name(),
-            amountt.to_string(balance.current(number)),
-            amountt.to_string(balance.prior(number)))
-        detail.detail(entries, credit=True, layout=layout)
+        print "{}: prior balance {}, balance {}".format(
+            tree.node().name(),
+            amountt.to_string(tree.node().balance()-tree.node().period_activity()),
+            amountt.to_string(tree.node().balance()))
+        detail.detail(details, credit=True, layout=layout)
