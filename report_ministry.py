@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 
-import datet
-
 import summary
 import summary_budget
 
 import detail
 import entriest
-
-import treet
 
 ################################################################
 
@@ -42,7 +38,7 @@ def ministry_summary(name, forest, ministry, period_name, layout):
     numbers = ministry.accounts(name)
     trees = [forest.tree_number(num) for num in numbers]
     if trees:
-        summary_budget.tree_summaries(trees, 
+        summary_budget.tree_summaries(trees,
                                       report_name="General Fund",
                                       activity_name=period_name,
                                       zeros=False, layout=layout)
@@ -55,7 +51,7 @@ def ministry_summary(name, forest, ministry, period_name, layout):
     for tree in trees:
         tree.remove_income_expense_from_tree()
     if trees:
-        summary.tree_summaries(trees, 
+        summary.tree_summaries(trees,
                                report_name="Other Funds",
                                activity_name=period_name,
                                zeros=False, layout=layout)

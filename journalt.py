@@ -1,6 +1,4 @@
-import sys
 import csv
-from pprint import pprint
 
 import entryt
 

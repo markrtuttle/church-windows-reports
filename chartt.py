@@ -31,8 +31,7 @@ class Chart(object):
             self.vendor_number_ = coa['vendor number']
 
         for number in self.chart_:
-            account = self.chart_[number]
-            self.chart_[number] = accountt.Account(account)
+            self.chart_[number] = accountt.Account(self.chart_[number])
 
     def accounts(self):
         return self.chart_.keys()

@@ -33,7 +33,7 @@ class Entry(object):
         self.elements = []
         for element in ELEMENTS:
             column = element_to_column[element]
-            value = '' if column is None else line[column]
+            value = None if column is None else line[column]
             self.elements.append(value)
         self.elements[DEBIT] = amountt.from_string(self.elements[DEBIT])
         self.elements[CREDIT] = amountt.from_string(self.elements[CREDIT])
@@ -82,12 +82,16 @@ class Entry(object):
 
     def date_is(self, low=None, high=None):
         val = self.date()
+        if val is None:
+            return False
         low_match = low is None or low <= val
         high_match = high is None or val <= high
         return low_match and high_match
 
     def posted_is(self, low=None, high=None):
         val = self.posted()
+        if val is None:
+            return False
         low_match = low is None or low <= val
         high_match = high is None or val <= high
         return low_match and high_match

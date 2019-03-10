@@ -149,7 +149,6 @@ def command_line_parser():
 
     parser.add_argument(
         '--dump-arguments',
-        '--dump-args',
         action='store_true',
         help='Dump current settings of command line arguments and exit'
     )
@@ -181,26 +180,24 @@ def parse_dates(date_list):
 ################################################################
 
 def parse():
-    # pylint: disable=too-many-branches
-
     parser = command_line_parser()
     args = parser.parse_args()
 
-    if args.date is None:
-        raise ValueError("No dates specified with --date")
     (args.date_start, args.date_end) = parse_dates(args.date)
-
     (args.posted_start, args.posted_end) = parse_dates(args.posted)
 
-    (mon1, _, _) = datet.parse_ymd_string(args.date_start)
-    (mon2, _, _) = datet.parse_ymd_string(args.date_end)
-    str1 = datet.month_name(mon1)
-    str2 = datet.month_name(mon2)
-    if mon1 == mon2:
-        args.period_name = str1
-    else:
-        args.period_name = "{}-{}".format(str1[:3], str2[:3])
-    args.month_name = args.period_name
+    args.period_name = None
+    args.month_name = None
+    if args.date_start is not None and args.date_end is not None:
+        (mon1, _, _) = datet.parse_ymd_string(args.date_start)
+        (mon2, _, _) = datet.parse_ymd_string(args.date_end)
+        str1 = datet.month_name(mon1)
+        str2 = datet.month_name(mon2)
+        if mon1 == mon2:
+            args.period_name = str1
+        else:
+            args.period_name = "{}-{}".format(str1[:3], str2[:3])
+        args.month_name = args.period_name
 
     return args
 

@@ -11,6 +11,8 @@ ACCOUNTS = {
         "name": "Mission and Justice",
         "deacons": ["Mike Rich"],
         "budget": [
+            "Connect Series",
+            "Interchurch Meetings",
             "Outreach Fund Contribution",
         ],
         "fund": [
@@ -21,6 +23,7 @@ ACCOUNTS = {
             "Neighbors In Need",
             "One Great Hour of Sharing",
             "Outreach Fund",
+            "PACC Men",
             "Relief Fund",
             "UCC Christmas Fund",
         ]
@@ -72,7 +75,7 @@ ACCOUNTS = {
     },
     "worship": {
         "name": "Worship",
-        "deacons": ["Bonnie Hayner", "Tina Gramm"],
+        "deacons": ["Don Cohn", "Dave Morrissette"],
         "budget": [
             "Pulpit Supply",
             "Worship",
@@ -94,8 +97,8 @@ ACCOUNTS = {
             "Pastor's Furnishings",
             ],
         "fund": [
-            "Deacons Fund",
             "Pastor Home Equity Liability",
+            "Deacons Fund",
             "Parental Leave Fund",
             "Sabbatical Fund",
             ]

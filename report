@@ -6,7 +6,6 @@ import arguments
 import initialt
 import journalt
 import chartt
-import balancet
 import treet
 import entriest
 
@@ -30,6 +29,15 @@ def main():
     # pylint: disable=too-many-branches
 
     arg = arguments.parse()
+
+    if arg.dump_arguments:
+        pprint(arg)
+        return
+
+    if not (arg.bills or arg.subfunds or arg.ministries or
+            arg.general or arg.vendors):
+        return
+
     chart = chartt.Chart(chart=arg.chart)
     initial = initialt.Initial(arg.initial)
     budget = budgett.Budget(arg.budget)
@@ -50,10 +58,6 @@ def main():
     entries = entriest.select_by_date(entries,
                                       arg.date_start, arg.date_end,
                                       arg.posted_start, arg.posted_end)
-
-    if arg.dump_arguments:
-        pprint(arg)
-        return
 
     first_report = True
 
@@ -84,9 +88,9 @@ def main():
         name = "General Fund"
         general = forest.tree_name(name)
         summary.tree_summary(general, name,
-                             arg.month_name, arg.month_name,
+                             arg.period_name, arg.period_name,
                              zeros=False, layout=layout)
-        summary_budget.tree_summary(general, name, arg.month_name,
+        summary_budget.tree_summary(general, name, arg.period_name,
                                     zeros=False, layout=layout)
 
     if arg.vendors:

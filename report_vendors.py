@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 import amountt
-
-import entriest
 import detail
 
 def vendor_report(forest, entries, layout=None, all_vendors=False):
@@ -15,7 +13,8 @@ def vendor_report(forest, entries, layout=None, all_vendors=False):
     first = True
     for tree in trees:
         number = tree.node().number()
-        details = [entry for entry in entries if entry.number_is([number])]
+        details = [entry for entry in entries
+                   if entry.number_is([number]) or all_vendors]
         if not details and not tree.node().balance():
             continue
 

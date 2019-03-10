@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import treet
 import amountt
 import accountt
 import layoutt
@@ -88,7 +87,7 @@ def header(line, rule, report_name="", activity_name="", balance_name=""):
 def footer(rule):
     rule()
 
-def tree_summary(tree, 
+def tree_summary(tree,
                  report_name="", activity_name="", balance_name="", zeros=True,
                  credit_tree=True, layout=None):
     (fmt, line, rule) = make_summary_format(layout, tree.depth())
@@ -96,7 +95,7 @@ def tree_summary(tree,
     tree_summary_line(tree, 0, fmt, line, zeros, credit_tree)
     footer(rule)
 
-def tree_summaries(trees, 
+def tree_summaries(trees,
                    report_name="", activity_name="", balance_name="", zeros=True,
                    credit_tree=True, layout=None):
     (fmt, line, rule) = make_summary_format(layout,

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import treet
 import summary
 
 def subfund_report(period_name, forest, layout):

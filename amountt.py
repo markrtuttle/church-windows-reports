@@ -14,8 +14,12 @@
 
 def from_string_fast(string):
     # String is of the form dddd.cc
+
+    if not string:
+        return None
     if not string[-3:].startswith('.'):
-        raise ValueError
+        raise ValueError("Invalid dollar amount: " + string)
+
     string = string.replace(',', '')
     string = string.replace('.', '')
     return int(string)
@@ -50,19 +54,12 @@ def from_string_slow(string):
         else:
             raise ValueError
 
-        size = len(dollars)
-        if size == 0:
-            dollars = '0'
+        dollars = '0' if not dollars else dollars
         dollars = dollars.replace(',', '')
 
-        size = len(cents)
-        if size == 0:
-            cents = '00'
-        elif size == 1:
-            cents = cents + '0'
-        elif size == 2:
-            pass
-        else:
+        try:
+            cents += ['00', '0', ''][len(cents)]
+        except IndexError:
             raise ValueError
 
         return sign * int(dollars + cents)
@@ -79,10 +76,10 @@ def to_string(amount):
         return ""
 
     sign = '-' if amount < 0 else ''
-    amount = -amount if sign else amount
+    amount = abs(amount)
 
     dollars = amount / 100
-    cents = abs(amount) % 100
+    cents = amount % 100
     return "{}{}.{:02}".format(sign, dollars, cents)
 
 ################################################################

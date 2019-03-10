@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-import treet
 import amountt
-import accountt
 import layoutt
 
 ################################################################
@@ -67,15 +65,10 @@ def make_summary_format(layout=None, level_max=0):
 def tree_summary_line(tree, level,
                       print_line, print_amounts, zeros, credit_tree):
 
-    number = tree.node().number()
     name = tree.node().name()
     activity = tree.node().period_activity()
     current = tree.node().balance()
     budget = tree.node().budget() or 0
-
-#    if credit_tree != accountt.is_credit_number(number):
-#        activity = -activity
-#        current = -current
 
     if zeros or activity or current or budget:
         print_amounts(name, activity, budget, current, level)
@@ -102,7 +95,7 @@ def header(line, rule, report_name="", activity_name=""):
 def footer(rule):
     rule()
 
-def tree_summary(tree, 
+def tree_summary(tree,
                  report_name="", activity_name="", zeros=True,
                  credit_tree=True, layout=None):
     (fmt, line, rule) = make_summary_format(layout, tree.depth())
@@ -110,7 +103,7 @@ def tree_summary(tree,
     tree_summary_line(tree, 0, fmt, line, zeros, credit_tree)
     footer(rule)
 
-def tree_summaries(trees, 
+def tree_summaries(trees,
                    report_name=None, activity_name=None, zeros=True,
                    credit_tree=True, layout=None):
     (fmt, line, rule) = make_summary_format(layout,
