@@ -10,7 +10,6 @@ import entriest
 
 
 def ministry_reports(forest, entries, ministry, period_name, layout=None):
-
     # pylint: disable=too-many-arguments
 
     names = list(ministry.keys())
@@ -34,7 +33,6 @@ def ministry_reports(forest, entries, ministry, period_name, layout=None):
 
 
 def ministry_summary(name, forest, ministry, period_name, layout):
-
     # pylint: disable=too-many-arguments
 
     numbers = ministry.accounts(name)
@@ -66,7 +64,6 @@ def ministry_summary(name, forest, ministry, period_name, layout):
 
 
 def ministry_detail(name, entries, ministry, layout):
-
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
 

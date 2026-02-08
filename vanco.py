@@ -221,7 +221,6 @@ if __name__ == "__main__":
 
 
 class Tests(unittest.TestCase):
-
     def test1(self):
         headers = ["Member Name", "Amount", "Process Date", "Settlement Date", "ACH/CC"]
         rows = [["Name", "25", "3/22/24", "3/26/24", "ACH"]]

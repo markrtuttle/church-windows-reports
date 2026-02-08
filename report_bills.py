@@ -5,7 +5,6 @@ import detail
 
 
 def bills_report(entries, layout, min_amount="100.00"):
-
     entries = entriest.select_by_amount(entries, low=min_amount)
     entries = entriest.select_bill(entries)
     entries = entriest.select_debit(entries)

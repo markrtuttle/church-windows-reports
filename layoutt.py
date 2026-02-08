@@ -1,5 +1,4 @@
 class Layout(object):
-
     def __init__(self, width=None):
         self.line_width = width or 80
         self.amount_width = 8

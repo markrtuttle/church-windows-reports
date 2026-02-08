@@ -8,7 +8,6 @@ import layoutt
 
 
 def make_summary_format(layout=None, level_max=0):
-
     if layout is None:
         layout = layoutt.Layout()
 
@@ -62,7 +61,6 @@ def make_summary_format(layout=None, level_max=0):
 
 
 def tree_summary_line(tree, level, print_line, print_amounts, zeros, credit_tree):
-
     number = tree.node().number()
     name = tree.node().name()
     start = tree.node().period_start()

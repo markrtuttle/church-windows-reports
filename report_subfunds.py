@@ -4,7 +4,6 @@ import summary
 
 
 def subfund_report(period_name, forest, layout):
-
     for name in ["Special Funds", "Investment Return", "PSCC Legacy Projects", "Capital Improvement Projects"]:
         tree = forest.tree_name(name).copy()
         tree.remove_income_expense_from_tree()

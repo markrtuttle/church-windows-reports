@@ -60,7 +60,6 @@ def is_credit_number(number):
 
 
 class Account(object):
-
     def __init__(self, account):
         self.type_ = account["type"]
         self.name_ = account["name"]

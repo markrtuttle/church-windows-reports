@@ -3,7 +3,6 @@ import datet
 
 
 def make_detail_format(layout):
-
     width = layout.width()
     amount_w = layout.amount()
     name_w = layout.name()

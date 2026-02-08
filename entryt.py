@@ -28,7 +28,6 @@ TYPES = [BILL, DONA, INCM, JRNL, PYMT]
 
 
 class Entry(object):
-
     def __init__(self, line, element_to_column):
         self.elements = []
         for element in ELEMENTS:

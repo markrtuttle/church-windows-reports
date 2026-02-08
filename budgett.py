@@ -8,7 +8,6 @@ import amountt
 
 
 class Budget(object):
-
     def __init__(self, budget=None):
         self.budget = {}
         with open(budget) as handle:

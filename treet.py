@@ -154,9 +154,7 @@ class Node(object):
 
 
 class Tree(object):
-
     def __init__(self, chart=None, number=None):
-
         if chart is None:
             self.node_ = None
             self.subtrees_ = None
@@ -312,7 +310,6 @@ class Tree(object):
 
 class Forest(object):
     def __init__(self, tree):
-
         self.number_ = {}
         self.name_ = {}
 

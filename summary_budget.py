@@ -7,7 +7,6 @@ import layoutt
 
 
 def make_summary_format(layout=None, level_max=0):
-
     if layout is None:
         layout = layoutt.Layout()
 
@@ -21,7 +20,7 @@ def make_summary_format(layout=None, level_max=0):
     amount_w += 2 * level_max
     balance_w += 2 * level_max
 
-    format_string = "| {{:<{nw}}} | {{:>{aw}}} " "| {{:>{bw}}} {{:>{bw}}} {{:>{bw}}} {{:>{aw}}} |"
+    format_string = "| {{:<{nw}}} | {{:>{aw}}} | {{:>{bw}}} {{:>{bw}}} {{:>{bw}}} {{:>{aw}}} |"
     format_length = lambda: (2 + name_w + 3 + amount_w + 3 + 3 * (balance_w + 1) + amount_w + 2)
 
     remaining_width = width - format_length()
@@ -63,7 +62,6 @@ def make_summary_format(layout=None, level_max=0):
 
 
 def tree_summary_line(tree, level, print_line, print_amounts, zeros, credit_tree):
-
     name = tree.node().name()
     activity = tree.node().period_activity()
     current = tree.node().balance()

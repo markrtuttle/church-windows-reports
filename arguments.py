@@ -16,26 +16,26 @@ def command_line_parser():
         "--chart",
         default="chart.json",
         metavar="FILE",
-        help=("Chart of accounts created by make-chart" " (default: %(default)s)"),
+        help=("Chart of accounts created by make-chart (default: %(default)s)"),
     )
     parser.add_argument(
         "--initial",
         default="initial.json",
         metavar="FILE",
-        help=("List of initial balances created by make-initial" " (default: %(default)s)"),
+        help=("List of initial balances created by make-initial (default: %(default)s)"),
     )
     parser.add_argument(
         "--budget",
         default="budget.json",
         metavar="FILE",
-        help=("List of budget amounts created by make-budget" " (default: %(default)s)"),
+        help=("List of budget amounts created by make-budget (default: %(default)s)"),
     )
     parser.add_argument(
         "--journal",
         default=["journal.csv"],
         metavar="FILE",
         nargs="+",
-        help=("Journal dumped by Church Windows as a .csv file. " " (default: %(default)s)"),
+        help=("Journal dumped by Church Windows as a .csv file.  (default: %(default)s)"),
     )
 
     parser.add_argument(

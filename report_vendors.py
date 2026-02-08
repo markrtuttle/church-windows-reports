@@ -5,7 +5,6 @@ import detail
 
 
 def vendor_report(forest, entries, layout=None, all_vendors=False):
-
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
 

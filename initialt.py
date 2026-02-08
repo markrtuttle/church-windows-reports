@@ -8,7 +8,6 @@ import amountt
 
 
 class Initial(object):
-
     def __init__(self, initial=None):
         self.initial = {}
         with open(initial) as handle:
