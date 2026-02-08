@@ -7,10 +7,10 @@ import amountt
 ################################################################
 
 
-class Budget(object):
+class Budget:
     def __init__(self, budget=None):
         self.budget = {}
-        with open(budget) as handle:
+        with open(budget, encoding="utf-8") as handle:
             self.budget = json.load(handle)["budget"]
         for number in self.budget:
             self.budget[number] = amountt.from_string(self.budget[number])

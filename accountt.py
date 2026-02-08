@@ -59,7 +59,7 @@ def is_credit_number(number):
 ################################################################
 
 
-class Account(object):
+class Account:
     def __init__(self, account):
         self.type_ = account["type"]
         self.name_ = account["name"]
@@ -115,43 +115,37 @@ class Account(object):
     def assets(self, chart=None):
         nums = [child for child in self.children_ if is_asset_number(child)]
         if chart:
-            name = lambda num: chart.account(num).name()
-            nums = sorted(nums, key=name)
+            nums = sorted(nums, key=lambda num: chart.account(num).name())
         return nums
 
     def liabilities(self, chart=None):
         nums = [child for child in self.children_ if is_liability_number(child)]
         if chart:
-            name = lambda num: chart.account(num).name()
-            nums = sorted(nums, key=name)
+            nums = sorted(nums, key=lambda num: chart.account(num).name())
         return nums
 
     def funds(self, chart=None):
         nums = [child for child in self.children_ if is_fund_number(child)]
         if chart:
-            name = lambda num: chart.account(num).name()
-            nums = sorted(nums, key=name)
+            nums = sorted(nums, key=lambda num: chart.account(num).name())
         return nums
 
     def incomes(self, chart=None):
         nums = [child for child in self.children_ if is_income_number(child)]
         if chart:
-            name = lambda num: chart.account(num).name()
-            nums = sorted(nums, key=name)
+            nums = sorted(nums, key=lambda num: chart.account(num).name())
         return nums
 
     def expenses(self, chart=None):
         nums = [child for child in self.children_ if is_expense_number(child)]
         if chart:
-            name = lambda num: chart.account(num).name()
-            nums = sorted(nums, key=name)
+            nums = sorted(nums, key=lambda num: chart.account(num).name())
         return nums
 
     def vendors(self, chart=None):
         nums = [child for child in self.children_ if is_vendor_number(child)]
         if chart:
-            name = lambda num: chart.account(num).name()
-            nums = sorted(nums, key=name)
+            nums = sorted(nums, key=lambda num: chart.account(num).name())
         return nums
 
     ################################################################

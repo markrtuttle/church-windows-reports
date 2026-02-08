@@ -10,7 +10,9 @@ def make_detail_format(layout):
     name_max = layout.name_max()
 
     format_string = "{{:>{aw}}} {{:>2}}/{{:>2}} {{:<{nw}}} {{:<{cw}}}"
-    format_length = lambda: amount_w + 1 + 5 + 1 + name_w + 1 + comment_w
+
+    def format_length():
+        return amount_w + 1 + 5 + 1 + name_w + 1 + comment_w
 
     remaining_width = width - format_length()
     remaining_width = remaining_width if remaining_width > 0 else 0

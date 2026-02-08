@@ -21,7 +21,9 @@ def make_summary_format(layout=None, level_max=0):
     balance_w += 2 * level_max
 
     format_string = "| {{:<{nw}}} | {{:>{aw}}} | {{:>{bw}}} {{:>{bw}}} {{:>{bw}}} {{:>{aw}}} |"
-    format_length = lambda: (2 + name_w + 3 + amount_w + 3 + 3 * (balance_w + 1) + amount_w + 2)
+
+    def format_length():
+        return 2 + name_w + 3 + amount_w + 3 + 3 * (balance_w + 1) + amount_w + 2
 
     remaining_width = width - format_length()
     remaining_width = remaining_width if remaining_width > 0 else 0
@@ -52,7 +54,7 @@ def make_summary_format(layout=None, level_max=0):
         left = budget - spent
         percent = float(left) / float(budget) if budget else 0
         lft = amountt.to_string(left)
-        pct = "{:.2f}".format(percent)
+        pct = f"{percent:.2f}"
         print_line(name, act, bud, spn, lft, pct, level)
 
     def print_rule():
@@ -101,7 +103,7 @@ def tree_summary(tree, report_name="", activity_name="", zeros=True, credit_tree
 
 
 def tree_summaries(trees, report_name=None, activity_name=None, zeros=True, credit_tree=True, layout=None):
-    fmt, line, rule = make_summary_format(layout, max([tree.depth() for tree in trees]))
+    fmt, line, rule = make_summary_format(layout, max(tree.depth() for tree in trees))
     header(fmt, rule, report_name, activity_name)
     tree_summary_lines(trees, 0, fmt, line, zeros, credit_tree)
     footer(rule)

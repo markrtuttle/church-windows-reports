@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-# pylint: disable=missing-docstring
-
 """A date is a string of the form yyyy/mm/dd.
 
 Dates yyyy/mm/dd can be compared for order using ordinary string
@@ -52,7 +50,7 @@ def from_string(string, first_day=True):
 
         return make_ymd_string(month, day, year)
     except (ValueError, IndexError):
-        raise ValueError("Not a valid date: {}".format(string))
+        raise ValueError(f"Not a valid date: {string}") from None
 
 
 def to_string(date):
@@ -67,16 +65,15 @@ def to_string(date):
 
 
 def validate_mdy(month, day, year):
-    # pylint: disable=misplaced-comparison-constant
-    if 0 <= year and year <= 99:
+    if 0 <= year <= 99:
         year = year + 2000
 
-    if not (1 <= month and month <= 12):
-        raise ValueError("Invalid month: {}".format(month))
-    if not (1 <= day and day <= 31):
-        raise ValueError("Invalid day: {}".format(day))
-    if not (1970 <= year and year <= 2070):
-        raise ValueError("Invalid year: {}".format(year))
+    if not 1 <= month <= 12:
+        raise ValueError(f"Invalid month: {month}")
+    if not 1 <= day <= 31:
+        raise ValueError(f"Invalid day: {day}")
+    if not 1970 <= year <= 2070:
+        raise ValueError(f"Invalid year: {year}")
 
     return (month, day, year)
 
@@ -86,8 +83,8 @@ def parse_mdy_string(string):
         month, day, year = string.split("/")
         month, day, year = validate_mdy(int(month), int(day), int(year))
         return (month, day, year)
-    except:
-        raise ValueError("Invalid date: " + string)
+    except ValueError:
+        raise ValueError("Invalid date: " + string) from None
 
 
 def parse_ymd_string(string):
@@ -95,36 +92,36 @@ def parse_ymd_string(string):
         year, month, day = string.split("/")
         month, day, year = validate_mdy(int(month), int(day), int(year))
         return (month, day, year)
-    except:
-        raise ValueError("Invalid date: " + string)
+    except ValueError:
+        raise ValueError("Invalid date: " + string) from None
 
 
 def make_mdy_string(month, day, year, with_year=True, with_pad=True):
     month, day, year = validate_mdy(month, day, year)
 
     if with_pad:
-        month = "{:0>2}".format(month)
-        day = "{:0>2}".format(day)
-        year = "{:0>4}".format(year)
+        month = f"{month:0>2}"
+        day = f"{day:0>2}"
+        year = f"{year:0>4}"
 
     if with_year:
-        return "{}/{}/{}".format(month, day, year)
+        return f"{month}/{day}/{year}"
 
-    return "{}/{}".format(month, day)
+    return f"{month}/{day}"
 
 
 def make_ymd_string(month, day, year, with_year=True, with_pad=True):
     month, day, year = validate_mdy(month, day, year)
 
     if with_pad:
-        month = "{:0>2}".format(month)
-        day = "{:0>2}".format(day)
-        year = "{:0>4}".format(year)
+        month = f"{month:0>2}"
+        day = f"{day:0>2}"
+        year = f"{year:0>4}"
 
     if with_year:
-        return "{}/{}/{}".format(year, month, day)
+        return f"{year}/{month}/{day}"
 
-    return "{}/{}".format(month, day)
+    return f"{month}/{day}"
 
 
 ################################################################

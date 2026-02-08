@@ -7,10 +7,10 @@ import amountt
 ################################################################
 
 
-class Initial(object):
+class Initial:
     def __init__(self, initial=None):
         self.initial = {}
-        with open(initial) as handle:
+        with open(initial, encoding="utf-8") as handle:
             self.initial = json.load(handle)["initial balance"]
         for number in self.initial:
             self.initial[number] = amountt.from_string(self.initial[number])

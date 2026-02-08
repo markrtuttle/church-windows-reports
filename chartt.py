@@ -12,7 +12,7 @@ import accountt
 ################################################################
 
 
-class Chart(object):
+class Chart:
     # pylint: disable=too-many-public-methods
 
     def __init__(self, chart=None):
@@ -24,7 +24,7 @@ class Chart(object):
         self.vendor_number_ = None
 
         if chart is not None:
-            with open(chart) as handle:
+            with open(chart, encoding="utf-8") as handle:
                 coa = json.load(handle)
             self.chart_ = coa["account"]
             self.number_ = coa["number"]

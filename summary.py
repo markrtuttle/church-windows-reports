@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import amountt
-import accountt
 import layoutt
 
 ################################################################
@@ -22,7 +21,9 @@ def make_summary_format(layout=None, level_max=0):
     balance_w += 2 * level_max
 
     format_string = "| {{:<{nw}}} | {{:>{bw}}} {{:>{aw}}} {{:>{aw}}} {{:>{bw}}} |"
-    format_length = lambda: 2 + name_w + 3 + balance_w + 1 + amount_w + 1 + amount_w + 1 + balance_w + 2
+
+    def format_length():
+        return 2 + name_w + 3 + balance_w + 1 + amount_w + 1 + amount_w + 1 + balance_w + 2
 
     remaining_width = width - format_length()
     remaining_width = remaining_width if remaining_width > 0 else 0
@@ -61,7 +62,6 @@ def make_summary_format(layout=None, level_max=0):
 
 
 def tree_summary_line(tree, level, print_line, print_amounts, zeros, credit_tree):
-    number = tree.node().number()
     name = tree.node().name()
     start = tree.node().period_start()
     credit = tree.node().period_credit()
@@ -105,7 +105,7 @@ def tree_summary(tree, report_name="", period_name="", balance_name="", zeros=Tr
 
 
 def tree_summaries(trees, report_name="", period_name="", balance_name="", zeros=True, credit_tree=True, layout=None):
-    fmt, line, rule = make_summary_format(layout, max([tree.depth() for tree in trees]))
+    fmt, line, rule = make_summary_format(layout, max(tree.depth() for tree in trees))
     header(fmt, rule, report_name, period_name, balance_name)
     tree_summary_lines(trees, 0, fmt, line, zeros, credit_tree)
     footer(rule)

@@ -60,8 +60,21 @@ clean:
 
 veryclean: clean
 	$(RM) ministry.pdf unassigned.pdf vendor.pdf
+	
 pylint:
-	pylint --disable=missing-docstring,duplicate-code *.py report
+	pylint \
+		--max-line-length=120 \
+		--disable=duplicate-code \
+		--disable=missing-docstring \
+		--disable=too-many-arguments \
+		--disable=too-many-instance-attributes \
+		--disable=too-many-locals \
+		--disable=too-many-positional-arguments \
+		--disable=too-many-public-methods \
+		*.py make-* report
 
+ruff:
+	ruff check --line-length=120 .
 
-
+black:
+	black --check --line-length=120 .

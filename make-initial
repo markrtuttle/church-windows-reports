@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import csv
-import sys
 import json
 import argparse
 
@@ -26,10 +25,9 @@ def scan_chart(file):
     """Scan chart of accounts for initial balances"""
 
     initial = {}
-    with open(file) as csvfile:
+    with open(file, encoding="utf-8") as csvfile:
         for line in csv.reader(csvfile):
             typ = line[0]
-            fund = line[1]
             name = line[2]
             number = line[3]
             balance = line[5]

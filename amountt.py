@@ -62,11 +62,11 @@ def from_string_slow(string):
         try:
             cents += ["00", "0", ""][len(cents)]
         except IndexError:
-            raise ValueError
+            raise ValueError from None
 
         return sign * int(dollars + cents)
     except ValueError:
-        raise ValueError("Invalid dollar amount: " + string)
+        raise ValueError("Invalid dollar amount: " + string) from None
 
 
 def from_string(string):
@@ -84,7 +84,7 @@ def to_string(amount):
 
     dollars = amount // 100
     cents = amount % 100
-    return "{}{}.{:02}".format(sign, dollars, cents)
+    return f"{sign}{dollars}.{cents:02}"
 
 
 ################################################################

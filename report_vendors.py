@@ -22,10 +22,8 @@ def vendor_report(forest, entries, layout=None, all_vendors=False):
         first = False
 
         print(
-            "{}: prior balance {}, balance {}".format(
-                tree.node().name(),
-                amountt.to_string(tree.node().balance() - tree.node().period_activity()),
-                amountt.to_string(tree.node().balance()),
-            )
+            f"{tree.node().name()}: "
+            f"prior balance {amountt.to_string(tree.node().balance() - tree.node().period_activity())}, "
+            f"balance {amountt.to_string(tree.node().balance())}"
         )
         detail.detail(details, credit=True, layout=layout)

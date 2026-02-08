@@ -21,7 +21,7 @@ def ministry_reports(forest, entries, ministry, period_name, layout=None):
             print("\f")
         first = False
 
-        print("{} ministry".format(ministry.name(name)))
+        print(f"{ministry.name(name)} ministry")
         # print "Deacons: {}".format(', '.join(ministry.deacons(name)))
         print()
         ministry_summary(name, forest, ministry, period_name, layout)

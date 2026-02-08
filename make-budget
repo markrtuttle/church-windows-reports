@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import csv
-import sys
 import json
 import argparse
 
@@ -9,7 +8,7 @@ import argparse
 def command_line_parser():
     """Create the command line parser."""
 
-    parser = argparse.ArgumentParser(description=("Extract budget from an income statement"))
+    parser = argparse.ArgumentParser(description="Extract budget from an income statement")
     parser.add_argument(
         "--income",
         default="income.csv",
@@ -26,10 +25,9 @@ def command_line_parser():
 def scan_income(file):
     budget = {}
 
-    with open(file) as csvfile:
+    with open(file, encoding="utf-8") as csvfile:
         for line in csv.reader(csvfile):
             number = line[0]
-            name = line[1]
             value = line[6]
 
             if number and value and number[0] in ["1", "2", "3", "4", "5"]:

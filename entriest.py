@@ -43,18 +43,15 @@ def select_bill(entries):
 
 
 def sort_by_date(entries, reverse=False):
-    key = lambda entry: entry.date()
-    return sorted(entries, key=key, reverse=reverse)
+    return sorted(entries, key=lambda entry: entry.date(), reverse=reverse)
 
 
 def sort_by_name(entries, reverse=False):
-    key = lambda entry: entry.name()
-    return sorted(entries, key=key, reverse=reverse)
+    return sorted(entries, key=lambda entry: entry.name(), reverse=reverse)
 
 
 def sort_by_amount(entries, reverse=False):
-    key = lambda entry: abs(entry.debit() or entry.credit())
-    return sorted(entries, key=key, reverse=reverse)
+    return sorted(entries, key=lambda entry: abs(entry.debit() or entry.credit()), reverse=reverse)
 
 
 def group_by_month(entries, reverse=False):

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-# pylint: disable=misplaced-comparison-constant
-
 import argparse
 
 import datet
@@ -124,7 +122,7 @@ def parse_dates(date_list):
 
         return (date_start, date_end)
     except ValueError:
-        raise ValueError("Not a valid list of dates: {}.".format(", ".join(date_list)))
+        raise ValueError(f"Not a valid list of dates: {', '.join(date_list)}.") from None
 
 
 ################################################################
@@ -147,7 +145,7 @@ def parse():
         if mon1 == mon2:
             args.period_name = str1
         else:
-            args.period_name = "{}-{}".format(str1[:3], str2[:3])
+            args.period_name = f"{str1[:3]}-{str2[:3]}"
         args.month_name = args.period_name
 
     return args

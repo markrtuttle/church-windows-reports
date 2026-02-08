@@ -17,13 +17,13 @@ def max0(numbers):
     return max(numbers + [0])
 
 
-class Node(object):
+class Node:
     def __init__(self, number, name):
         self.number_ = number
         self.name_ = name
 
         self.early_credit_ = 0
-        self.early_debig_ = 0
+        self.early_debit_ = 0
         self.early_activity_ = 0
 
         self.period_start_ = 0
@@ -153,7 +153,7 @@ class Node(object):
         return node
 
 
-class Tree(object):
+class Tree:
     def __init__(self, chart=None, number=None):
         if chart is None:
             self.node_ = None
@@ -308,7 +308,7 @@ class Tree(object):
         self.remove_from_tree(remove)
 
 
-class Forest(object):
+class Forest:
     def __init__(self, tree):
         self.number_ = {}
         self.name_ = {}

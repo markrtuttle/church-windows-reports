@@ -169,7 +169,7 @@ ACCOUNTS = {
 ################################################################
 
 
-class Ministry(object):
+class Ministry:
     def __init__(self, coa):
         # minstry accounts: map ministry name to minstry accounts
         self.accounts_ = ACCOUNTS
@@ -209,7 +209,7 @@ class Ministry(object):
         try:
             return self.unassigned[kind]
         except KeyError:
-            raise ValueError("Unassigned account type '{}' unknown".format(kind))
+            raise ValueError(f"Unassigned account type '{kind}' unknown") from None
 
     def unassigned_funds_accounts(self):
         numbers = []
@@ -223,8 +223,7 @@ class Ministry(object):
             return json.dumps(self.accounts_, indent=2, sort_keys=True)
 
         report = {}
-        for key in self.unassigned:
-            numbers = self.unassigned[key]
+        for key, numbers in self.unassigned.items():
             sort_account_numbers(key, numbers, self.coa_)
             report[key] = [self.coa_.account(num).name() for num in numbers]
         return json.dumps(report, indent=2, sort_keys=True)

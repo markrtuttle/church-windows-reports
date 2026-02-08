@@ -165,8 +165,8 @@ def accumulator(add_cols, sub_cols):
     return lambda row: sum(row[col] for col in add_cols) - sum(row[col] for col in sub_cols)
 
 
-def set_group_total(group, accumulator, dst_row, dst_col):
-    group[dst_row][dst_col] = sum(accumulator(row) for row in group)
+def set_group_total(group, accumulate, dst_row, dst_col):
+    group[dst_row][dst_col] = sum(accumulate(row) for row in group)
     return group
 
 
@@ -213,8 +213,6 @@ def main():
     # bank("vanco2.csv", "bank.csv")
     church_windows("vanco2.csv", "church_windows.csv")
 
-
-import pprint
 
 if __name__ == "__main__":
     main()

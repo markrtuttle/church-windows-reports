@@ -24,7 +24,7 @@ ELEMENT_TO_HEADER_MAP = {
 }
 
 
-class Journal(object):
+class Journal:
     """Church Windows journal"""
 
     def __init__(self, journals=None):
@@ -62,7 +62,7 @@ class Journal(object):
         self.element_to_column_map = {}
 
         headers_parsed = False
-        with open(journal) as journal_transactions:
+        with open(journal, encoding="utf-8") as journal_transactions:
             for line in csv.reader(journal_transactions):
                 line.append("")  # Ensure line has at least one item
                 if headers_parsed:

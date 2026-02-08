@@ -21,19 +21,18 @@ def from_string(string):
         int2 = int(parts[2])
         int3 = int(parts[3])
 
-        # pylint: disable=misplaced-comparison-constant
-        if not (0 <= int0 and int0 <= 5):
+        if not 0 <= int0 <= 5:
             raise ValueError
-        if not (0 <= int1 and int1 <= 999):
+        if not 0 <= int1 <= 999:
             raise ValueError
-        if not (0 <= int2 and int2 <= 999):
+        if not 0 <= int2 <= 999:
             raise ValueError
-        if not (0 <= int3 and int3 <= 999):
+        if not 0 <= int3 <= 999:
             raise ValueError
 
-        return "{}.{:0>3}.{:0>3}.{:0.3}".format(int0, int1, int2, int3)
+        return f"{int0}.{int1:0>3}.{int2:0>3}.{int3:0.3}"
     except ValueError:
-        raise ValueError("Illegal account number " + string)
+        raise ValueError("Illegal account number " + string) from None
 
 
 def to_string(number):

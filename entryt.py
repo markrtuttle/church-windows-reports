@@ -27,7 +27,7 @@ TYPES = [BILL, DONA, INCM, JRNL, PYMT]
 ################################################################
 
 
-class Entry(object):
+class Entry:
     def __init__(self, line, element_to_column):
         self.elements = []
         for element in ELEMENTS:
@@ -125,4 +125,4 @@ class Entry(object):
         return elt
 
     def string(self):
-        return "{}".format(self.elements)
+        return f"{self.elements}"
