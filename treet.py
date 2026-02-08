@@ -12,8 +12,10 @@ import accountt
 
 ################################################################
 
+
 def max0(numbers):
     return max(numbers + [0])
+
 
 class Node(object):
     def __init__(self, number, name):
@@ -150,6 +152,7 @@ class Node(object):
 
         return node
 
+
 class Tree(object):
 
     def __init__(self, chart=None, number=None):
@@ -164,8 +167,7 @@ class Tree(object):
         if number is None:
             number = "0.000.000.000"
             name = "Root"
-            children = [num for num in chart.accounts()
-                        if chart.account(num).parent() is None]
+            children = [num for num in chart.accounts() if chart.account(num).parent() is None]
         else:
             name = chart.account(number).name()
             children = chart.account(number).children()
@@ -208,13 +210,10 @@ class Tree(object):
             if self.node().kind() == subtree.node().kind():
                 year_start += subtree.node().year_start()
             else:
-                year_start -= subtree.node().year_start()            
+                year_start -= subtree.node().year_start()
         self.node().set_year_start(year_start)
 
-    def set_balances(self,
-                     early_credit, early_debit,
-                     period_credit, period_debit,
-                     year_credit, year_debit):
+    def set_balances(self, early_credit, early_debit, period_credit, period_debit, year_credit, year_debit):
         number = self.node().number()
 
         ecredit = early_credit.get(number, 0)
@@ -225,9 +224,7 @@ class Tree(object):
         ydebit = year_debit.get(number, 0)
 
         for subtree in self.subtrees():
-            subtree.set_balances(early_credit, early_debit,
-                                 period_credit, period_debit,
-                                 year_credit, year_debit)
+            subtree.set_balances(early_credit, early_debit, period_credit, period_debit, year_credit, year_debit)
 
             ecredit += subtree.node().early_credit()
             edebit += subtree.node().early_debit()
@@ -249,7 +246,7 @@ class Tree(object):
         sign = 1 if self.node().kind() == "C" else -1
         early_activity = sign * (ecredit - edebit)
         period_activity = sign * (pcredit - pdebit)
-        year_activity = sign * (ycredit  -  ydebit)
+        year_activity = sign * (ycredit - ydebit)
 
         assert year_activity == early_activity + period_activity
 
@@ -298,9 +295,9 @@ class Tree(object):
         subtrees = []
         for subtree in self.subtrees():
             number = subtree.node().number()
-            if remove(number) or max_level is not None and level+1 > max_level:
+            if remove(number) or max_level is not None and level + 1 > max_level:
                 continue
-            subtree.remove_from_tree(remove, level+1, max_level)
+            subtree.remove_from_tree(remove, level + 1, max_level)
             subtrees.append(subtree)
         self.subtrees_ = subtrees
         self.depth_ = max0([stree.depth() for stree in self.subtrees()]) + 1
@@ -308,9 +305,10 @@ class Tree(object):
 
     def remove_income_expense_from_tree(self):
         def remove(number):
-            return (accountt.is_income_number(number) or
-                    accountt.is_expense_number(number))
+            return accountt.is_income_number(number) or accountt.is_expense_number(number)
+
         self.remove_from_tree(remove)
+
 
 class Forest(object):
     def __init__(self, tree):

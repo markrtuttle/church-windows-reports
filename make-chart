@@ -6,39 +6,42 @@ import json
 import argparse
 import re
 
+
 def command_line_parser():
     """Create the command line parser."""
 
-    parser = argparse.ArgumentParser(
-        description=("Extract chart of accounts")
+    parser = argparse.ArgumentParser(description=("Extract chart of accounts"))
+    parser.add_argument(
+        "--chart",
+        default="chart.csv",
+        metavar="CHART",
+        help=("Chart of accounts dumped from Church Windows as a CSV file" " (default: %(default)s)"),
     )
     parser.add_argument(
-        '--chart',
-        default='chart.csv',
-        metavar='CHART',
-        help=("Chart of accounts dumped from Church Windows as a CSV file"
-              " (default: %(default)s)")
-    )
-    parser.add_argument(
-        '--balance',
-        default='balance.csv',
-        metavar='BALANCE',
-        help=("Balance statement dumped from Church Windows as a CSV file."
-              "Select 'Accounts with zero balance' and on the 'Detail' tab "
-              "select all details. "
-              " (default: %(default)s)")
+        "--balance",
+        default="balance.csv",
+        metavar="BALANCE",
+        help=(
+            "Balance statement dumped from Church Windows as a CSV file."
+            "Select 'Accounts with zero balance' and on the 'Detail' tab "
+            "select all details. "
+            " (default: %(default)s)"
+        ),
     )
 
     return parser
 
+
 def clean(string):
-    string = re.sub(r"\s+", ' ', string)
+    string = re.sub(r"\s+", " ", string)
     return string.strip()
+
 
 ################################################################
 
-VENDOR_NAME = '-A/P Vendor-'
-VENDOR_NUMBER = '2.000.000.000'
+VENDOR_NAME = "-A/P Vendor-"
+VENDOR_NUMBER = "2.000.000.000"
+
 
 def scan_chart(chart):
     """Scan chart of accounts for account definitions"""
@@ -59,7 +62,7 @@ def scan_chart(chart):
             children = []
 
             # skip initial row of csv file
-            if typ == 'Account Type':
+            if typ == "Account Type":
                 continue
 
             # link income and expense accounts to funds
@@ -74,32 +77,35 @@ def scan_chart(chart):
                 parent = VENDOR_NUMBER
 
             account[number] = {
-                'type': typ,
-                'fund': fund,
-                'name': name,
-                'number': number,
-                'parent': parent,
-                'children': children
+                "type": typ,
+                "fund": fund,
+                "name": name,
+                "number": number,
+                "parent": parent,
+                "children": children,
             }
             name_to_number[name] = number
 
     account[VENDOR_NUMBER] = {
-        'type': 'Liability',
-        'fund': '',
-        'name': VENDOR_NAME,
-        'number': VENDOR_NUMBER,
-        'parent': None,
-        'children': []
+        "type": "Liability",
+        "fund": "",
+        "name": VENDOR_NAME,
+        "number": VENDOR_NUMBER,
+        "parent": None,
+        "children": [],
     }
 
-    return {'account': account, 'vendor name': VENDOR_NAME, 'vendor number': VENDOR_NUMBER}
+    return {"account": account, "vendor name": VENDOR_NAME, "vendor number": VENDOR_NUMBER}
+
 
 ################################################################
 
+
 def is_number(number):
     if number:
-        return number[0] in ['1', '2', '3', '4', '5']
+        return number[0] in ["1", "2", "3", "4", "5"]
     return False
+
 
 def scan_balance(balance):
     """Scan balance statement for asset, liability, and fund hierarchy"""
@@ -119,65 +125,72 @@ def scan_balance(balance):
                 parent_name = new_parent_name
                 continue
 
-            ancestor[child_number] = {'number': parent_number, 'name': parent_name}
+            ancestor[child_number] = {"number": parent_number, "name": parent_name}
 
     return ancestor
 
+
 ################################################################
+
 
 def make_tree(account, ancestor):
     for child in ancestor:
-        parent_number = ancestor[child]['number']
-        parent_name = ancestor[child]['name']
+        parent_number = ancestor[child]["number"]
+        parent_name = ancestor[child]["name"]
 
-        typ = account[child]['type']
-        name = account[child]['name']
-        fund = account[child]['fund']
-        assert(typ in ['Asset', 'Liability', 'Fund'])
-        assert(name == fund)
+        typ = account[child]["type"]
+        name = account[child]["name"]
+        fund = account[child]["fund"]
+        assert typ in ["Asset", "Liability", "Fund"]
+        assert name == fund
 
         if account.get(parent_number) is None:
             account[parent_number] = {
-                'type': account[child]['type'],
-                'fund': parent_name,
-                'name': parent_name,
-                'number': parent_number,
-                'parent': None,
-                'children': []
+                "type": account[child]["type"],
+                "fund": parent_name,
+                "name": parent_name,
+                "number": parent_number,
+                "parent": None,
+                "children": [],
             }
 
-        account[child]['parent'] = parent_number
-        account[child]['fund'] = parent_name
+        account[child]["parent"] = parent_number
+        account[child]["fund"] = parent_name
 
     for number in account:
-        parent = account[number]['parent']
+        parent = account[number]["parent"]
         if parent:
-            account[parent]['children'].append(number)
+            account[parent]["children"].append(number)
 
     for number in account:
-        account[number]['children'].sort()
+        account[number]["children"].sort()
 
     return account
 
+
 ################################################################
+
 
 def make_name(account):
     name = {}
     for number in account:
-        name[account[number]['name']] = number
+        name[account[number]["name"]] = number
     return name
 
+
 ################################################################
+
 
 def main():
     parser = command_line_parser()
     args = parser.parse_args()
     chart = scan_chart(args.chart)
     ancestor = scan_balance(args.balance)
-    chart['account'] = make_tree(chart['account'], ancestor)
-    chart['number'] = make_name(chart['account'])
+    chart["account"] = make_tree(chart["account"], ancestor)
+    chart["number"] = make_name(chart["account"])
 
     print(json.dumps(chart, indent=2, sort_keys=True))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

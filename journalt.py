@@ -23,6 +23,7 @@ ELEMENT_TO_HEADER_MAP = {
     POSTED: "Date Posted",
 }
 
+
 class Journal(object):
     """Church Windows journal"""
 
@@ -44,7 +45,7 @@ class Journal(object):
         header_to_column_map = {}
         column = 0
         for header in headers:
-            if header: # skip empty columns
+            if header:  # skip empty columns
                 header_to_column_map[header] = column
             column += 1
 
@@ -63,7 +64,7 @@ class Journal(object):
         headers_parsed = False
         with open(journal) as journal_transactions:
             for line in csv.reader(journal_transactions):
-                line.append("") # Ensure line has at least one item
+                line.append("")  # Ensure line has at least one item
                 if headers_parsed:
                     # Skip initial blank lines
                     if not line[0]:
@@ -107,8 +108,7 @@ class Journal(object):
         for entry in self.entries():
             number = entry.number()
             # date is prior to the current period
-            if (entry.date_is(None, date_start)
-                    and not entry.date_is(date_start, None)):
+            if entry.date_is(None, date_start) and not entry.date_is(date_start, None):
                 early_credits[number] += entry.credit() or 0
                 early_debits[number] += entry.debit() or 0
             # date is in current period
@@ -120,6 +120,4 @@ class Journal(object):
                 year_credits[number] += entry.credit() or 0
                 year_debits[number] += entry.debit() or 0
 
-        return (early_credits, early_debits,
-                period_credits, period_debits,
-                year_credits, year_debits)
+        return (early_credits, early_debits, period_credits, period_debits, year_credits, year_debits)

@@ -5,22 +5,23 @@ import sys
 import json
 import argparse
 
+
 def command_line_parser():
     """Create the command line parser."""
 
-    parser = argparse.ArgumentParser(
-        description=("Extract budget from an income statement")
-    )
+    parser = argparse.ArgumentParser(description=("Extract budget from an income statement"))
     parser.add_argument(
-        '--income',
-        default='income.csv',
-        metavar='INCOME',
-        help=("Income statement dumped from Church Windows as a CSV file. "
-              "Select 'General Fund' and 'Accounts with zero balance.' "
-              " (default: %(default)s)")
-
+        "--income",
+        default="income.csv",
+        metavar="INCOME",
+        help=(
+            "Income statement dumped from Church Windows as a CSV file. "
+            "Select 'General Fund' and 'Accounts with zero balance.' "
+            " (default: %(default)s)"
+        ),
     )
     return parser
+
 
 def scan_income(file):
     budget = {}
@@ -31,16 +32,18 @@ def scan_income(file):
             name = line[1]
             value = line[6]
 
-            if number and value and number[0] in ['1', '2', '3', '4', '5']:
+            if number and value and number[0] in ["1", "2", "3", "4", "5"]:
                 budget[number] = value
 
     return budget
+
 
 def main():
     parser = command_line_parser()
     args = parser.parse_args()
     budget = scan_income(args.income)
-    print(json.dumps({'budget': budget}, indent=2, sort_keys=True))
+    print(json.dumps({"budget": budget}, indent=2, sort_keys=True))
+
 
 if __name__ == "__main__":
     main()

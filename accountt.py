@@ -17,47 +17,56 @@ TYPES = [ASSET, LIABILITY, VENDOR, FUND, INCOME, EXPENSE]
 ################################################################
 
 # The account numbers start with 1 through 5
-ASSET_PREFIX = '1'
-LIABILITY_PREFIX = '2'
-FUND_PREFIX = '3'
-INCOME_PREFIX = '4'
-EXPENSE_PREFIX = '5'
+ASSET_PREFIX = "1"
+LIABILITY_PREFIX = "2"
+FUND_PREFIX = "3"
+INCOME_PREFIX = "4"
+EXPENSE_PREFIX = "5"
+
 
 def is_asset_number(number):
     return number.startswith(ASSET_PREFIX)
 
+
 def is_liability_number(number):
     return number.startswith(LIABILITY_PREFIX)
+
 
 def is_fund_number(number):
     return number.startswith(FUND_PREFIX)
 
+
 def is_income_number(number):
     return number.startswith(INCOME_PREFIX)
+
 
 def is_expense_number(number):
     return number.startswith(EXPENSE_PREFIX)
 
+
 def is_vendor_number(number):
-    return number[:1] not in [ASSET_PREFIX, LIABILITY_PREFIX, FUND_PREFIX,
-                              INCOME_PREFIX, EXPENSE_PREFIX]
+    return number[:1] not in [ASSET_PREFIX, LIABILITY_PREFIX, FUND_PREFIX, INCOME_PREFIX, EXPENSE_PREFIX]
+
 
 def is_debit_number(number):
     return is_asset_number(number) or is_expense_number(number)
 
+
 def is_credit_number(number):
     return not is_debit_number(number)
 
+
 ################################################################
+
 
 class Account(object):
 
     def __init__(self, account):
-        self.type_ = account['type']
-        self.name_ = account['name']
-        self.number_ = account['number']
-        self.parent_ = account['parent']
-        self.children_ = account['children']
+        self.type_ = account["type"]
+        self.name_ = account["name"]
+        self.number_ = account["number"]
+        self.parent_ = account["parent"]
+        self.children_ = account["children"]
 
     ################################################################
 
@@ -149,14 +158,16 @@ class Account(object):
     ################################################################
 
     def dictionary(self):
-        return {'type': self.type_,
-                'name': self.name_,
-                'number': self.number_,
-                'parent': self.parent_,
-                'children': self.children_,
-               }
+        return {
+            "type": self.type_,
+            "name": self.name_,
+            "number": self.number_,
+            "parent": self.parent_,
+            "children": self.children_,
+        }
 
     def string(self):
         return json.dumps(self.dictionary())
+
 
 ################################################################

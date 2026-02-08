@@ -4,16 +4,17 @@
 
 """An account number is a string, typically of the form d.ddd.ddd.ddd.
 
-   Account numbers can be compared for order and equality using ordinary string comparison.
+Account numbers can be compared for order and equality using ordinary string comparison.
 """
 
 ################################################################
 
+
 def from_string(string):
     try:
-        parts = string.split('.')
+        parts = string.split(".")
         if len(parts) != 4:
-            return string.strip() # not formal accout numbers
+            return string.strip()  # not formal accout numbers
 
         int0 = int(parts[0])
         int1 = int(parts[1])
@@ -34,7 +35,9 @@ def from_string(string):
     except ValueError:
         raise ValueError("Illegal account number " + string)
 
+
 def to_string(number):
     return number
+
 
 ################################################################

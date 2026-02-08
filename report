@@ -24,6 +24,7 @@ import report_vendors
 
 ################################################################
 
+
 def main():
 
     # pylint: disable=too-many-branches
@@ -34,8 +35,7 @@ def main():
         pprint(arg)
         return
 
-    if not (arg.bills or arg.subfunds or arg.ministries or
-            arg.general or arg.vendors):
+    if not (arg.bills or arg.subfunds or arg.ministries or arg.general or arg.vendors):
         return
 
     chart = chartt.Chart(chart=arg.chart)
@@ -45,9 +45,7 @@ def main():
     layout = layoutt.Layout(arg.width)
 
     journal = journalt.Journal(arg.journal)
-    (ecredits, edebits,
-     pcredits, pdebits,
-     ycredits, ydebits) = journal.accumulate(arg.date_start, arg.date_end)
+    ecredits, edebits, pcredits, pdebits, ycredits, ydebits = journal.accumulate(arg.date_start, arg.date_end)
     tree = treet.Tree(chart)
     tree.set_year_starts(initial)
     tree.set_budgets(budget)
@@ -56,9 +54,7 @@ def main():
     forest = treet.Forest(tree)
 
     entries = journal.entries()
-    entries = entriest.select_by_date(entries,
-                                      arg.date_start, arg.date_end,
-                                      arg.posted_start, arg.posted_end)
+    entries = entriest.select_by_date(entries, arg.date_start, arg.date_end, arg.posted_start, arg.posted_end)
 
     first_report = True
 
@@ -78,9 +74,7 @@ def main():
         if not first_report:
             print("\f")
         first_report = False
-        report_ministry.ministry_reports(forest, entries,
-                                         ministry, arg.month_name,
-                                         layout)
+        report_ministry.ministry_reports(forest, entries, ministry, arg.month_name, layout)
 
     if arg.general:
         if not first_report:
@@ -88,18 +82,15 @@ def main():
         first_report = False
         name = "General Fund"
         general = forest.tree_name(name)
-        summary.tree_summary(general, name,
-                             arg.period_name, arg.period_name,
-                             zeros=False, layout=layout)
-        summary_budget.tree_summary(general, name, arg.period_name,
-                                    zeros=False, layout=layout)
+        summary.tree_summary(general, name, arg.period_name, arg.period_name, zeros=False, layout=layout)
+        summary_budget.tree_summary(general, name, arg.period_name, zeros=False, layout=layout)
 
     if arg.vendors:
         if not first_report:
             print("\f")
         first_report = False
-        report_vendors.vendor_report(forest, entries, layout,
-                                     all_vendors=arg.all_vendors)
+        report_vendors.vendor_report(forest, entries, layout, all_vendors=arg.all_vendors)
+
 
 if __name__ == "__main__":
     main()

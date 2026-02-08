@@ -11,6 +11,7 @@ import accountt
 
 ################################################################
 
+
 class Chart(object):
     # pylint: disable=too-many-public-methods
 
@@ -25,10 +26,10 @@ class Chart(object):
         if chart is not None:
             with open(chart) as handle:
                 coa = json.load(handle)
-            self.chart_ = coa['account']
-            self.number_ = coa['number']
-            self.vendor_name_ = coa['vendor name']
-            self.vendor_number_ = coa['vendor number']
+            self.chart_ = coa["account"]
+            self.number_ = coa["number"]
+            self.vendor_name_ = coa["vendor name"]
+            self.vendor_number_ = coa["vendor number"]
 
         for number in self.chart_:
             self.chart_[number] = accountt.Account(self.chart_[number])
@@ -48,7 +49,6 @@ class Chart(object):
     def vendor_number(self):
         return self.vendor_number_
 
-
     ################################################################
 
     def account_dictionary(self):
@@ -67,14 +67,16 @@ class Chart(object):
         return json.dumps(self.number_dictionary(), indent=2, sort_keys=True)
 
     def dictionary(self):
-        dictionary = {'account': self.account_dictionary(),
-                      'number': self.number_dictionary(),
-                      'vendor name': self.vendor_name_,
-                      'vendor number': self.vendor_number_
-                     }
+        dictionary = {
+            "account": self.account_dictionary(),
+            "number": self.number_dictionary(),
+            "vendor name": self.vendor_name_,
+            "vendor number": self.vendor_number_,
+        }
         return dictionary
 
     def string(self):
         return json.dumps(self.dictionary(), indent=2, sort_keys=True)
+
 
 ################################################################

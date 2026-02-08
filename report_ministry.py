@@ -8,8 +8,8 @@ import entriest
 
 ################################################################
 
-def ministry_reports(forest, entries, ministry, period_name,
-                     layout=None):
+
+def ministry_reports(forest, entries, ministry, period_name, layout=None):
 
     # pylint: disable=too-many-arguments
 
@@ -23,13 +23,15 @@ def ministry_reports(forest, entries, ministry, period_name,
         first = False
 
         print("{} ministry".format(ministry.name(name)))
-        #print "Deacons: {}".format(', '.join(ministry.deacons(name)))
+        # print "Deacons: {}".format(', '.join(ministry.deacons(name)))
         print()
         ministry_summary(name, forest, ministry, period_name, layout)
         print()
         ministry_detail(name, entries, ministry, layout)
 
+
 ################################################################
+
 
 def ministry_summary(name, forest, ministry, period_name, layout):
 
@@ -38,10 +40,9 @@ def ministry_summary(name, forest, ministry, period_name, layout):
     numbers = ministry.accounts(name)
     trees = [forest.tree_number(num) for num in numbers]
     if trees:
-        summary_budget.tree_summaries(trees,
-                                      report_name="General Fund",
-                                      activity_name=period_name,
-                                      zeros=False, layout=layout)
+        summary_budget.tree_summaries(
+            trees, report_name="General Fund", activity_name=period_name, zeros=False, layout=layout
+        )
 
     if numbers:
         print()
@@ -51,13 +52,18 @@ def ministry_summary(name, forest, ministry, period_name, layout):
     for tree in trees:
         tree.remove_income_expense_from_tree()
     if trees:
-        summary.tree_summaries(trees,
-                               report_name="Other Funds",
-                               period_name=period_name,
-                               balance_name=period_name,
-                               zeros=False, layout=layout)
+        summary.tree_summaries(
+            trees,
+            report_name="Other Funds",
+            period_name=period_name,
+            balance_name=period_name,
+            zeros=False,
+            layout=layout,
+        )
+
 
 ################################################################
+
 
 def ministry_detail(name, entries, ministry, layout):
 
@@ -74,5 +80,6 @@ def ministry_detail(name, entries, ministry, layout):
     for group in groups:
         print()
         detail.detail(group, credit=True, layout=layout)
+
 
 ################################################################

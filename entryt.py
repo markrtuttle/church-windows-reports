@@ -14,8 +14,7 @@ DETAIL = 8
 POSTED = 9
 
 # Enum elements
-ELEMENTS = [TID, TYPE, NUMBER, NAME, DATE, DEBIT, CREDIT,
-            COMMENTS, DETAIL, POSTED]
+ELEMENTS = [TID, TYPE, NUMBER, NAME, DATE, DEBIT, CREDIT, COMMENTS, DETAIL, POSTED]
 
 # The transaction types
 BILL = "BILL"
@@ -26,6 +25,7 @@ PYMT = "PYMT"
 TYPES = [BILL, DONA, INCM, JRNL, PYMT]
 
 ################################################################
+
 
 class Entry(object):
 
@@ -39,7 +39,7 @@ class Entry(object):
         self.elements[CREDIT] = amountt.from_string(self.elements[CREDIT])
         self.elements[DATE] = datet.from_string(self.elements[DATE])
         self.elements[POSTED] = datet.from_string(self.elements[POSTED])
-        if self.elements[NUMBER] == '-A/P Vendor-':
+        if self.elements[NUMBER] == "-A/P Vendor-":
             self.elements[NUMBER] = self.elements[NAME]
 
     ################################################################

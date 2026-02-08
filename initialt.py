@@ -6,12 +6,13 @@ import amountt
 
 ################################################################
 
+
 class Initial(object):
 
     def __init__(self, initial=None):
         self.initial = {}
         with open(initial) as handle:
-            self.initial = json.load(handle)['initial balance']
+            self.initial = json.load(handle)["initial balance"]
         for number in self.initial:
             self.initial[number] = amountt.from_string(self.initial[number])
 
@@ -28,5 +29,6 @@ class Initial(object):
 
     def string(self):
         return json.dumps(self.dictionary(), indent=2, sort_keys=True)
+
 
 ################################################################

@@ -5,23 +5,22 @@ import sys
 import json
 import argparse
 
+
 def command_line_parser():
     """Create the command line parser."""
 
     parser = argparse.ArgumentParser(
-        description=("Extract initial account balances from prior year's "
-                     "final balance statement")
+        description=("Extract initial account balances from prior year's " "final balance statement")
     )
     parser.add_argument(
-        '--chart',
-        default='chart.csv',
-        metavar='CHART',
-        help=("Chart of accounts dumped from Church Windows as a CSV file"
-              " (default: %(default)s)")
-
+        "--chart",
+        default="chart.csv",
+        metavar="CHART",
+        help=("Chart of accounts dumped from Church Windows as a CSV file" " (default: %(default)s)"),
     )
 
     return parser
+
 
 def scan_chart(file):
     """Scan chart of accounts for initial balances"""
@@ -35,9 +34,9 @@ def scan_chart(file):
             number = line[3]
             balance = line[5]
 
-            if typ in ['Asset', 'Liability', 'Fund', 'Income', 'Expense']:
-                if balance != '0.00':
-                    if typ == 'Liability' and number == '':
+            if typ in ["Asset", "Liability", "Fund", "Income", "Expense"]:
+                if balance != "0.00":
+                    if typ == "Liability" and number == "":
                         number = name
                     initial[number] = balance
 
@@ -49,6 +48,7 @@ def main():
     args = parser.parse_args()
     initial = scan_chart(args.chart)
     print(json.dumps({"initial balance": initial}, indent=2, sort_keys=True))
+
 
 if __name__ == "__main__":
     main()

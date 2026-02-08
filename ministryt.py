@@ -26,9 +26,9 @@ ACCOUNTS = {
             "Outreach Fund",
             "PACC Men",
             "Relief Fund",
-            "Team Mission Forward", 
+            "Team Mission Forward",
             "UCC Christmas Fund",
-        ]
+        ],
     },
     "property": {
         "name": "Property",
@@ -55,7 +55,7 @@ ACCOUNTS = {
             "Emergency Property Fund",
             "Narthex and Sanctuary Upgrades",
             "Roof Self-Loan",
-        ]
+        ],
     },
     "education": {
         "name": "Christian Education",
@@ -65,16 +65,15 @@ ACCOUNTS = {
         ],
         "fund": [
             "Youth Fund",
-        ]
+        ],
     },
     "stewardship": {
         "name": "Stewardship",
         "deacons": ["Sharon Hamilton"],
-        "budget": [
-        ],
+        "budget": [],
         "fund": [
             "Environmental Stewardship",
-        ]
+        ],
     },
     "worship": {
         "name": "Worship",
@@ -85,7 +84,7 @@ ACCOUNTS = {
         ],
         "fund": [
             "Flower Fund",
-        ]
+        ],
     },
     "pastor": {
         "name": "Pastor",
@@ -97,26 +96,22 @@ ACCOUNTS = {
             "Pastoral Discretionary Expenses",
             "Pastor's Auto Allowance",
             "Pastor's Books/Cont Ed Expense",
-            ],
+        ],
         "fund": [
             "Deacons Fund",
             "Parental Leave Fund",
             "Pastor Home Equity Liability",
             "Sabbatical Fund",
-            "Team Mission Forward", 
-            ]
+            "Team Mission Forward",
+        ],
     },
     "finance": {
         "name": "Finance",
         "deacons": ["Debbie Douglas"],
         "budget": [
             "Bank Service Charges",
-            ],
-        "fund": [
-            "Investment Return",
-            "PSCC Legacy Projects",
-            "Capital Improvement Projects"
         ],
+        "fund": ["Investment Return", "PSCC Legacy Projects", "Capital Improvement Projects"],
     },
     "administration": {
         "name": "Administration",
@@ -136,7 +131,7 @@ ACCOUNTS = {
         "fund": [
             "Special Event",
             "Women's Guild",
-        ]
+        ],
     },
     "membership": {
         "name": "Membership",
@@ -146,8 +141,8 @@ ACCOUNTS = {
             "Social Media / Communications",
         ],
         "fund": [
-            "Team Mission Forward", 
-        ]
+            "Team Mission Forward",
+        ],
     },
     "music": {
         "name": "Music",
@@ -158,21 +153,21 @@ ACCOUNTS = {
         "fund": [
             "Music Fund",
             "Organ Restoration",
-        ]
+        ],
     },
     "fellowship": {
         "name": "Fellowship",
         "deacons": ["Hong Chin"],
-        "budget": [
-        ],
+        "budget": [],
         "fund": [
             "Hospitality Fund",
-            "Team Mission Forward", 
-        ]
-    }
+            "Team Mission Forward",
+        ],
+    },
 }
 
 ################################################################
+
 
 class Ministry(object):
     def __init__(self, coa):
@@ -195,12 +190,10 @@ class Ministry(object):
         return self.accounts_[ministry_name]["deacons"]
 
     def accounts(self, ministry_name):
-        return [self.coa_.number(name_)
-                for name_ in self.accounts_[ministry_name]["budget"]]
+        return [self.coa_.number(name_) for name_ in self.accounts_[ministry_name]["budget"]]
 
     def funds(self, ministry_name):
-        return [self.coa_.number(name_)
-                for name_ in self.accounts_[ministry_name]["fund"]]
+        return [self.coa_.number(name_) for name_ in self.accounts_[ministry_name]["fund"]]
 
     def fund_accounts(self, fund_number):
         fund_account = self.coa_.account(fund_number)
@@ -216,8 +209,7 @@ class Ministry(object):
         try:
             return self.unassigned[kind]
         except KeyError:
-            raise ValueError("Unassigned account type '{}' unknown".
-                             format(kind))
+            raise ValueError("Unassigned account type '{}' unknown".format(kind))
 
     def unassigned_funds_accounts(self):
         numbers = []
@@ -237,11 +229,12 @@ class Ministry(object):
             report[key] = [self.coa_.account(num).name() for num in numbers]
         return json.dumps(report, indent=2, sort_keys=True)
 
-################################################################
+    ################################################################
 
     def used_accounts(self):
         def numbers(names):
             return [self.coa_.number(name) for name in names]
+
         used = {}
         used["budget"] = []
         used["asset"] = []
@@ -282,11 +275,10 @@ class Ministry(object):
         unused = {}
         unused["budget"] = diff_number_list(cht["budget"], used["budget"])
         unused["asset"] = diff_number_list(cht["asset"], used["asset"])
-        unused["fund"] = diff_number_list(cht["fund"],
-                                          used["fund"] + [general_fund])
-        unused["liability"] = diff_number_list(cht["liability"],
-                                               used["liability"])
+        unused["fund"] = diff_number_list(cht["fund"], used["fund"] + [general_fund])
+        unused["liability"] = diff_number_list(cht["liability"], used["liability"])
         return unused
+
 
 def diff_number_list(lista, listb):
     lista.sort()
@@ -305,9 +297,10 @@ def diff_number_list(lista, listb):
             continue
         lista = lista[1:]
         listb = listb[1:]
-    return diff+lista
+    return diff + lista
+
 
 def sort_account_numbers(kind, numbers, coa):
-    #numbers.sort(key=lambda number: coa.account(number).name())
+    # numbers.sort(key=lambda number: coa.account(number).name())
     if kind == "budget":
         numbers.sort(key=lambda number: coa.account(number).is_expense())

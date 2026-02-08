@@ -1,6 +1,7 @@
 import amountt
 import datet
 
+
 def make_detail_format(layout):
 
     width = layout.width()
@@ -27,15 +28,16 @@ def make_detail_format(layout):
 
     def print_line(amount, date, name, comment):
         amount = amountt.to_string(amount)
-        (month, day, _) = datet.parse_ymd_string(date)
+        month, day, _ = datet.parse_ymd_string(date)
         name = name[:name_w]
         comment = comment[:comment_w]
         print(string.format(amount, month, day, name, comment))
 
     def print_rule():
-        print('-'*width)
+        print("-" * width)
 
     return (print_line, print_rule)
+
 
 def entry_line(entry, print_line, credit):
     date = entry.date()
@@ -49,10 +51,12 @@ def entry_line(entry, print_line, credit):
 
     print_line(amount, date, name, comment)
 
+
 def entry_lines(entries, print_line, credit):
     for entry in entries:
         entry_line(entry, print_line, credit)
 
+
 def detail(entries, credit=True, layout=None):
-    (print_line, _) = make_detail_format(layout)
+    print_line, _ = make_detail_format(layout)
     entry_lines(entries, print_line, credit)
