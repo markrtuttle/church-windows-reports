@@ -88,6 +88,8 @@ class Journal(object):
     ################################################################
 
     def accumulate(self, date_start, date_end):
+        early_credits = {}
+        early_debits = {}
         period_credits = {}
         period_debits = {}
         year_credits = {}
@@ -95,17 +97,29 @@ class Journal(object):
 
         for entry in self.entries():
             number = entry.number()
+            early_credits[number] = 0
+            early_debits[number] = 0
+            period_credits[number] = 0
+            period_debits[number] = 0
+            year_credits[number] = 0
+            year_debits[number] = 0
 
-            period_credits[number] = period_credits.get(number) or 0
-            period_debits[number] = period_debits.get(number) or 0
-            year_credits[number] = year_credits.get(number) or 0
-            year_debits[number] = year_debits.get(number) or 0
-
+        for entry in self.entries():
+            number = entry.number()
+            # date is prior to the current period
+            if (entry.date_is(None, date_start)
+                    and not entry.date_is(date_start, None)):
+                early_credits[number] += entry.credit() or 0
+                early_debits[number] += entry.debit() or 0
+            # date is in current period
             if entry.date_is(date_start, date_end):
                 period_credits[number] += entry.credit() or 0
                 period_debits[number] += entry.debit() or 0
+            # date is in current year
             if entry.date_is(None, date_end):
                 year_credits[number] += entry.credit() or 0
                 year_debits[number] += entry.debit() or 0
 
-        return (period_credits, period_debits, year_credits, year_debits)
+        return (early_credits, early_debits,
+                period_credits, period_debits,
+                year_credits, year_debits)

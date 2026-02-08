@@ -1,28 +1,30 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # pylint: disable=missing-docstring
 
 """An amount is an integer giving an amount in cents.
 
-   An amount is just an integer that can be added and compared with
-   ordinary integer operations.  Functions convert between a string of
-   the form dddd.cc (with an optional sign) giving an amount in
-   dollars and cents with and an integer giving an amount in cents.
+An amount is just an integer that can be added and compared with
+ordinary integer operations.  Functions convert between a string of
+the form dddd.cc (with an optional sign) giving an amount in
+dollars and cents with and an integer giving an amount in cents.
 """
 
 ################################################################
+
 
 def from_string_fast(string):
     # String is of the form dddd.cc
 
     if not string:
         return None
-    if not string[-3:].startswith('.'):
+    if not string[-3:].startswith("."):
         raise ValueError("Invalid dollar amount: " + string)
 
-    string = string.replace(',', '')
-    string = string.replace('.', '')
+    string = string.replace(",", "")
+    string = string.replace(".", "")
     return int(string)
+
 
 def from_string_slow(string):
     """Convert dollars (a string) to cents (an integer)"""
@@ -37,28 +39,28 @@ def from_string_slow(string):
         # two digits for the cents (eg, 1.2 for 1.20).
 
         sign = 1
-        if string.startswith('-'):
+        if string.startswith("-"):
             sign = -1
             string = string[1:]
-        elif string.startswith('+'):
+        elif string.startswith("+"):
             string = string[1:]
 
-        parts = string.split('.')
+        parts = string.split(".")
         size = len(parts)
         if size == 1:
             dollars = parts[0]
-            cents = '00'
+            cents = "00"
         elif size == 2:
             dollars = parts[0]
             cents = parts[1]
         else:
             raise ValueError
 
-        dollars = '0' if not dollars else dollars
-        dollars = dollars.replace(',', '')
+        dollars = "0" if not dollars else dollars
+        dollars = dollars.replace(",", "")
 
         try:
-            cents += ['00', '0', ''][len(cents)]
+            cents += ["00", "0", ""][len(cents)]
         except IndexError:
             raise ValueError
 
@@ -66,8 +68,10 @@ def from_string_slow(string):
     except ValueError:
         raise ValueError("Invalid dollar amount: " + string)
 
+
 def from_string(string):
     return from_string_slow(string)
+
 
 def to_string(amount):
     """Convert cents (an integer) to dollars (a string)"""
@@ -75,11 +79,12 @@ def to_string(amount):
     if amount is None:
         return ""
 
-    sign = '-' if amount < 0 else ''
+    sign = "-" if amount < 0 else ""
     amount = abs(amount)
 
-    dollars = amount / 100
+    dollars = amount // 100
     cents = amount % 100
     return "{}{}.{:02}".format(sign, dollars, cents)
+
 
 ################################################################

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import amountt
 import layoutt
@@ -45,7 +45,7 @@ def make_summary_format(layout=None, level_max=0):
         spn = spent + " "*(2*level)
         lft = left  + " "*(2*level)
         pct = percent + " "*(2*level)
-        print string.format(name, act, bud, spn, lft, pct)
+        print(string.format(name, act, bud, spn, lft, pct))
 
     def print_amounts(name, activity, budget, spent, level=0):
         act = amountt.to_string(activity)
@@ -58,7 +58,7 @@ def make_summary_format(layout=None, level_max=0):
         print_line(name, act, bud, spn, lft, pct, level)
 
     def print_rule():
-        print '-'*width
+        print('-'*width)
 
     return (print_line, print_amounts, print_rule)
 

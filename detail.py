@@ -30,10 +30,10 @@ def make_detail_format(layout):
         (month, day, _) = datet.parse_ymd_string(date)
         name = name[:name_w]
         comment = comment[:comment_w]
-        print string.format(amount, month, day, name, comment)
+        print(string.format(amount, month, day, name, comment))
 
     def print_rule():
-        print '-'*width
+        print('-'*width)
 
     return (print_line, print_rule)
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import accountt
 
@@ -19,9 +19,21 @@ class Node(object):
     def __init__(self, number, name):
         self.number_ = number
         self.name_ = name
+
+        self.early_credit_ = 0
+        self.early_debig_ = 0
+        self.early_activity_ = 0
+
+        self.period_start_ = 0
+        self.period_credit_ = 0
+        self.period_debit_ = 0
         self.period_activity_ = 0
+
+        self.year_start_ = 0
+        self.year_credit_ = 0
+        self.year_debit_ = 0
         self.year_activity_ = 0
-        self.initial_balance_ = 0
+
         self.balance_ = 0
         self.budget_ = 0
 
@@ -36,14 +48,38 @@ class Node(object):
     def name(self):
         return self.name_
 
+    def early_credit(self):
+        return self.early_credit_
+
+    def early_debit(self):
+        return self.early_debit_
+
+    def early_activity(self):
+        return self.early_activity_
+
+    def period_start(self):
+        return self.period_start_
+
+    def period_credit(self):
+        return self.period_credit_
+
+    def period_debit(self):
+        return self.period_debit_
+
     def period_activity(self):
         return self.period_activity_
 
+    def year_start(self):
+        return self.year_start_
+
+    def year_debit(self):
+        return self.year_debit_
+
+    def year_credit(self):
+        return self.year_credit_
+
     def year_activity(self):
         return self.year_activity_
-
-    def initial_balance(self):
-        return self.initial_balance_
 
     def balance(self):
         return self.balance_
@@ -57,14 +93,38 @@ class Node(object):
     def kind(self):
         return self.kind_
 
+    def set_early_credit(self, credit):
+        self.early_credit_ = credit
+
+    def set_early_debit(self, debit):
+        self.early_debit_ = debit
+
+    def set_early_activity(self, activity):
+        self.early_activity_ = activity
+
+    def set_period_start(self, start):
+        self.period_start_ = start
+
+    def set_period_credit(self, credit):
+        self.period_credit_ = credit
+
+    def set_period_debit(self, debit):
+        self.period_debit_ = debit
+
     def set_period_activity(self, activity):
         self.period_activity_ = activity
 
+    def set_year_start(self, start):
+        self.year_start_ = start
+
+    def set_year_credit(self, credit):
+        self.year_credit_ = credit
+
+    def set_year_debit(self, debit):
+        self.year_debit_ = debit
+
     def set_year_activity(self, activity):
         self.year_activity_ = activity
-
-    def set_initial_balance(self, initial):
-        self.initial_balance_ = initial
 
     def set_balance(self, balance):
         self.balance_ = balance
@@ -74,9 +134,17 @@ class Node(object):
 
     def copy(self):
         node = Node(self.number(), self.name())
+
+        node.set_period_start(self.period_start())
+        node.set_period_credit(self.period_credit())
+        node.set_period_debit(self.period_debit())
         node.set_period_activity(self.period_activity())
+
+        node.set_year_start(self.year_start())
+        node.set_year_credit(self.year_credit())
+        node.set_year_debit(self.year_debit())
         node.set_year_activity(self.year_activity())
-        node.set_initial_balance(self.initial_balance())
+
         node.set_balance(self.balance())
         node.set_budget(self.budget())
 
@@ -133,35 +201,70 @@ class Tree(object):
     def traversal(self):
         return self.traversal_
 
-    def set_initial_balances(self, initial):
-        self.node().set_initial_balance(initial.balance(self.node().number()))
+    def set_year_starts(self, initial):
+        year_start = initial.balance(self.node().number())
         for subtree in self.subtrees():
-            subtree.set_initial_balances(initial)
-
-    def set_balances(self, period_credit, period_debit, year_credit, year_debit):
-        number = self.node().number()
-        period_activity = period_credit.get(number, 0) - period_debit.get(number, 0)
-        year_activity = year_credit.get(number, 0) - year_debit.get(number, 0)
-
-        if self.node().kind() == "D":
-            period_activity = -period_activity
-            year_activity = -year_activity
-
-        balance = self.node().initial_balance() + year_activity
-        for subtree in self.subtrees():
-            subtree.set_balances(period_credit, period_debit, year_credit, year_debit)
-
+            subtree.set_year_starts(initial)
             if self.node().kind() == subtree.node().kind():
-                period_activity += subtree.node().period_activity()
-                year_activity += subtree.node().year_activity()
-                balance += subtree.node().balance()
+                year_start += subtree.node().year_start()
             else:
-                period_activity -= subtree.node().period_activity()
-                year_activity -= subtree.node().year_activity()
-                balance -= subtree.node().balance()
+                year_start -= subtree.node().year_start()            
+        self.node().set_year_start(year_start)
 
+    def set_balances(self,
+                     early_credit, early_debit,
+                     period_credit, period_debit,
+                     year_credit, year_debit):
+        number = self.node().number()
+
+        ecredit = early_credit.get(number, 0)
+        edebit = early_debit.get(number, 0)
+        pcredit = period_credit.get(number, 0)
+        pdebit = period_debit.get(number, 0)
+        ycredit = year_credit.get(number, 0)
+        ydebit = year_debit.get(number, 0)
+
+        for subtree in self.subtrees():
+            subtree.set_balances(early_credit, early_debit,
+                                 period_credit, period_debit,
+                                 year_credit, year_debit)
+
+            ecredit += subtree.node().early_credit()
+            edebit += subtree.node().early_debit()
+            pcredit += subtree.node().period_credit()
+            pdebit += subtree.node().period_debit()
+            ycredit += subtree.node().year_credit()
+            ydebit += subtree.node().year_debit()
+
+        assert ycredit == ecredit + pcredit
+        assert ydebit == edebit + pdebit
+
+        self.node().set_early_credit(ecredit)
+        self.node().set_early_debit(edebit)
+        self.node().set_period_credit(pcredit)
+        self.node().set_period_debit(pdebit)
+        self.node().set_year_credit(ycredit)
+        self.node().set_year_debit(ydebit)
+
+        sign = 1 if self.node().kind() == "C" else -1
+        early_activity = sign * (ecredit - edebit)
+        period_activity = sign * (pcredit - pdebit)
+        year_activity = sign * (ycredit  -  ydebit)
+
+        assert year_activity == early_activity + period_activity
+
+        self.node().set_early_activity(early_activity)
         self.node().set_period_activity(period_activity)
         self.node().set_year_activity(year_activity)
+
+        year_start = self.node().year_start()
+        period_start = year_start + early_activity
+        balance = year_start + year_activity
+
+        assert balance == period_start + period_activity
+        assert balance == year_start + year_activity
+
+        self.node().set_period_start(period_start)
         self.node().set_balance(balance)
 
     def set_budgets(self, budget):

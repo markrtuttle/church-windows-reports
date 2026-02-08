@@ -1,0 +1,49 @@
+Routine steps:
+
+journal
+
+add "date posted" to list of columns
+export to csv
+
+balance sheet
+
+set month
+uncheck accounts with zero balance
+confirm columns account number, account name, period activity, ytd balance
+uncheck investment return, special funds, capital improvement, pscc legacy projects in detail
+export to pdf
+
+income sheet
+
+check accounts with zero balance
+set fund to general fund
+set month
+confirm columns act num, act name, period acty, prev year, ytd bal, budget
+export to pdf
+
+reports
+
+report --date --posted --bills
+report --date --posted --subfunds
+report --date --posted --ministries --landscape
+
+
+If needed steps:
+
+balance.csv
+
+as above but
+check zero balance
+check investment return and special funds in detail
+export to csv
+
+income.csv
+
+as above but
+export to csv
+
+chart.csv
+
+export to csv
+
+

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # pylint: disable=missing-docstring
 
@@ -9,7 +9,7 @@ import json
 ACCOUNTS = {
     "outreach": {
         "name": "Mission and Justice",
-        "deacons": ["Mike Rich"],
+        "deacons": ["Jane Flores", "Damon Sidel"],
         "budget": [
             "Connect Series",
             "Interchurch Meetings",
@@ -18,19 +18,21 @@ ACCOUNTS = {
         "fund": [
             "Adopt a Family",
             "Adopt a Vet",
-            "Arlington Food Pantry Fund",
+            "Arlington EATS Fund",
+            "Environmental Stewardship",
             "Housing Corp. of Arlington",
             "Neighbors In Need",
             "One Great Hour of Sharing",
             "Outreach Fund",
             "PACC Men",
             "Relief Fund",
+            "Team Mission Forward", 
             "UCC Christmas Fund",
         ]
     },
     "property": {
         "name": "Property",
-        "deacons": ["Gary Kane"],
+        "deacons": ["Eric Rochon"],
         "budget": [
             "Church Grounds",
             "Church Maintenance",
@@ -48,15 +50,16 @@ ACCOUNTS = {
             "Water/Sewer",
         ],
         "fund": [
-            "Capital Fund",
             "Capital Campaign 2009 Fund",
+            "Capital Fund",
             "Emergency Property Fund",
+            "Narthex and Sanctuary Upgrades",
             "Roof Self-Loan",
         ]
     },
     "education": {
         "name": "Christian Education",
-        "deacons": ["Marianne McPherson", "Kate Lindheim"],
+        "deacons": ["Valerie Censabella", "Barbara Wagner"],
         "budget": [
             "Christian Education",
         ],
@@ -66,7 +69,7 @@ ACCOUNTS = {
     },
     "stewardship": {
         "name": "Stewardship",
-        "deacons": ["Stu Belden", "Jim Williams"],
+        "deacons": ["Sharon Hamilton"],
         "budget": [
         ],
         "fund": [
@@ -75,7 +78,7 @@ ACCOUNTS = {
     },
     "worship": {
         "name": "Worship",
-        "deacons": ["Don Cohn", "Dave Morrissette"],
+        "deacons": ["Bonnie Hayner"],
         "budget": [
             "Pulpit Supply",
             "Worship",
@@ -94,38 +97,37 @@ ACCOUNTS = {
             "Pastoral Discretionary Expenses",
             "Pastor's Auto Allowance",
             "Pastor's Books/Cont Ed Expense",
-            "Pastor's Furnishings",
             ],
         "fund": [
-            "Pastor Home Equity Liability",
             "Deacons Fund",
             "Parental Leave Fund",
+            "Pastor Home Equity Liability",
             "Sabbatical Fund",
+            "Team Mission Forward", 
             ]
     },
     "finance": {
         "name": "Finance",
-        "deacons": ["Tim Durning"],
+        "deacons": ["Debbie Douglas"],
         "budget": [
             "Bank Service Charges",
             ],
         "fund": [
             "Investment Return",
+            "PSCC Legacy Projects",
+            "Capital Improvement Projects"
         ],
     },
     "administration": {
         "name": "Administration",
-        "deacons": ["Maureen Igoe"],
+        "deacons": ["Laurie Scott"],
         "budget": [
-            "Association Dues",
             "Interchurch Meetings",
             "Office Expense",
             "Telephone",
-            "Parsonage Basic Telephone",
             "Pastoral Discretionary Expenses",
             "Pastor's Auto Allowance",
             "Pastor's Books/Cont Ed Expense",
-            "Pastor's Furnishings",
             "Payroll Services",
             "Property/Liability Insurance",
             "Social Media / Communications",
@@ -138,17 +140,18 @@ ACCOUNTS = {
     },
     "membership": {
         "name": "Membership",
-        "deacons": ["Betty Rich", "Cindy Manson"],
+        "deacons": ["Cindy Manson"],
         "budget": [
             "Membership",
             "Social Media / Communications",
         ],
         "fund": [
+            "Team Mission Forward", 
         ]
     },
     "music": {
         "name": "Music",
-        "deacons": ["Linda Cohn"],
+        "deacons": ["Ethan Brush"],
         "budget": [
             "Music",
         ],
@@ -164,6 +167,7 @@ ACCOUNTS = {
         ],
         "fund": [
             "Hospitality Fund",
+            "Team Mission Forward", 
         ]
     }
 }
@@ -243,7 +247,7 @@ class Ministry(object):
         used["asset"] = []
         used["liability"] = []
         used["fund"] = []
-        for key in self.keys():
+        for key in list(self.keys()):
             used["budget"] += numbers(self.accounts_[key]["budget"])
             used["fund"] += numbers(self.accounts_[key]["fund"])
         return used

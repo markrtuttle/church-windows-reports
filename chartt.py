@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # pylint: disable=missing-docstring
 
@@ -34,7 +34,7 @@ class Chart(object):
             self.chart_[number] = accountt.Account(self.chart_[number])
 
     def accounts(self):
-        return self.chart_.keys()
+        return list(self.chart_.keys())
 
     def account(self, number):
         return self.chart_[number]

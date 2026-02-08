@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import json
 
@@ -19,7 +19,7 @@ class Initial(object):
         return self.initial.get(number, 0)
 
     def numbers(self):
-        return self.initial.keys()
+        return list(self.initial.keys())
 
     ################################################################
 

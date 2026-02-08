@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import entriest
 import detail
@@ -12,5 +12,5 @@ def bills_report(entries, layout, min_amount="100.00"):
     groups = [entriest.sort_by_amount(group, reverse=True) for group in groups]
 
     for group in groups:
-        print
+        print()
         detail.detail(group, credit=False, layout=layout)

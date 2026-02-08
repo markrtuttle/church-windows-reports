@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import summary
 import summary_budget
@@ -13,20 +13,20 @@ def ministry_reports(forest, entries, ministry, period_name,
 
     # pylint: disable=too-many-arguments
 
-    names = ministry.keys()
+    names = list(ministry.keys())
     names.sort()
 
     first = True
     for name in names:
         if not first:
-            print "\f"
+            print("\f")
         first = False
 
-        print "{} ministry".format(ministry.name(name))
-        print "Deacons: {}".format(', '.join(ministry.deacons(name)))
-        print
+        print("{} ministry".format(ministry.name(name)))
+        #print "Deacons: {}".format(', '.join(ministry.deacons(name)))
+        print()
         ministry_summary(name, forest, ministry, period_name, layout)
-        print
+        print()
         ministry_detail(name, entries, ministry, layout)
 
 ################################################################
@@ -44,7 +44,7 @@ def ministry_summary(name, forest, ministry, period_name, layout):
                                       zeros=False, layout=layout)
 
     if numbers:
-        print
+        print()
 
     numbers = ministry.funds(name)
     trees = [forest.tree_number(num).copy() for num in numbers]
@@ -53,7 +53,8 @@ def ministry_summary(name, forest, ministry, period_name, layout):
     if trees:
         summary.tree_summaries(trees,
                                report_name="Other Funds",
-                               activity_name=period_name,
+                               period_name=period_name,
+                               balance_name=period_name,
                                zeros=False, layout=layout)
 
 ################################################################
@@ -71,7 +72,7 @@ def ministry_detail(name, entries, ministry, layout):
     groups = [entriest.sort_by_name(group) for group in groups]
 
     for group in groups:
-        print
+        print()
         detail.detail(group, credit=True, layout=layout)
 
 ################################################################

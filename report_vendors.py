@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import amountt
 import detail
@@ -19,11 +19,11 @@ def vendor_report(forest, entries, layout=None, all_vendors=False):
             continue
 
         if not first:
-            print
+            print()
         first = False
 
-        print "{}: prior balance {}, balance {}".format(
+        print("{}: prior balance {}, balance {}".format(
             tree.node().name(),
             amountt.to_string(tree.node().balance()-tree.node().period_activity()),
-            amountt.to_string(tree.node().balance()))
+            amountt.to_string(tree.node().balance())))
         detail.detail(details, credit=True, layout=layout)
