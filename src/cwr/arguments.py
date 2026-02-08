@@ -2,7 +2,7 @@
 
 import argparse
 
-import datet
+from cwr import datet
 
 ################################################################
 

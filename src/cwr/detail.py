@@ -1,5 +1,4 @@
-import amountt
-import datet
+from cwr import amountt, datet
 
 
 def make_detail_format(layout):

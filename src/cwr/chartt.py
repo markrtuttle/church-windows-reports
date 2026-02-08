@@ -7,7 +7,8 @@
 # the layout of the chart of accounts.
 
 import json
-import accountt
+
+from cwr import accountt
 
 ################################################################
 

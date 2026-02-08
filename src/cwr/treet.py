@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import accountt
+from cwr import accountt
 
 ################################################################
 

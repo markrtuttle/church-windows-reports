@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import entriest
-import detail
+from cwr import detail, entriest
 
 
 def bills_report(entries, layout, min_amount="100.00"):

@@ -2,25 +2,23 @@
 
 from pprint import pprint
 
-import arguments
-import initialt
-import journalt
-import chartt
-import treet
-import entriest
-
-import budgett
-
-import summary
-import summary_budget
-
-import ministryt
-
-import layoutt
-import report_bills
-import report_subfunds
-import report_ministry
-import report_vendors
+from cwr import (
+    arguments,
+    budgett,
+    chartt,
+    entriest,
+    initialt,
+    journalt,
+    layoutt,
+    ministryt,
+    report_bills,
+    report_ministry,
+    report_subfunds,
+    report_vendors,
+    summary,
+    summary_budget,
+    treet,
+)
 
 ################################################################
 

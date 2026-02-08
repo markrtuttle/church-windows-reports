@@ -2,7 +2,7 @@
 
 import json
 
-import amountt
+from cwr import amountt
 
 ################################################################
 

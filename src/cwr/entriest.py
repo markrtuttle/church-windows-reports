@@ -1,6 +1,4 @@
-import amountt
-import entryt
-import accountt
+from cwr import accountt, amountt, entryt
 
 
 def select_by_number(entries, numbers):

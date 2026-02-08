@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
+import argparse
 import csv
 import json
-import argparse
 
 
 def command_line_parser():

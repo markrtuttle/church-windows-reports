@@ -7,8 +7,8 @@ comparison.  Functions convert between strings giving dates of the
 form mm/dd/yyyy and dates of the form yyyy/mm/dd.
 """
 
-import time
 import calendar
+import time
 
 ################################################################
 

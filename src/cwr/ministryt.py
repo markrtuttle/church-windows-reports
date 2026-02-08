@@ -9,7 +9,6 @@ import json
 ACCOUNTS = {
     "outreach": {
         "name": "Mission and Justice",
-        "deacons": ["Jane Flores", "Damon Sidel"],
         "budget": [
             "Connect Series",
             "Interchurch Meetings",
@@ -32,7 +31,6 @@ ACCOUNTS = {
     },
     "property": {
         "name": "Property",
-        "deacons": ["Eric Rochon"],
         "budget": [
             "Church Grounds",
             "Church Maintenance",
@@ -59,7 +57,6 @@ ACCOUNTS = {
     },
     "education": {
         "name": "Christian Education",
-        "deacons": ["Valerie Censabella", "Barbara Wagner"],
         "budget": [
             "Christian Education",
         ],
@@ -69,7 +66,6 @@ ACCOUNTS = {
     },
     "stewardship": {
         "name": "Stewardship",
-        "deacons": ["Sharon Hamilton"],
         "budget": [],
         "fund": [
             "Environmental Stewardship",
@@ -77,7 +73,6 @@ ACCOUNTS = {
     },
     "worship": {
         "name": "Worship",
-        "deacons": ["Bonnie Hayner"],
         "budget": [
             "Pulpit Supply",
             "Worship",
@@ -88,7 +83,6 @@ ACCOUNTS = {
     },
     "pastor": {
         "name": "Pastor",
-        "deacons": ["Leah Lyman Waldron"],
         "budget": [
             "Home Equity/Compensation",
             "Sabbatical Fund Contribution",
@@ -107,7 +101,6 @@ ACCOUNTS = {
     },
     "finance": {
         "name": "Finance",
-        "deacons": ["Debbie Douglas"],
         "budget": [
             "Bank Service Charges",
         ],
@@ -115,7 +108,6 @@ ACCOUNTS = {
     },
     "administration": {
         "name": "Administration",
-        "deacons": ["Laurie Scott"],
         "budget": [
             "Interchurch Meetings",
             "Office Expense",
@@ -135,7 +127,6 @@ ACCOUNTS = {
     },
     "membership": {
         "name": "Membership",
-        "deacons": ["Cindy Manson"],
         "budget": [
             "Membership",
             "Social Media / Communications",
@@ -146,7 +137,6 @@ ACCOUNTS = {
     },
     "music": {
         "name": "Music",
-        "deacons": ["Ethan Brush"],
         "budget": [
             "Music",
         ],
@@ -157,7 +147,6 @@ ACCOUNTS = {
     },
     "fellowship": {
         "name": "Fellowship",
-        "deacons": ["Hong Chin"],
         "budget": [],
         "fund": [
             "Hospitality Fund",
@@ -185,9 +174,6 @@ class Ministry:
 
     def name(self, ministry_name):
         return self.accounts_[ministry_name]["name"]
-
-    def deacons(self, ministry_name):
-        return self.accounts_[ministry_name]["deacons"]
 
     def accounts(self, ministry_name):
         return [self.coa_.number(name_) for name_ in self.accounts_[ministry_name]["budget"]]

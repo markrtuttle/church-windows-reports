@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
+import argparse
 import csv
 import json
-import argparse
 
 
 def command_line_parser():
@@ -32,11 +32,10 @@ def scan_chart(file):
             number = line[3]
             balance = line[5]
 
-            if typ in ["Asset", "Liability", "Fund", "Income", "Expense"]:
-                if balance != "0.00":
-                    if typ == "Liability" and number == "":
-                        number = name
-                    initial[number] = balance
+            if typ in ["Asset", "Liability", "Fund", "Income", "Expense"] and balance != "0.00":
+                if typ == "Liability" and number == "":
+                    number = name
+                initial[number] = balance
 
     return initial
 

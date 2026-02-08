@@ -56,7 +56,7 @@ def from_string_slow(string):
         else:
             raise ValueError
 
-        dollars = "0" if not dollars else dollars
+        dollars = dollars if dollars else "0"
         dollars = dollars.replace(",", "")
 
         try:

@@ -1,13 +1,7 @@
 import csv
 
-import entryt
-
-# Import names of entry items (should be values of an enum)
-from entryt import TID, TYPE, NUMBER, NAME, DATE, DEBIT, CREDIT
-from entryt import COMMENTS, DETAIL, POSTED
-
-# Import list of entry items (should be iterator of an enum)
-from entryt import ELEMENTS
+from cwr import entryt
+from cwr.entryt import COMMENTS, CREDIT, DATE, DEBIT, DETAIL, ELEMENTS, NAME, NUMBER, POSTED, TID, TYPE
 
 # Map entry element to header of journal column containing element
 ELEMENT_TO_HEADER_MAP = {
@@ -43,11 +37,9 @@ class Journal:
 
         # Map column header to column number
         header_to_column_map = {}
-        column = 0
-        for header in headers:
+        for column, header in enumerate(headers):
             if header:  # skip empty columns
                 header_to_column_map[header] = column
-            column += 1
 
         # Map entry element to column number
         for element in ELEMENTS:

@@ -1,0 +1,114 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cwr"
+version = "0.1"
+description = "Church Windows finanical reports"
+readme = "README.md"
+requires-python = ">=3.14"
+authors = [
+    {name = "Mark R. Tuttle", email = "mrtuttle@alum.mit.edu"},
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = []
+
+[project.scripts]
+report = "cwr.report:main"
+make-initial = "cwr.make_initial:main"
+make-budget = "cwr.make_budget:main"
+make-chart = "cwr.make_chart:main"
+
+[project.optional-dependencies]
+dev = [
+    "pylint",
+    "pytest",
+    "black",
+    "ruff",
+    "mypy",
+    "build",
+]
+
+[project.urls]
+#Homepage = "https://github.com/yourusername/accounting-system"
+#Repository = "https://github.com/yourusername/accounting-system"
+#Issues = "https://github.com/yourusername/accounting-system/issues"
+
+[tool.black]
+line-length = 120
+target-version = ['py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 120
+#target-version = "py310"
+
+[tool.ruff.lint]
+# Enable essential error and warning checks
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+
+# Ignore specific rules that are too strict for this project
+ignore = [
+    "E501",  # Line too long (handled by Black)
+    "B007",  # Loop control variable not used (sometimes acceptable)
+    "SIM108", # Use ternary operator (sometimes less readable)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Allow print statements in main execution blocks
+"*.py" = ["T201"]
+
+[tool.ruff.lint.isort]
+#known-first-party = ["account", "amount", "date", "journal", "number", "utility"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+# If using pytest instead of unittest
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "tests/*",
+    "run_tests.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]

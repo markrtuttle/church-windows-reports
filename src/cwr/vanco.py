@@ -35,7 +35,7 @@ def sort_rows_by_column(rows, idx):
 
 
 def group_rows_by_column(rows, idx):
-    keys = sorted(set(row[idx] for row in rows if row[idx]))
+    keys = sorted({row[idx] for row in rows if row[idx]})
     return [[row for row in rows if row[idx] == key] for key in keys]
 
 
@@ -86,7 +86,7 @@ def append_total_to_rows(rows, total_calculator):
 
 def append_total_to_headers(hdridx, total_header):
     index = len(hdridx)
-    assert total_header not in hdridx.keys()
+    assert total_header not in hdridx
     assert index not in hdridx.values()
     hdridx[total_header] = index
     return hdridx

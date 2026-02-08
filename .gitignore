@@ -1,5 +1,8 @@
-.DS_Store
-*.pyc
-*.json
 *.csv
-*~
+*.egg-info
+*.json
+*.pyc
+.DS_Store
+.vscode
+__pycache__
+dist

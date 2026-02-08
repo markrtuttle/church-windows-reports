@@ -1,27 +1,4 @@
-# chart.csv
-# reports/export -> export -> coa data -> export
-# 
-# balance.csv
-# reports/export -> financial -> balance sheet
-# accounts with zero balancce
-# detail -> total funds -> temporarily restricted -> check all
-# export
-# 
-# income.csv
-# reports/export -> financial -> treasurer's report
-# accounts with zero balances
-# fund -> general fund
-# export
-# 
-# vendor.csv
-# reports -> transaction -> general ledger -> account = accounts payable/vendor
-# export
-# 
-# journal.csv
-# date posted
-# export
-# 
-
+PKG = cwr
 FLAGS = --month $(shell date +%m)
 
 default:
@@ -71,10 +48,27 @@ pylint:
 		--disable=too-many-locals \
 		--disable=too-many-positional-arguments \
 		--disable=too-many-public-methods \
-		*.py make-* report
+		src
 
 ruff:
-	ruff check --line-length=120 .
+	ruff check --line-length=120 src
+
+ruff-fix:
+	ruff check --fix --line-length=120 src
 
 black:
-	black --check --line-length=120 .
+	black --check --line-length=120 src
+
+black-fix:
+	black --line-length=120 src
+
+build:
+	python3 -m build
+
+install:
+	python3 -m pip install --editable .
+	python3 -m pip install '$(PKG)[dev]'
+
+uninstall:
+	python3 -m pip uninstall $(PKG)
+

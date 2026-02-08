@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import summary
+from cwr import summary
 
 
 def subfund_report(period_name, forest, layout):

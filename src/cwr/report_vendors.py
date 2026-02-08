@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import amountt
-import detail
+from cwr import amountt, detail
 
 
 def vendor_report(forest, entries, layout=None, all_vendors=False):

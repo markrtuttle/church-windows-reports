@@ -1,5 +1,4 @@
-import amountt
-import datet
+from cwr import amountt, datet
 
 # An enum for the entry elements
 TID = 0

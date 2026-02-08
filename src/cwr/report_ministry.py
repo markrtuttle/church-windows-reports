@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
-import summary
-import summary_budget
-
-import detail
-import entriest
+from cwr import detail, entriest, summary, summary_budget
 
 ################################################################
 

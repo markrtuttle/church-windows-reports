@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import amountt
-import layoutt
+from cwr import amountt, layoutt
 
 ################################################################
 
